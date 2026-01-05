@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎣 Contrôle Garde-Pêche AAPPMA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* ========== PAGE DE CONNEXION ========== */
+        .login-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-title {
+            color: #1a472a;
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+            font-weight: bold;
+            transition: border-color 0.3s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #2d5a3d;
+        }
+
+        .login-input.error {
+            border-color: #e74c3c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(45, 90, 61, 0.4);
+        }
+
+        .login-error {
+            color: #e74c3c;
+            margin-top: 15px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* ========== APPLICATION PRINCIPALE ========== */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .app-content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ========== NAVIGATION TABS ========== */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-tab:hover {
+            background: #f0f0f0;
+        }
+
+        .nav-tab.active {
+            background: #2d5a3d;
+            color: white;
+        }
+
+        .nav-tab-icon {
+            font-size: 24px;
+        }
+
+        /* ========== SECTIONS ========== */
+        .section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #1a472a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ========== FORMULAIRE FICHE SANITAIRE ========== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d5a3d;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #e74c3c;
+        }
+
+        .form-section-title {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #1a472a;
+            margin: 25px 0 15px;
+        }
+
+        /* ========== SÉLECTION RÈGLEMENT ========== */
+        .reglement-selection {
+            margin-top: 30px;
+        }
+
+        .reglement-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .reglement-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .reglement-card:hover {
+            border-color: #2d5a3d;
+            transform: translateY(-3px);
+        }
+
+        .reglement-card.selected {
+            border-color: #2d5a3d;
+            background: #e8f5e9;
+        }
+
+        .reglement-card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .reglement-card-title {
+            font-weight: 700;
+            color: #1a472a;
+        }
+
+        .reglement-read-btn {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .reglement-read-btn:hover {
+            background: #f57c00;
+        }
+
+        .reglement-read-btn.visible {
+            display: block;
+        }
+
+        /* ========== MODAL RÈGLEMENT ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 800px;
+            max-height: 90vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-body h3 {
+            color: #1a472a;
+            margin: 20px 0 10px;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .read-confirm-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .read-confirm-checkbox input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .modal-validate-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2d5a3d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .modal-validate-btn.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-validate-btn.enabled:hover {
+            background: #1a472a;
+        }
+
+        /* ========== RECHERCHE PERSONNE ========== */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2d5a3d;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #2d5a3d;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-results.visible {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: #f5f5f5;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+        }
+
+        .search-result-status {
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .status-ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-banned {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .view-info-btn {
+            background: #2d5a3d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ========== INFOS PERSONNE ========== */
+        .person-info-card {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .person-info-card.visible {
+            display: block;
+        }
+
+        .person-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .person-info-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a472a;
+        }
+
+        .person-info-status {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .infractions-list {
+            margin-top: 15px;
+        }
+
+        .infraction-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .infraction-item.banned {
+            border-left-color: #c62828;
+        }
+
+        .infraction-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .infraction-source {
+            font-size: 12px;
+            color: #2d5a3d;
+            font-weight: 600;
+        }
+
+        .infraction-motif {
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .no-infraction {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* ========== VALIDATION FINALE ========== */
+        .validation-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .validate-control-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .validate-control-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(45, 90, 61, 0.3);
+        }
+
+        .validate-control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ========== HISTORIQUE ========== */
+        .history-list {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2d5a3d;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .history-item-name {
+            font-weight: 700;
+            color: #1a472a;
+        }
+
+        .history-item-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .history-item-reglement {
+            font-size: 12px;
+            background: #e8f5e9;
+            padding: 3px 10px;
+            border-radius: 10px;
+            color: #2d5a3d;
+            font-weight: 600;
+        }
+
+        /* ========== ALERTES ========== */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .alert.visible {
+            display: block;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            color: #f57c00;
+            border: 1px solid #ffcc80;
+        }
+
+        /* ========== LOADING ========== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #2d5a3d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .app-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .reglement-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .person-info-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== PAGE DE CONNEXION ========== -->
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-logo">👮</div>
+            <h1 class="login-title">Contrôleur / Garde de Pêche</h1>
+            <p class="login-subtitle">AAPPMA Gundershoffen</p>
+            <input type="password" class="login-input" id="loginCode" maxlength="3" placeholder="•••" autocomplete="off">
+            <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
+            <p class="login-error" id="loginError">❌ Code incorrect</p>
+        </div>
+    </div>
+
+    <!-- ========== APPLICATION PRINCIPALE ========== -->
+    <div class="app-container" id="appContainer">
+        <header class="app-header">
+            <div class="app-title">👮 Contrôle Garde-Pêche</div>
+            <button class="logout-btn" id="logoutBtn">🔒 Déconnexion</button>
+        </header>
+
+        <div class="app-content">
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="fiche">
+                    <span class="nav-tab-icon">📋</span>
+                    <span>Fiche Contrôle</span>
+                </button>
+                <button class="nav-tab" data-tab="recherche">
+                    <span class="nav-tab-icon">🔍</span>
+                    <span>Rechercher</span>
+                </button>
+                <button class="nav-tab" data-tab="historique">
+                    <span class="nav-tab-icon">📜</span>
+                    <span>Historique</span>
+                </button>
+            </div>
+
+            <!-- Alert -->
+            <div class="alert" id="alert"></div>
+
+            <!-- ========== SECTION FICHE CONTRÔLE ========== -->
+            <div class="section active" id="sectionFiche">
+                <h2 class="section-title">📋 Fiche de Contrôle Sanitaire</h2>
+
+                <form id="ficheForm">
+                    <div class="form-section-title">👤 Informations du pêcheur</div>
+                    
+                    <div class="form-group required">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" required>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="adresse">Adresse complète</label>
+                        <textarea id="adresse" name="adresse" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="telephone">Numéro de téléphone</label>
+                        <input type="tel" id="telephone" name="telephone" required>
+                    </div>
+
+                    <div class="form-section-title">🚨 Contact d'urgence</div>
+
+                    <div class="form-group required">
+                        <label for="urgenceNom">Nom</label>
+                        <input type="text" id="urgenceNom" name="urgenceNom" required>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="urgencePrenom">Prénom</label>
+                        <input type="text" id="urgencePrenom" name="urgencePrenom" required>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="urgenceTel">Numéro de téléphone</label>
+                        <input type="tel" id="urgenceTel" name="urgenceTel" required>
+                    </div>
+
+                    <!-- Sélection du règlement -->
+                    <div class="reglement-selection">
+                        <div class="form-section-title">📜 Sélection du règlement</div>
+                        
+                        <div class="reglement-cards">
+                            <div class="reglement-card" data-reglement="carpodrome">
+                                <div class="reglement-card-icon">🎣</div>
+                                <div class="reglement-card-title">Carpodrome</div>
+                            </div>
+                            <div class="reglement-card" data-reglement="hardt">
+                                <div class="reglement-card-icon">🐟</div>
+                                <div class="reglement-card-title">Hardt</div>
+                            </div>
+                            <div class="reglement-card" data-reglement="breitmatt">
+                                <div class="reglement-card-icon">🌊</div>
+                                <div class="reglement-card-title">Breitmatt</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="reglement-read-btn" id="readReglementBtn">
+                            📖 Lire le règlement (obligatoire)
+                        </button>
+                    </div>
+
+                    <!-- Validation -->
+                    <div class="validation-section">
+                        <button type="submit" class="validate-control-btn" id="validateBtn" disabled>
+                            ✅ Valider le contrôle
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ========== SECTION RECHERCHE ========== -->
+            <div class="section" id="sectionRecherche">
+                <h2 class="section-title">🔍 Rechercher une personne</h2>
+
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Tapez un nom ou prénom...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+
+                <div class="loading" id="searchLoading">
+                    <div class="spinner"></div>
+                    <p>Recherche en cours...</p>
+                </div>
+
+                <div class="person-info-card" id="personInfoCard">
+                    <div class="person-info-header">
+                        <span class="person-info-name" id="personName"></span>
+                        <span class="person-info-status" id="personStatus"></span>
+                    </div>
+                    <div id="personInfractions"></div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION HISTORIQUE ========== -->
+            <div class="section" id="sectionHistorique">
+                <h2 class="section-title">📜 Historique des contrôles</h2>
+                <div class="loading" id="historyLoading">
+                    <div class="spinner"></div>
+                    <p>Chargement...</p>
+                </div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL RÈGLEMENT ========== -->
+    <div class="modal-overlay" id="reglementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">📜 Règlement</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <label class="read-confirm-checkbox">
+                    <input type="checkbox" id="readConfirmCheckbox">
+                    <span>J'ai lu et compris le règlement</span>
+                </label>
+                <button class="modal-validate-btn" id="modalValidateBtn">
+                    ✅ Confirmer la lecture
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // ========== CONFIGURATION FIREBASE ==========
+        const firebaseConfigHardt = {
+            apiKey: "AIzaSyADXcfDOBLHC7pdlGedDW-4wAHKyPHW19I",
+            authDomain: "resahardt.firebaseapp.com",
+            databaseURL: "https://resahardt-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "resahardt",
+            storageBucket: "resahardt.firebasestorage.app",
+            messagingSenderId: "159584744908",
+            appId: "1:159584744908:web:1cc909277052b56e945969"
+        };
+
+        const firebaseConfigCarpodrome = {
+            apiKey: "AIzaSyBhkDGebCSuqjcENl8dZI0ZeSAkjHUUsuY",
+            authDomain: "reservation-carpodrome.firebaseapp.com",
+            databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "reservation-carpodrome",
+            storageBucket: "reservation-carpodrome.firebasestorage.app",
+            messagingSenderId: "112186411680",
+            appId: "1:112186411680:web:13bc4892163e47a04317c5"
+        };
+
+        // Initialiser les 2 apps Firebase
+        const appHardt = firebase.initializeApp(firebaseConfigHardt, 'hardt');
+        const appCarpodrome = firebase.initializeApp(firebaseConfigCarpodrome, 'carpodrome');
+
+        const dbHardt = firebase.database(appHardt);
+        const dbCarpodrome = firebase.database(appCarpodrome);
+
+        // ========== RÈGLEMENTS ==========
+        const reglements = {
+            carpodrome: {
+                title: "🎣 RÈGLEMENT CARPODROME 2026",
+                content: `
+                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
+                    <p><strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
+                    <ul>
+                        <li><strong>Sur réservation uniquement et 24h à l'avance</strong></li>
+                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
+                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
+                        <li>Pêche de 8h à 19h (mars-avril et septembre-octobre)</li>
+                        <li>Pêche de 8h à 20h (mai à août)</li>
+                    </ul>
+                    
+                    <h3>🎫 RÉSERVATION ET TARIFS</h3>
+                    <ul>
+                        <li>Carte journalière : <strong>10 € (Titulaires carte annuelle 5€)</strong></li>
+                        <li>Carte demi-journée : <strong>6 € (Titulaires carte annuelle 3€)</strong></li>
+                        <li>Jours d'événements : <strong>10 €</strong></li>
+                    </ul>
+                    
+                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
+                    <ul>
+                        <li>Pêche <strong>No Kill obligatoire</strong></li>
+                        <li>Canne au coup uniquement, longueur max : 13 m</li>
+                        <li>1 ligne par pêcheur</li>
+                        <li>Max 2 pêcheurs par poste</li>
+                        <li>Hameçon sans ardillon, taille max n°10</li>
+                        <li>Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini)</li>
+                        <li>Graines cuites obligatoirement</li>
+                    </ul>
+                    
+                    <h3>⛔ INTERDICTIONS</h3>
+                    <ul>
+                        <li>❌ Feux au sol et barbecues</li>
+                        <li>❌ Pêche de nuit</li>
+                        <li>❌ Camping</li>
+                        <li>❌ Baignade, canotage</li>
+                        <li>❌ Franglaise, Feeder</li>
+                        <li>❌ Graines crues, pêche au pain</li>
+                        <li>❌ Hameçons avec ardillons</li>
+                        <li>❌ Pêche en surface</li>
+                    </ul>
+                    
+                    <h3>👮 SANCTIONS</h3>
+                    <ul>
+                        <li>1ère infraction → avertissement</li>
+                        <li>2ème infraction → exclusion temporaire ou définitive</li>
+                        <li>Aucun remboursement en cas d'exclusion</li>
+                    </ul>
+                    
+                    <h3>🗑️ GESTION DES DÉCHETS</h3>
+                    <p>Ramener ses déchets. Amende possible : <strong>150 €</strong></p>
+                `
+            },
+            hardt: {
+                title: "🐟 RÈGLEMENT ETANG DE LA HARDT 2026",
+                content: `
+                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
+                    <p><strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
+                    <ul>
+                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
+                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
+                        <li>Du <strong>1er novembre au 31 décembre</strong> : samedis, dimanches et jours fériés</li>
+                        <li>Pêche de nuit : <strong>20h → 8h (réservation obligatoire)</strong></li>
+                    </ul>
+                    
+                    <h3>🎫 CARTES ET TARIFS</h3>
+                    <ul>
+                        <li>Carte journalière : <strong>10 €</strong></li>
+                        <li>Carte demi-journée : <strong>6 €</strong></li>
+                        <li>Carte pêche de nuit : <strong>10 €</strong></li>
+                    </ul>
+                    
+                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
+                    <ul>
+                        <li>Pêche <strong>No Kill obligatoire</strong></li>
+                        <li>2 lignes par pêcheur</li>
+                        <li>12 postes carpistes (n°1 à 12), 3 postes pêche au coup</li>
+                        <li><strong>Poste 4 réservé aux contrôleurs</strong></li>
+                        <li>1 véhicule par pêcheur autour de l'étang</li>
+                        <li><strong>Circulation interdite après 22h</strong></li>
+                        <li>Matériel requis : bassine/tapis + filoche adaptée</li>
+                        <li>Graines cuites obligatoirement</li>
+                    </ul>
+                    
+                    <h3>⛔ INTERDICTIONS</h3>
+                    <ul>
+                        <li>❌ Consommation d'alcool excessif</li>
+                        <li>❌ Camping (hors pêcheurs)</li>
+                        <li>❌ Baignade, canotage, accès aux îles</li>
+                        <li>❌ Sacs de conservation, bateau amorceur</li>
+                        <li>❌ Graines crues, pêche au pain</li>
+                        <li>❌ Hameçons avec ardillons</li>
+                        <li>❌ Bas de ligne en tresse</li>
+                        <li>❌ Pêche en surface</li>
+                        <li>❌ Véhicules visiteurs autour de l'étang</li>
+                    </ul>
+                    
+                    <h3>👮 SANCTIONS</h3>
+                    <ul>
+                        <li>1ère infraction → avertissement</li>
+                        <li>2ème infraction → exclusion temporaire ou définitive</li>
+                    </ul>
+                    
+                    <h3>🗑️ GESTION DES DÉCHETS</h3>
+                    <p>Ramener ses déchets. Amende possible : <strong>150 €</strong></p>
+                `
+            },
+            breitmatt: {
+                title: "🐟 RÈGLEMENT ETANG DE LA BREITMATT 2026",
+                content: `
+                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
+                    <p><strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
+                    <ul>
+                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
+                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
+                        <li>Du <strong>1er novembre au 31 décembre</strong> : samedis, dimenches et jours fériés</li>
+                    </ul>
+                    
+                    <h3>🎫 CARTES ET TARIFS</h3>
+                    <ul>
+                        <li>Carte journalière : <strong>10 €</strong></li>
+                        <li>Carte demi-journée : <strong>6 €</strong></li>
+                        <li>Carnassiers : carte annuelle obligatoire (journalière refusée)</li>
+                    </ul>
+                    
+                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
+                    <ul>
+                        <li>Pêche <strong>No Kill obligatoire</strong></li>
+                        <li>2 lignes par pêcheur</li>
+                        <li>Amorçage et pêche depuis le poste</li>
+                        <li>Matériel requis : bassine/tapis avec rebord (5cm mini) + filoche</li>
+                        <li>Graines cuites obligatoirement</li>
+                        <li>Canne toujours sous surveillance</li>
+                    </ul>
+                    
+                    <h3>⛔ INTERDICTIONS</h3>
+                    <ul>
+                        <li>❌ Feux au sol et barbecues</li>
+                        <li>❌ Camping</li>
+                        <li>❌ Baignade, canotage</li>
+                        <li>❌ Pêche en dehors des postes et dans la frayère</li>
+                        <li>❌ Sacs de conservation, bateau amorceur</li>
+                        <li>❌ Graines crues, pêche au pain</li>
+                        <li>❌ Hameçons avec ardillons</li>
+                        <li>❌ Bas de ligne en tresse</li>
+                        <li>❌ Pêche en surface</li>
+                        <li>❌ Stationnement sur le chemin et berge côté étang</li>
+                    </ul>
+                    
+                    <h3>👮 SANCTIONS</h3>
+                    <ul>
+                        <li>1ère infraction → avertissement</li>
+                        <li>2ème infraction → exclusion temporaire ou définitive</li>
+                    </ul>
+                    
+                    <h3>🗑️ GESTION DES DÉCHETS</h3>
+                    <p>Ramener ses déchets. Amende possible : <strong>150 €</strong></p>
+                `
+            }
+        };
+
+        // ========== VARIABLES GLOBALES ==========
+        const CODE_ACCESS = "911";
+        let selectedReglement = null;
+        let reglementRead = false;
+        let allInfractions = [];
+
+        // ========== ÉLÉMENTS DOM ==========
+        const loginPage = document.getElementById('loginPage');
+        const appContainer = document.getElementById('appContainer');
+        const loginCode = document.getElementById('loginCode');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const sections = document.querySelectorAll('.section');
+        const ficheForm = document.getElementById('ficheForm');
+        const reglementCards = document.querySelectorAll('.reglement-card');
+        const readReglementBtn = document.getElementById('readReglementBtn');
+        const reglementModal = document.getElementById('reglementModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const modalClose = document.getElementById('modalClose');
+        const readConfirmCheckbox = document.getElementById('readConfirmCheckbox');
+        const modalValidateBtn = document.getElementById('modalValidateBtn');
+        const validateBtn = document.getElementById('validateBtn');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const personInfoCard = document.getElementById('personInfoCard');
+        const alertBox = document.getElementById('alert');
+
+        // ========== CONNEXION ==========
+        loginBtn.addEventListener('click', handleLogin);
+        loginCode.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        function handleLogin() {
+            const code = loginCode.value;
+            if (code === CODE_ACCESS) {
+                loginPage.style.display = 'none';
+                appContainer.style.display = 'block';
+                loadInfractions();
+                loadHistory();
+            } else {
+                loginCode.classList.add('error');
+                loginError.style.display = 'block';
+                setTimeout(() => {
+                    loginCode.classList.remove('error');
+                    loginError.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            appContainer.style.display = 'none';
+            loginPage.style.display = 'flex';
+            loginCode.value = '';
+            resetForm();
+        });
+
+        // ========== NAVIGATION ==========
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                navTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabName = tab.dataset.tab;
+                sections.forEach(s => s.classList.remove('active'));
+                document.getElementById(`section${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+            });
+        });
+
+        // ========== SÉLECTION RÈGLEMENT ==========
+        reglementCards.forEach(card => {
+            card.addEventListener('click', () => {
+                reglementCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedReglement = card.dataset.reglement;
+                reglementRead = false;
+                readReglementBtn.classList.add('visible');
+                readReglementBtn.textContent = '📖 Lire le règlement (obligatoire)';
+                updateValidateButton();
+            });
+        });
+
+        // ========== MODAL RÈGLEMENT ==========
+        readReglementBtn.addEventListener('click', () => {
+            if (!selectedReglement) return;
+            
+            const reglement = reglements[selectedReglement];
+            modalTitle.textContent = reglement.title;
+            modalBody.innerHTML = reglement.content;
+            readConfirmCheckbox.checked = false;
+            modalValidateBtn.classList.remove('enabled');
+            reglementModal.classList.add('visible');
+        });
+
+        modalClose.addEventListener('click', () => {
+            reglementModal.classList.remove('visible');
+        });
+
+        reglementModal.addEventListener('click', (e) => {
+            if (e.target === reglementModal) {
+                reglementModal.classList.remove('visible');
+            }
+        });
+
+        readConfirmCheckbox.addEventListener('change', () => {
+            if (readConfirmCheckbox.checked) {
+                modalValidateBtn.classList.add('enabled');
+            } else {
+                modalValidateBtn.classList.remove('enabled');
+            }
+        });
+
+        modalValidateBtn.addEventListener('click', () => {
+            if (readConfirmCheckbox.checked) {
+                reglementRead = true;
+                reglementModal.classList.remove('visible');
+                readReglementBtn.textContent = '✅ Règlement lu';
+                readReglementBtn.style.background = '#2d5a3d';
+                updateValidateButton();
+            }
+        });
+
+        // ========== VALIDATION FORMULAIRE ==========
+        function updateValidateButton() {
+            const formValid = ficheForm.checkValidity();
+            validateBtn.disabled = !(formValid && selectedReglement && reglementRead);
+        }
+
+        ficheForm.addEventListener('input', updateValidateButton);
+
+        ficheForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!selectedReglement || !reglementRead) {
+                showAlert('Veuillez sélectionner et lire un règlement', 'error');
+                return;
+            }
+
+            const formData = {
+                nom: document.getElementById('nom').value.toUpperCase(),
+                prenom: document.getElementById('prenom').value,
+                adresse: document.getElementById('adresse').value,
+                telephone: document.getElementById('telephone').value,
+                urgence: {
+                    nom: document.getElementById('urgenceNom').value.toUpperCase(),
+                    prenom: document.getElementById('urgencePrenom').value,
+                    telephone: document.getElementById('urgenceTel').value
+                },
+                reglement: selectedReglement,
+                dateControle: new Date().toISOString(),
+                timestamp: Date.now()
+            };
+
+            try {
+                // Sauvegarder dans Firebase Carpodrome (base principale)
+                await dbCarpodrome.ref('controles').push(formData);
+                showAlert('✅ Contrôle enregistré avec succès !', 'success');
+                resetForm();
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
+            }
+        });
+
+        function resetForm() {
+            ficheForm.reset();
+            reglementCards.forEach(c => c.classList.remove('selected'));
+            selectedReglement = null;
+            reglementRead = false;
+            readReglementBtn.classList.remove('visible');
+            readReglementBtn.style.background = '#ff9800';
+            validateBtn.disabled = true;
+        }
+
+        // ========== RECHERCHE ==========
+        async function loadInfractions() {
+            allInfractions = [];
+            
+            try {
+                // Charger depuis Carpodrome
+                const snapshotCarpodrome = await dbCarpodrome.ref('infractions').once('value');
+                const dataCarpodrome = snapshotCarpodrome.val();
+                if (dataCarpodrome) {
+                    // Avertissements
+                    if (dataCarpodrome.avertissements) {
+                        Object.entries(dataCarpodrome.avertissements).forEach(([key, val]) => {
+                            allInfractions.push({
+                                ...val,
+                                id: key,
+                                source: 'Carpodrome',
+                                type: 'avertissement'
+                            });
+                        });
+                    }
+                    // Bannissements
+                    if (dataCarpodrome.bannissements) {
+                        Object.entries(dataCarpodrome.bannissements).forEach(([key, val]) => {
+                            allInfractions.push({
+                                ...val,
+                                id: key,
+                                source: 'Carpodrome',
+                                type: 'bannissement'
+                            });
+                        });
+                    }
+                }
+
+                // Charger depuis Hardt
+                const snapshotHardt = await dbHardt.ref('infractions').once('value');
+                const dataHardt = snapshotHardt.val();
+                if (dataHardt) {
+                    // Avertissements
+                    if (dataHardt.avertissements) {
+                        Object.entries(dataHardt.avertissements).forEach(([key, val]) => {
+                            allInfractions.push({
+                                ...val,
+                                id: key,
+                                source: 'Hardt',
+                                type: 'avertissement'
+                            });
+                        });
+                    }
+                    // Bannissements
+                    if (dataHardt.bannissements) {
+                        Object.entries(dataHardt.bannissements).forEach(([key, val]) => {
+                            allInfractions.push({
+                                ...val,
+                                id: key,
+                                source: 'Hardt',
+                                type: 'bannissement'
+                            });
+                        });
+                    }
+                }
+
+                console.log('Infractions chargées:', allInfractions.length);
+            } catch (error) {
+                console.error('Erreur chargement infractions:', error);
+            }
+        }
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('visible');
+                return;
+            }
+
+            const results = allInfractions.filter(inf => {
+                const nom = (inf.nom || '').toLowerCase();
+                const prenom = (inf.prenom || '').toLowerCase();
+                return nom.includes(query) || prenom.includes(query);
+            });
+
+            // Dédupliquer par nom/prénom
+            const unique = [];
+            const seen = new Set();
+            results.forEach(r => {
+                const key = `${r.nom}-${r.prenom}`.toLowerCase();
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    unique.push(r);
+                }
+            });
+
+            displaySearchResults(unique, query);
+        });
+
+        function displaySearchResults(results, query) {
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">Aucun résultat trouvé</div>';
+                searchResults.classList.add('visible');
+                return;
+            }
+
+            searchResults.innerHTML = results.map(r => {
+                const isBanned = allInfractions.some(inf => 
+                    inf.nom === r.nom && inf.prenom === r.prenom && inf.type === 'bannissement'
+                );
+                const hasWarning = allInfractions.some(inf => 
+                    inf.nom === r.nom && inf.prenom === r.prenom && inf.type === 'avertissement'
+                );
+
+                let statusClass = 'status-ok';
+                let statusText = 'OK';
+                if (isBanned) {
+                    statusClass = 'status-banned';
+                    statusText = '🚫 BANNI';
+                } else if (hasWarning) {
+                    statusClass = 'status-warning';
+                    statusText = '⚠️ Avertissement';
+                }
+
+                return `
+                    <div class="search-result-item" data-nom="${r.nom}" data-prenom="${r.prenom}">
+                        <div>
+                            <div class="search-result-name">${r.nom} ${r.prenom}</div>
+                            <span class="search-result-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <button class="view-info-btn">👁️ Voir infos</button>
+                    </div>
+                `;
+            }).join('');
+
+            searchResults.classList.add('visible');
+
+            // Event listeners pour les résultats
+            searchResults.querySelectorAll('.search-result-item').forEach(item => {
+                item.querySelector('.view-info-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const nom = item.dataset.nom;
+                    const prenom = item.dataset.prenom;
+                    showPersonInfo(nom, prenom);
+                    searchResults.classList.remove('visible');
+                });
+            });
+        }
+
+        function showPersonInfo(nom, prenom) {
+            const infractions = allInfractions.filter(inf => 
+                inf.nom === nom && inf.prenom === prenom
+            );
+
+            const isBanned = infractions.some(inf => inf.type === 'bannissement');
+            const hasWarning = infractions.some(inf => inf.type === 'avertissement');
+
+            document.getElementById('personName').textContent = `${nom} ${prenom}`;
+            
+            const statusEl = document.getElementById('personStatus');
+            if (isBanned) {
+                statusEl.textContent = '🚫 BANNI';
+                statusEl.className = 'person-info-status status-banned';
+            } else if (hasWarning) {
+                statusEl.textContent = '⚠️ Avertissement en cours';
+                statusEl.className = 'person-info-status status-warning';
+            } else {
+                statusEl.textContent = '✅ RAS';
+                statusEl.className = 'person-info-status status-ok';
+            }
+
+            const infractionsContainer = document.getElementById('personInfractions');
+            if (infractions.length === 0) {
+                infractionsContainer.innerHTML = '<div class="no-infraction">✅ Aucune infraction enregistrée</div>';
+            } else {
+                infractionsContainer.innerHTML = `
+                    <h4 style="margin-bottom: 10px;">📋 Infractions (${infractions.length})</h4>
+                    <div class="infractions-list">
+                        ${infractions.map(inf => `
+                            <div class="infraction-item ${inf.type === 'bannissement' ? 'banned' : ''}">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span class="infraction-date">📅 ${formatDate(inf.date || inf.timestamp)}</span>
+                                    <span class="infraction-source">📍 ${inf.source}</span>
+                                </div>
+                                <div class="infraction-motif">
+                                    ${inf.type === 'bannissement' ? '🚫' : '⚠️'} 
+                                    ${inf.type === 'bannissement' ? 'BANNISSEMENT' : 'Avertissement'}
+                                    ${inf.motif ? ': ' + inf.motif : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            personInfoCard.classList.add('visible');
+        }
+
+        // Cacher les résultats quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                searchResults.classList.remove('visible');
+            }
+        });
+
+        // ========== HISTORIQUE ==========
+        async function loadHistory() {
+            const historyLoading = document.getElementById('historyLoading');
+            const historyList = document.getElementById('historyList');
+            
+            historyLoading.classList.add('visible');
+            historyList.innerHTML = '';
+
+            try {
+                const snapshot = await dbCarpodrome.ref('controles').orderByChild('timestamp').limitToLast(50).once('value');
+                const data = snapshot.val();
+                
+                historyLoading.classList.remove('visible');
+                
+                if (!data) {
+                    historyList.innerHTML = '<p style="text-align: center; color: #666;">Aucun contrôle enregistré</p>';
+                    return;
+                }
+
+                const controles = Object.entries(data).map(([key, val]) => ({...val, id: key}))
+                    .sort((a, b) => b.timestamp - a.timestamp);
+
+                historyList.innerHTML = controles.map(c => `
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <span class="history-item-name">${c.nom} ${c.prenom}</span>
+                            <span class="history-item-reglement">${c.reglement?.toUpperCase() || 'N/A'}</span>
+                        </div>
+                        <div class="history-item-date">📅 ${formatDate(c.dateControle)}</div>
+                        <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                            📞 ${c.telephone || 'N/A'}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                historyLoading.classList.remove('visible');
+                historyList.innerHTML = '<p style="color: #c62828;">Erreur de chargement</p>';
+            }
+        }
+
+        // ========== UTILITAIRES ==========
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Date inconnue';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch {
+                return dateStr;
+            }
+        }
+
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert visible alert-${type}`;
+            setTimeout(() => {
+                alertBox.classList.remove('visible');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
