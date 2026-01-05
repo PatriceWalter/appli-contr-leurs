@@ -8,905 +8,164 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%); min-height: 100vh; color: #333; }
+
+        /* LOGIN */
+        .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-container { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; width: 100%; }
+        .login-logo { width: 150px; height: 150px; margin: 0 auto 20px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 70px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .login-title { color: #1a472a; font-size: 24px; margin-bottom: 10px; font-weight: 700; }
+        .login-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
+        .login-input { width: 100%; padding: 15px 20px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 20px; letter-spacing: 10px; font-weight: bold; }
+        .login-input:focus { outline: none; border-color: #2d5a3d; }
+        .login-input.error { border-color: #e74c3c; animation: shake 0.5s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .login-error { color: #e74c3c; margin-top: 15px; display: none; font-weight: 500; }
+
+        /* APP */
+        .app-container { display: none; min-height: 100vh; }
+
+        /* BACK BUTTON */
+        .back-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 1000; background: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 16px; font-weight: 600; color: #1a472a; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .back-btn.visible { display: flex; align-items: center; gap: 8px; }
+
+        /* PAGES */
+        .page { display: none; min-height: 100vh; padding: 20px; padding-top: 80px; }
+        .page.active { display: block; }
+        .menu-page { padding-top: 20px; }
+
+        /* MENU */
+        .menu-header { text-align: center; color: white; margin-bottom: 30px; padding: 20px; }
+        .menu-logo { width: 120px; height: 120px; margin: 0 auto 15px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .menu-subtitle { font-size: 14px; opacity: 0.9; }
+        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
+        .menu-card { background: white; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-card-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+        .menu-card-content { flex: 1; }
+        .menu-card-title { font-size: 18px; font-weight: 700; color: #1a472a; margin-bottom: 5px; }
+        .menu-card-desc { font-size: 13px; color: #666; }
+        .menu-card-arrow { font-size: 24px; color: #ccc; }
+        .logout-card { margin-top: 30px; background: #f8f9fa; border: 2px dashed #ddd; }
+        .logout-card .menu-card-icon { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+
+        /* PAGE CONTENT */
+        .page-content { max-width: 800px; margin: 0 auto; }
+        .page-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .page-title { font-size: 22px; color: #1a472a; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; display: flex; align-items: center; gap: 10px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2d5a3d; }
+        .form-group.required label::after { content: " *"; color: #e74c3c; }
+        .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+
+        /* REGLEMENT */
+        .reglement-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        @media (max-width: 500px) { .reglement-cards { grid-template-columns: 1fr; } }
+        .reglement-card { background: #f8f9fa; border: 3px solid #e0e0e0; border-radius: 12px; padding: 15px 10px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .reglement-card:hover { border-color: #2d5a3d; }
+        .reglement-card.selected { border-color: #2d5a3d; background: #e8f5e9; }
+        .reglement-card-icon { font-size: 30px; margin-bottom: 5px; }
+        .reglement-card-title { font-weight: 700; color: #1a472a; font-size: 14px; }
+        .reglement-read-btn { display: none; margin-top: 15px; width: 100%; padding: 12px; background: #ff9800; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        .reglement-read-btn.visible { display: block; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.visible { display: flex; }
+        .modal-content { background: white; border-radius: 15px; max-width: 900px; max-height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; }
+        .modal-close { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; font-size: 14px; line-height: 1.7; }
+        .modal-body h3 { color: #1a472a; margin: 20px 0 10px; padding-bottom: 5px; border-bottom: 2px solid #e8f5e9; }
+        .modal-body ul { margin-left: 20px; margin-bottom: 15px; }
+        .modal-footer { padding: 20px; border-top: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px; }
+        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .read-confirm-checkbox input { width: 20px; height: 20px; cursor: pointer; }
+        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; }
+        .modal-validate-btn.enabled { opacity: 1; pointer-events: auto; }
+
+        /* SEARCH */
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
+        .search-input:focus { outline: none; border-color: #2d5a3d; }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #666; }
+        .search-results { margin-top: 15px; }
+        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid #2d5a3d; transition: all 0.2s; }
+        .search-result-item:hover { background: #e8f5e9; }
+        .search-result-name { font-weight: 700; color: #1a472a; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
+
+        /* BADGES */
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+        .badge-ok { background: #e8f5e9; color: #2e7d32; }
+        .badge-warning { background: #fff3e0; color: #f57c00; }
+        .badge-banned { background: #ffebee; color: #c62828; }
+        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
+        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
+        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
+
+        /* DETAIL */
+        .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
+        .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
+        .detail-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .info-item { background: #f8f9fa; padding: 12px; border-radius: 8px; }
+        .info-item-label { font-size: 12px; color: #666; margin-bottom: 3px; }
+        .info-item-value { font-weight: 600; color: #333; }
+
+        /* INFRACTIONS */
+        .infractions-section { margin-top: 25px; background: #fff3e0; border-radius: 12px; padding: 20px; border: 2px solid #ffcc80; }
+        .infractions-section.banned { background: #ffebee; border-color: #ef9a9a; }
+        .infractions-header { font-weight: 700; font-size: 16px; color: #f57c00; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .infractions-section.banned .infractions-header { color: #c62828; }
+        .infraction-item { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #ff9800; }
+        .infraction-item.banned { border-left-color: #c62828; }
+        .infraction-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+        .infraction-date { font-size: 12px; color: #666; }
+        .infraction-motif { font-weight: 500; }
+        .no-results { text-align: center; color: #666; padding: 40px; }
+
+        /* BUTTONS */
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
+
+        /* INFRACTION TYPE */
+        .infraction-type-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .infraction-type-btn { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; }
+        .infraction-type-btn.selected { border-color: #ff9800; background: #fff3e0; }
+        .infraction-type-btn.banned.selected { border-color: #c62828; background: #ffebee; }
+
+        /* ALERT */
+        .alert { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; font-weight: 500; z-index: 3000; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .alert.visible { display: block; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        /* ========== PAGE DE CONNEXION ========== */
-        .login-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .login-logo {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 70px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .login-title {
-            color: #1a472a;
-            font-size: 24px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .login-subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 24px;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            letter-spacing: 10px;
-            font-weight: bold;
-            transition: border-color 0.3s;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: #2d5a3d;
-        }
-
-        .login-input.error {
-            border-color: #e74c3c;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(45, 90, 61, 0.4);
-        }
-
-        .login-error {
-            color: #e74c3c;
-            margin-top: 15px;
-            display: none;
-            font-weight: 500;
-        }
-
-        /* ========== APPLICATION PRINCIPALE ========== */
-        .app-container {
-            display: none;
-            min-height: 100vh;
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .app-title {
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .app-content {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* ========== NAVIGATION TABS ========== */
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .nav-tab {
-            flex: 1;
-            min-width: 100px;
-            padding: 15px 10px;
-            background: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .nav-tab:hover {
-            background: #f0f0f0;
-        }
-
-        .nav-tab.active {
-            background: #2d5a3d;
-            color: white;
-        }
-
-        .nav-tab-icon {
-            font-size: 24px;
-        }
-
-        /* ========== SECTIONS ========== */
-        .section {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section-title {
-            font-size: 20px;
-            color: #1a472a;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* ========== FORMULAIRE FICHE SANITAIRE ========== */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #2d5a3d;
-        }
-
-        .form-group.required label::after {
-            content: " *";
-            color: #e74c3c;
-        }
-
-        .form-section-title {
-            background: #f5f5f5;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #1a472a;
-            margin: 25px 0 15px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 500px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .ville-select {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .ville-select.visible {
-            display: block;
-        }
-
-        .ville-options {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-top: 5px;
-        }
-
-        .ville-option {
-            padding: 10px 15px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .ville-option:hover {
-            border-color: #2d5a3d;
-            background: #e8f5e9;
-        }
-
-        .ville-option.selected {
-            border-color: #2d5a3d;
-            background: #e8f5e9;
-            font-weight: 600;
-        }
-
-        .ville-loading {
-            padding: 10px;
-            color: #666;
-            font-style: italic;
-        }
-
-        /* ========== SÉLECTION RÈGLEMENT ========== */
-        .reglement-selection {
-            margin-top: 30px;
-        }
-
-        .reglement-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .reglement-card {
-            background: #f8f9fa;
-            border: 3px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .reglement-card:hover {
-            border-color: #2d5a3d;
-            transform: translateY(-3px);
-        }
-
-        .reglement-card.selected {
-            border-color: #2d5a3d;
-            background: #e8f5e9;
-        }
-
-        .reglement-card-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        .reglement-card-title {
-            font-weight: 700;
-            color: #1a472a;
-        }
-
-        .reglement-read-btn {
-            display: none;
-            margin-top: 20px;
-            width: 100%;
-            padding: 15px;
-            background: #ff9800;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .reglement-read-btn:hover {
-            background: #f57c00;
-        }
-
-        .reglement-read-btn.visible {
-            display: block;
-        }
-
-        /* ========== MODAL RÈGLEMENT ========== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.visible {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            max-width: 900px;
-            max-height: 90vh;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 18px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        .modal-body h3 {
-            color: #1a472a;
-            margin: 25px 0 12px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #e8f5e9;
-        }
-
-        .modal-body ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        .modal-body li {
-            margin-bottom: 6px;
-        }
-
-        .modal-body p {
-            margin-bottom: 10px;
-        }
-
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .read-confirm-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-        }
-
-        .read-confirm-checkbox input {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .modal-validate-btn {
-            width: 100%;
-            padding: 15px;
-            background: #2d5a3d;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .modal-validate-btn.enabled {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-validate-btn.enabled:hover {
-            background: #1a472a;
-        }
-
-        /* ========== RECHERCHE PERSONNE ========== */
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px 50px 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #2d5a3d;
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 2px solid #2d5a3d;
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-        }
-
-        .search-results.visible {
-            display: block;
-        }
-
-        .search-result-item {
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .search-result-item:hover {
-            background: #f5f5f5;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-name {
-            font-weight: 600;
-        }
-
-        .search-result-status {
-            font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: 600;
-        }
-
-        .status-ok {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-warning {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .status-banned {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .view-info-btn {
-            background: #2d5a3d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* ========== INFOS PERSONNE ========== */
-        .person-info-card {
-            display: none;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .person-info-card.visible {
-            display: block;
-        }
-
-        .person-info-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .person-info-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a472a;
-        }
-
-        .person-info-status {
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .infractions-list {
-            margin-top: 15px;
-        }
-
-        .infraction-item {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #ff9800;
-        }
-
-        .infraction-item.banned {
-            border-left-color: #c62828;
-        }
-
-        .infraction-date {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .infraction-source {
-            font-size: 12px;
-            color: #2d5a3d;
-            font-weight: 600;
-        }
-
-        .infraction-motif {
-            margin-top: 5px;
-            font-weight: 500;
-        }
-
-        .no-infraction {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        /* ========== GESTION INFRACTIONS ========== */
-        .infraction-form {
-            background: #fff3e0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .infraction-form h3 {
-            color: #f57c00;
-            margin-bottom: 15px;
-        }
-
-        .infraction-type-btns {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .infraction-type-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .infraction-type-btn:hover {
-            border-color: #ff9800;
-        }
-
-        .infraction-type-btn.selected {
-            border-color: #ff9800;
-            background: #fff3e0;
-        }
-
-        .infraction-type-btn.banned.selected {
-            border-color: #c62828;
-            background: #ffebee;
-        }
-
-        /* ========== VALIDATION FINALE ========== */
-        .validation-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        .validate-control-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .validate-control-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(45, 90, 61, 0.3);
-        }
-
-        .validate-control-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ========== HISTORIQUE ========== */
-        .history-list {
-            margin-top: 20px;
-        }
-
-        .history-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #2d5a3d;
-        }
-
-        .history-item-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .history-item-name {
-            font-weight: 700;
-            color: #1a472a;
-        }
-
-        .history-item-date {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .history-item-reglement {
-            font-size: 12px;
-            background: #e8f5e9;
-            padding: 3px 10px;
-            border-radius: 10px;
-            color: #2d5a3d;
-            font-weight: 600;
-        }
-
-        /* ========== ALERTES ========== */
-        .alert {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: 500;
-            display: none;
-        }
-
-        .alert.visible {
-            display: block;
-        }
-
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-        }
-
-        .alert-warning {
-            background: #fff3e0;
-            color: #f57c00;
-            border: 1px solid #ffcc80;
-        }
-
-        /* ========== LOADING ========== */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading.visible {
-            display: block;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #2d5a3d;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 600px) {
-            .app-header {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .nav-tabs {
-                flex-direction: column;
-            }
-
-            .nav-tab {
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .reglement-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .person-info-header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-
-            .infraction-type-btns {
-                flex-direction: column;
-            }
+            .page { padding: 15px; padding-top: 70px; }
+            .menu-page { padding-top: 15px; }
+            .detail-header { flex-direction: column; text-align: center; }
+            .infraction-type-btns { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <!-- ========== PAGE DE CONNEXION ========== -->
+    <div class="alert" id="alert"></div>
+
+    <!-- LOGIN -->
     <div class="login-page" id="loginPage">
         <div class="login-container">
             <div class="login-logo">👮</div>
@@ -918,1158 +177,349 @@
         </div>
     </div>
 
-    <!-- ========== APPLICATION PRINCIPALE ========== -->
+    <!-- APP -->
     <div class="app-container" id="appContainer">
-        <header class="app-header">
-            <div class="app-title">👮 Contrôleur / Garde de Pêche</div>
-            <button class="logout-btn" id="logoutBtn">🔒 Déconnexion</button>
-        </header>
+        <button class="back-btn" id="backBtn">← Retour</button>
 
-        <div class="app-content">
-            <!-- Navigation -->
-            <div class="nav-tabs">
-                <button class="nav-tab active" data-tab="fiche">
-                    <span class="nav-tab-icon">📋</span>
-                    <span>Fiche Contrôle</span>
-                </button>
-                <button class="nav-tab" data-tab="recherche">
-                    <span class="nav-tab-icon">🔍</span>
-                    <span>Rechercher</span>
-                </button>
-                <button class="nav-tab" data-tab="infractions">
-                    <span class="nav-tab-icon">⚠️</span>
-                    <span>Infractions</span>
-                </button>
-                <button class="nav-tab" data-tab="historique">
-                    <span class="nav-tab-icon">📜</span>
-                    <span>Historique</span>
-                </button>
+        <!-- MENU -->
+        <div class="page menu-page active" id="pageMenu">
+            <div class="menu-header">
+                <div class="menu-logo">👮</div>
+                <h1 class="menu-title">Contrôleur / Garde de Pêche</h1>
+                <p class="menu-subtitle">AAPPMA Gundershoffen</p>
             </div>
-
-            <!-- Alert -->
-            <div class="alert" id="alert"></div>
-
-            <!-- ========== SECTION FICHE CONTRÔLE ========== -->
-            <div class="section active" id="sectionFiche">
-                <h2 class="section-title">📋 Fiche de Contrôle Sanitaire</h2>
-
-                <form id="ficheForm">
-                    <div class="form-section-title">👤 Informations du pêcheur</div>
-                    
-                    <div class="form-group required">
-                        <label for="nom">Nom</label>
-                        <input type="text" id="nom" name="nom" required>
+            <div class="menu-cards">
+                <div class="menu-card" data-page="fiche">
+                    <div class="menu-card-icon">📋</div>
+                    <div class="menu-card-content">
+                        <div class="menu-card-title">Fiche de Renseignement</div>
+                        <div class="menu-card-desc">Enregistrer un nouveau pêcheur</div>
                     </div>
-
-                    <div class="form-group required">
-                        <label for="prenom">Prénom</label>
-                        <input type="text" id="prenom" name="prenom" required>
+                    <div class="menu-card-arrow">›</div>
+                </div>
+                <div class="menu-card" data-page="recherche">
+                    <div class="menu-card-icon">🔍</div>
+                    <div class="menu-card-content">
+                        <div class="menu-card-title">Rechercher un Pêcheur</div>
+                        <div class="menu-card-desc">Consulter les fiches et infractions</div>
                     </div>
-
-                    <div class="form-group required">
-                        <label for="adresse">Adresse (numéro et rue)</label>
-                        <input type="text" id="adresse" name="adresse" placeholder="Ex: 12 rue de la Paix" required>
+                    <div class="menu-card-arrow">›</div>
+                </div>
+                <div class="menu-card" data-page="infractions">
+                    <div class="menu-card-icon">⚠️</div>
+                    <div class="menu-card-content">
+                        <div class="menu-card-title">Ajouter une Infraction</div>
+                        <div class="menu-card-desc">Avertissement ou bannissement</div>
                     </div>
+                    <div class="menu-card-arrow">›</div>
+                </div>
+                <div class="menu-card logout-card" id="logoutBtn">
+                    <div class="menu-card-icon">🔒</div>
+                    <div class="menu-card-content">
+                        <div class="menu-card-title">Déconnexion</div>
+                        <div class="menu-card-desc">Quitter l'application</div>
+                    </div>
+                    <div class="menu-card-arrow">›</div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-row">
-                        <div class="form-group required">
-                            <label for="codePostal">Code postal</label>
-                            <input type="text" id="codePostal" name="codePostal" maxlength="5" placeholder="67110" required>
+        <!-- FICHE -->
+        <div class="page" id="pageFiche">
+            <div class="page-content">
+                <div class="page-card">
+                    <h1 class="page-title">📋 Fiche de Renseignement</h1>
+                    <form id="ficheForm">
+                        <div class="form-section-title">👤 Informations du pêcheur</div>
+                        <div class="form-group required"><label for="nom">Nom</label><input type="text" id="nom" required></div>
+                        <div class="form-group required"><label for="prenom">Prénom</label><input type="text" id="prenom" required></div>
+                        <div class="form-group required"><label for="adresse">Adresse</label><input type="text" id="adresse" placeholder="12 rue de la Paix" required></div>
+                        <div class="form-row">
+                            <div class="form-group required"><label for="codePostal">Code postal</label><input type="text" id="codePostal" maxlength="5" placeholder="67110" required></div>
+                            <div class="form-group required"><label for="ville">Ville</label><select id="ville" required disabled><option value="">Entrez le code postal</option></select></div>
                         </div>
-                        <div class="form-group required">
-                            <label for="ville">Ville</label>
-                            <input type="text" id="ville" name="ville" required readonly placeholder="Sélectionnez via le code postal">
-                        </div>
-                    </div>
-
-                    <div class="ville-select" id="villeSelect">
-                        <label>Sélectionnez la ville :</label>
-                        <div class="ville-options" id="villeOptions"></div>
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="telephone">Numéro de téléphone</label>
-                        <input type="tel" id="telephone" name="telephone" placeholder="06 XX XX XX XX" required>
-                    </div>
-
-                    <div class="form-section-title">🚨 Contact d'urgence</div>
-
-                    <div class="form-group required">
-                        <label for="urgenceNom">Nom</label>
-                        <input type="text" id="urgenceNom" name="urgenceNom" required>
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="urgencePrenom">Prénom</label>
-                        <input type="text" id="urgencePrenom" name="urgencePrenom" required>
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="urgenceTel">Numéro de téléphone</label>
-                        <input type="tel" id="urgenceTel" name="urgenceTel" placeholder="06 XX XX XX XX" required>
-                    </div>
-
-                    <!-- Sélection du règlement -->
-                    <div class="reglement-selection">
-                        <div class="form-section-title">📜 Sélection du règlement</div>
-                        
+                        <div class="form-group required"><label for="telephone">Téléphone</label><input type="tel" id="telephone" placeholder="06 XX XX XX XX" required></div>
+                        <div class="form-section-title">🚨 Contact d'urgence</div>
+                        <div class="form-group required"><label for="urgenceNom">Nom</label><input type="text" id="urgenceNom" required></div>
+                        <div class="form-group required"><label for="urgencePrenom">Prénom</label><input type="text" id="urgencePrenom" required></div>
+                        <div class="form-group required"><label for="urgenceTel">Téléphone</label><input type="tel" id="urgenceTel" placeholder="06 XX XX XX XX" required></div>
+                        <div class="form-section-title">📜 Règlement</div>
                         <div class="reglement-cards">
-                            <div class="reglement-card" data-reglement="carpodrome">
-                                <div class="reglement-card-icon">🎣</div>
-                                <div class="reglement-card-title">Carpodrome</div>
-                            </div>
-                            <div class="reglement-card" data-reglement="hardt">
-                                <div class="reglement-card-icon">🐟</div>
-                                <div class="reglement-card-title">Hardt</div>
-                            </div>
-                            <div class="reglement-card" data-reglement="breitmatt">
-                                <div class="reglement-card-icon">🌊</div>
-                                <div class="reglement-card-title">Breitmatt</div>
-                            </div>
+                            <div class="reglement-card" data-reglement="carpodrome"><div class="reglement-card-icon">🎣</div><div class="reglement-card-title">Carpodrome</div></div>
+                            <div class="reglement-card" data-reglement="hardt"><div class="reglement-card-icon">🐟</div><div class="reglement-card-title">Hardt</div></div>
+                            <div class="reglement-card" data-reglement="breitmatt"><div class="reglement-card-icon">🌊</div><div class="reglement-card-title">Breitmatt</div></div>
                         </div>
-
-                        <button type="button" class="reglement-read-btn" id="readReglementBtn">
-                            📖 Lire le règlement (obligatoire)
-                        </button>
-                    </div>
-
-                    <!-- Validation -->
-                    <div class="validation-section">
-                        <button type="submit" class="validate-control-btn" id="validateBtn" disabled>
-                            ✅ Valider le contrôle
-                        </button>
-                    </div>
-                </form>
+                        <button type="button" class="reglement-read-btn" id="readReglementBtn">📖 Lire le règlement (obligatoire)</button>
+                        <div style="margin-top:25px"><button type="submit" class="btn btn-primary" id="validateBtn" disabled>✅ Enregistrer la fiche</button></div>
+                    </form>
+                </div>
             </div>
+        </div>
 
-            <!-- ========== SECTION RECHERCHE ========== -->
-            <div class="section" id="sectionRecherche">
-                <h2 class="section-title">🔍 Rechercher une personne</h2>
-
-                <div class="search-container">
-                    <div class="search-input-wrapper">
+        <!-- RECHERCHE -->
+        <div class="page" id="pageRecherche">
+            <div class="page-content">
+                <div class="page-card">
+                    <h1 class="page-title">🔍 Rechercher un Pêcheur</h1>
+                    <div class="search-container">
                         <input type="text" class="search-input" id="searchInput" placeholder="Tapez un nom ou prénom...">
                         <span class="search-icon">🔍</span>
                     </div>
-                    <div class="search-results" id="searchResults"></div>
-                </div>
-
-                <div class="loading" id="searchLoading">
-                    <div class="spinner"></div>
-                    <p>Recherche en cours...</p>
-                </div>
-
-                <div class="person-info-card" id="personInfoCard">
-                    <div class="person-info-header">
-                        <span class="person-info-name" id="personName"></span>
-                        <span class="person-info-status" id="personStatus"></span>
-                    </div>
-                    <div id="personInfractions"></div>
+                    <div class="search-results" id="searchResults"><div class="no-results">Tapez au moins 2 caractères</div></div>
                 </div>
             </div>
+        </div>
 
-            <!-- ========== SECTION GESTION INFRACTIONS ========== -->
-            <div class="section" id="sectionInfractions">
-                <h2 class="section-title">⚠️ Ajouter une infraction</h2>
-
-                <form id="infractionForm">
-                    <div class="form-group required">
-                        <label for="infNom">Nom</label>
-                        <input type="text" id="infNom" name="infNom" required>
+        <!-- DETAIL -->
+        <div class="page" id="pageDetail">
+            <div class="page-content">
+                <div class="page-card">
+                    <div class="detail-header">
+                        <div class="detail-name" id="detailName"></div>
+                        <span class="detail-status" id="detailStatus"></span>
                     </div>
+                    <div class="detail-info" id="detailInfo"></div>
+                    <div class="infractions-section" id="detailInfractions" style="display:none"></div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-group required">
-                        <label for="infPrenom">Prénom</label>
-                        <input type="text" id="infPrenom" name="infPrenom" required>
-                    </div>
-
-                    <div class="form-group required">
-                        <label>Type d'infraction</label>
-                        <div class="infraction-type-btns">
-                            <button type="button" class="infraction-type-btn selected" data-type="avertissement">
-                                ⚠️ Avertissement
-                            </button>
-                            <button type="button" class="infraction-type-btn banned" data-type="bannissement">
-                                🚫 Bannissement
-                            </button>
+        <!-- INFRACTIONS -->
+        <div class="page" id="pageInfractions">
+            <div class="page-content">
+                <div class="page-card">
+                    <h1 class="page-title">⚠️ Ajouter une Infraction</h1>
+                    <form id="infractionForm">
+                        <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
+                        <div class="form-group required"><label for="infPrenom">Prénom</label><input type="text" id="infPrenom" required></div>
+                        <div class="form-group required">
+                            <label>Type</label>
+                            <div class="infraction-type-btns">
+                                <button type="button" class="infraction-type-btn selected" data-type="avertissement">⚠️ Avertissement</button>
+                                <button type="button" class="infraction-type-btn banned" data-type="bannissement">🚫 Bannissement</button>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="form-group required">
-                        <label for="infMotif">Motif</label>
-                        <textarea id="infMotif" name="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="infLieu">Lieu du contrôle</label>
-                        <select id="infLieu">
-                            <option value="Carpodrome">Carpodrome</option>
-                            <option value="Hardt">Hardt</option>
-                            <option value="Breitmatt">Breitmatt</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="validate-control-btn" style="background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%);">
-                        ⚠️ Enregistrer l'infraction
-                    </button>
-                </form>
-
-                <div style="margin-top: 30px;">
-                    <h3 style="color: #1a472a; margin-bottom: 15px;">📋 Dernières infractions</h3>
-                    <div id="recentInfractions"></div>
+                        <div class="form-group required"><label for="infMotif">Motif</label><textarea id="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea></div>
+                        <div class="form-group"><label for="infLieu">Lieu</label><select id="infLieu"><option value="Breitmatt">Breitmatt</option><option value="Carpodrome">Carpodrome</option><option value="Hardt">Hardt</option></select></div>
+                        <button type="submit" class="btn btn-warning">⚠️ Enregistrer l'infraction</button>
+                    </form>
+                    <div style="margin-top:30px"><h3 style="color:#1a472a;margin-bottom:15px">📋 Dernières infractions</h3><div id="recentInfractions"></div></div>
                 </div>
-            </div>
-
-            <!-- ========== SECTION HISTORIQUE ========== -->
-            <div class="section" id="sectionHistorique">
-                <h2 class="section-title">📜 Historique des contrôles</h2>
-                <div class="loading" id="historyLoading">
-                    <div class="spinner"></div>
-                    <p>Chargement...</p>
-                </div>
-                <div class="history-list" id="historyList"></div>
             </div>
         </div>
     </div>
 
-    <!-- ========== MODAL RÈGLEMENT ========== -->
+    <!-- MODAL -->
     <div class="modal-overlay" id="reglementModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">📜 Règlement</h2>
-                <button class="modal-close" id="modalClose">&times;</button>
-            </div>
+            <div class="modal-header"><h2 id="modalTitle">📜 Règlement</h2><button class="modal-close" id="modalClose">&times;</button></div>
             <div class="modal-body" id="modalBody"></div>
             <div class="modal-footer">
-                <label class="read-confirm-checkbox">
-                    <input type="checkbox" id="readConfirmCheckbox">
-                    <span>J'ai lu et compris le règlement</span>
-                </label>
-                <button class="modal-validate-btn" id="modalValidateBtn">
-                    ✅ Confirmer la lecture
-                </button>
+                <label class="read-confirm-checkbox"><input type="checkbox" id="readConfirmCheckbox"><span>J'ai lu et compris le règlement</span></label>
+                <button class="modal-validate-btn" id="modalValidateBtn">✅ Confirmer la lecture</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <script>
-        // ========== CONFIGURATION FIREBASE ==========
-        const firebaseConfig = {
+        // FIREBASE
+        const appMain = firebase.initializeApp({
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
             authDomain: "appli-controleur-gunder.firebaseapp.com",
             databaseURL: "https://appli-controleur-gunder-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "appli-controleur-gunder",
-            storageBucket: "appli-controleur-gunder.firebasestorage.app",
-            messagingSenderId: "780831512988",
-            appId: "1:780831512988:web:f0f263cfaf9abd18269059"
-        };
+            projectId: "appli-controleur-gunder"
+        });
+        const dbMain = firebase.database(appMain);
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        let dbCarpodrome = null, dbHardt = null;
+        try { dbCarpodrome = firebase.database(firebase.initializeApp({ databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app" }, 'carpodrome')); console.log('✅ Carpodrome'); } catch(e) {}
+        try { dbHardt = firebase.database(firebase.initializeApp({ databaseURL: "https://resahardt-default-rtdb.europe-west1.firebasedatabase.app" }, 'hardt')); console.log('✅ Hardt'); } catch(e) {}
 
-        // ========== RÈGLEMENTS COMPLETS ==========
         const reglements = {
-            carpodrome: {
-                title: "🎣 RÈGLEMENT CARPODROME 2026",
-                content: `
-                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
-                    <p>Les horaires de pêche : <strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
-                    <ul>
-                        <li><strong>Sur réservation uniquement et 24h à l'avance</strong></li>
-                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
-                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
-                        <li>Pêche de 8h à 19h - Période de mars à avril et période de septembre à fin octobre</li>
-                        <li>Pêche de 8h à 20h - Période de mai à fin août</li>
-                    </ul>
-                    <p><strong>L'AAPPMA peut à tout moment fermer les étangs pour cause d'évènements indépendants de notre volonté (manque d'eau, cyanobactéries, etc...)</strong></p>
-
-                    <h3>🎫 RÉSERVATION ET TARIFS</h3>
-                    <ul>
-                        <li>Carte <strong>journalière</strong> : <strong>10 € (Titulaires de la carte annuelle 5€)</strong></li>
-                        <li>Carte <strong>demi-journée</strong> : <strong>6 € (Titulaires de la carte annuelle 3€)</strong></li>
-                        <li><strong>Jours d'événements : pêche payante pour tous (10 €)</strong></li>
-                        <li><strong>Réservation obligatoire 24h avant</strong> via formulaire en ligne, accès via QR code ou le lien sur le site internet www.aappma-gundershoffen.fr</li>
-                    </ul>
-                    <p>Contact en cas de problème de réservation : Patrice – 06.37.70.37.31 ou par mail gundershoffenaappma@gmail.com</p>
-                    <p><strong>⚠️ Il est impératif que chaque pêcheur dispose de la somme exacte pour l'achat d'une carte. L'association ne peut assurer la disponibilité de monnaie.</strong></p>
-
-                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
-                    <ul>
-                        <li>Pêche <strong>No Kill obligatoire</strong></li>
-                        <li>Canne au coup uniquement, longueur max : 13 m</li>
-                        <li>1 ligne par pêcheur</li>
-                        <li>Max 2 pêcheurs par poste (à préciser lors de la réservation)</li>
-                        <li>Pêche sous la canne, dans la zone du poste réservé</li>
-                        <li>Amorçage : uniquement à la coupelle ou fronde</li>
-                        <li><strong>Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini) pour les carpes de plus de 5kg</strong></li>
-                        <li>Hameçon sans ardillon, taille max n°10 (pincé/limé interdit)</li>
-                        <li>Bourriche autorisée pour poisson blanc uniquement</li>
-                        <li>Carpes et tanches : relâchées immédiatement</li>
-                        <li>Esches autorisées : végétales, vers de terre, asticots</li>
-                        <li>Pellets et baby corn autorisés</li>
-                        <li>Graines cuites obligatoirement</li>
-                        <li>Kit de soins conseillé</li>
-                    </ul>
-
-                    <h3>👶 PÊCHE DES MINEURS</h3>
-                    <ul>
-                        <li>Autorisée à partir de <strong>12 ans</strong>, en journée uniquement</li>
-                        <li>Moins de 12 ans : accompagnement obligatoire (sous responsabilité parentale)</li>
-                    </ul>
-
-                    <h3>👮 CONTRÔLES ET SANCTIONS</h3>
-                    <ul>
-                        <li>Carte de pêche à présenter</li>
-                        <li>Contrôles réguliers et imprévus</li>
-                    </ul>
-                    <p><strong>Sanctions :</strong></p>
-                    <ul>
-                        <li>1ère infraction → avertissement</li>
-                        <li>2ème infraction → exclusion temporaire ou définitive</li>
-                        <li>Aucun remboursement en cas d'exclusion</li>
-                    </ul>
-
-                    <h3>⛔ INTERDICTIONS</h3>
-                    <ul>
-                        <li>❌ Feux au sol et barbecues</li>
-                        <li>❌ Pêche de nuit</li>
-                        <li>❌ Camping (seuls parapluies autorisés)</li>
-                        <li>❌ Baignade, canotage</li>
-                        <li>❌ Mutilation ou marquage des poissons</li>
-                        <li>❌ Faire pêcher une autre personne qui n'a pas réservé le poste</li>
-                        <li>❌ Franglaise, Feeder</li>
-                        <li>❌ Poisson posé au sol ou tenu avec un chiffon</li>
-                        <li>❌ Graines crues</li>
-                        <li>❌ Pêche au pain</li>
-                        <li>❌ Hameçons avec ardillons</li>
-                        <li>❌ Pêche en surface</li>
-                    </ul>
-
-                    <h3>🗑️ GESTION DES DÉCHETS</h3>
-                    <p>Règle commune aux deux étangs :</p>
-                    <ul>
-                        <li>Ramener ses déchets</li>
-                        <li>Amende possible : <strong>150 €</strong> (art. 632-1 du code pénal)</li>
-                    </ul>
-
-                    <h3>🤝 UN COUP DE MAIN, UNE RÉCOMPENSE !</h3>
-                    <p>Tu donnes de ton temps pour une journée de travail avec l'AAPPMA ?</p>
-                    <p>👉 En remerciement, tu gagnes 2 jours de pêche gratuite soit au carpodrome, aux étangs concours, ou nuit de pêche à la Hardt (après réservation). Valable pendant le mois de ta participation.</p>
-                    <p>Parce qu'ensemble, on fait vivre nos étangs et l'AAPPMA.</p>
-
-                    <h3>🌐 INFORMATIONS EN LIGNE</h3>
-                    <p>Retrouvez toutes nos informations, règlements, actualités et formulaires sur notre site internet : <strong>www.aappma-gundershoffen.fr</strong></p>
-
-                    <h3>📞 CONTACTS UTILES</h3>
-                    <ul>
-                        <li>Président : René Rahm – 06.50.76.59.34</li>
-                        <li>Problème sur réservations : Patrice Walter – 06.37.70.37.31</li>
-                        <li>Garde pêche : Raymond Ledig – 06.95.24.90.84 (Mail : gpp67110@free.fr)</li>
-                        <li>Urgences : POMPIERS 18 – POLICE 17 – SAMU 15</li>
-                    </ul>
-                `
-            },
-            hardt: {
-                title: "🐟 RÈGLEMENT ETANG DE LA HARDT 2026",
-                content: `
-                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
-                    <p>Les horaires de pêche : <strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
-                    <ul>
-                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
-                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
-                        <li>Du <strong>1er novembre au 31 décembre</strong> : samedis, dimanches et jours fériés</li>
-                        <li>Pêche de nuit : <strong>20h → 8h (réservation obligatoire)</strong></li>
-                    </ul>
-                    <p><strong>La pêche aux carnassiers est autorisée :</strong></p>
-                    <ul>
-                        <li>Du <strong>1er novembre au 31 décembre</strong></li>
-                        <li>Weekends et jours fériés uniquement</li>
-                        <li>Carte annuelle AAPPMA Gundershoffen <strong>obligatoire</strong></li>
-                        <li>❌ <strong>Carte journalière refusée</strong></li>
-                    </ul>
-                    <p><strong>L'AAPPMA peut à tout moment fermer les étangs pour cause d'évènements indépendants de notre volonté (manque d'eau, cyanobactéries, etc...)</strong></p>
-
-                    <h3>🎫 CARTES ET TARIFS</h3>
-                    <ul>
-                        <li>Carte <strong>journalière</strong> : <strong>10 €</strong></li>
-                        <li>Carte <strong>demi-journée</strong> : <strong>6 €</strong></li>
-                        <li>Carte <strong>pêche de nuit</strong> : <strong>10 €</strong> (réservation 24h à l'avance par SMS au 06.76.57.85.03)</li>
-                        <li>Carte <strong>annuelle</strong> : obligatoire pour la pêche aux carnassiers</li>
-                        <li><strong>Jours d'événements : pêche payante pour tous (10 €)</strong></li>
-                    </ul>
-                    <p><strong>⚠️ Il est impératif que chaque pêcheur dispose de la somme exacte pour l'achat d'une carte. L'association ne peut assurer la disponibilité de monnaie.</strong></p>
-
-                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
-                    <ul>
-                        <li><strong>Pêche No Kill obligatoire</strong></li>
-                        <li><strong>Amorçage et pêche depuis le poste</strong></li>
-                        <li>Matériel requis : <strong>bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée</strong></li>
-                        <li>Kit de soins conseillé</li>
-                        <li><strong>Graines cuites obligatoirement</strong></li>
-                        <li>Esches autorisées : végétales, vers, asticots, teignes, vers de lune...</li>
-                        <li><strong>Canne toujours sous surveillance</strong></li>
-                        <li><strong>Respect des zones de pêche (voir plan) et des autres pêcheurs</strong></li>
-                        <li>2 lignes par pêcheur</li>
-                        <li>12 postes carpistes (n°1 à 12)</li>
-                        <li>3 postes pêche au coup (lettres)</li>
-                        <li><strong>Poste 4 réservé aux contrôleurs</strong></li>
-                        <li><strong>1 véhicule par pêcheur autorisé autour de l'étang et les véhicules visiteurs restent dehors</strong></li>
-                        <li><strong>Circulation interdite après 22h (sauf urgence et avoir prévenu au préalable un contrôleur)</strong></li>
-                    </ul>
-
-                    <h3>🕒 PÊCHE DE NUIT</h3>
-                    <p>Horaire de pêche de nuit :</p>
-                    <ul>
-                        <li>20h du soir à 8h du matin</li>
-                        <li>Sur réservation 24h à l'avance par SMS au 06.76.57.85.03</li>
-                        <li>Une pêche de présentation est obligatoire avant autorisation annuelle</li>
-                    </ul>
-
-                    <h3>👶 PÊCHE DES MINEURS</h3>
-                    <ul>
-                        <li>Autorisée à partir de <strong>12 ans</strong>, en journée uniquement</li>
-                        <li>Moins de 12 ans : accompagnement obligatoire (sous responsabilité parentale)</li>
-                    </ul>
-
-                    <h3>👮 CONTRÔLES ET SANCTIONS</h3>
-                    <ul>
-                        <li>Carte de pêche à présenter</li>
-                        <li>Contrôles réguliers et imprévus</li>
-                    </ul>
-                    <p><strong>Sanctions :</strong></p>
-                    <ul>
-                        <li>1ère infraction → avertissement</li>
-                        <li>2ème infraction → exclusion temporaire ou définitive</li>
-                        <li>Aucun remboursement en cas d'exclusion</li>
-                    </ul>
-
-                    <h3>⛔ INTERDICTIONS</h3>
-                    <ul>
-                        <li>❌ Feux au sol (barbecue lors des périodes de sécheresses ou arrêtés préfectoraux)</li>
-                        <li>❌ Consommation d'alcool excessif</li>
-                        <li>❌ Camping (hors pêcheurs)</li>
-                        <li>❌ Baignade, canotage, accès aux îles</li>
-                        <li>❌ Mutilation ou marquage des poissons</li>
-                        <li>❌ Canne laissée sans surveillance</li>
-                        <li>❌ Pêche en dehors des postes</li>
-                        <li>❌ Sacs de conservation</li>
-                        <li>❌ Bateau amorceur</li>
-                        <li>❌ Poisson posé au sol ou tenu avec un chiffon</li>
-                        <li>❌ Graines crues</li>
-                        <li>❌ Pêche au pain</li>
-                        <li>❌ Hameçons avec ardillons</li>
-                        <li>❌ Bas de ligne en tresse (sauf corps de ligne)</li>
-                        <li>❌ Pêche en surface</li>
-                        <li>❌ Stationnement sur le chemin et ailleurs que derrière son poste de pêche</li>
-                        <li>❌ <strong>Véhicules visiteurs autour de l'étang (les véhicules visiteurs doivent rester sur le parking)</strong></li>
-                    </ul>
-
-                    <h3>🎣 Pêche aux carnassiers - INTERDICTIONS</h3>
-                    <ul>
-                        <li>❌ Carte journalière (non autorisée)</li>
-                        <li>❌ Filets, nasses, pêche à la main ou sous glace</li>
-                        <li>❌ Troubler l'eau, fouiller</li>
-                        <li>❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)</li>
-                        <li>❌ Appâts à base d'œufs de poissons interdits</li>
-                        <li>❌ Quota : <strong>3 carnassiers/jour max, dont 2 brochets (min. 50 cm)</strong></li>
-                    </ul>
-
-                    <h3>🗑️ GESTION DES DÉCHETS</h3>
-                    <ul>
-                        <li>Ramener ses déchets</li>
-                        <li>Amende possible : <strong>150 €</strong> (art. 632-1 du code pénal)</li>
-                    </ul>
-
-                    <h3>🤝 UN COUP DE MAIN, UNE RÉCOMPENSE !</h3>
-                    <p>Tu donnes de ton temps pour une journée de travail avec l'AAPPMA ?</p>
-                    <p>👉 En remerciement, tu gagnes 2 jours de pêche gratuite soit au carpodrome, aux étangs concours, ou nuit de pêche à la Hardt (après réservation). Valable pendant le mois de ta participation.</p>
-                    <p>Parce qu'ensemble, on fait vivre nos étangs et l'AAPPMA.</p>
-
-                    <h3>🌐 INFORMATIONS EN LIGNE</h3>
-                    <p>Retrouvez toutes nos informations, règlements, actualités et formulaires sur notre site internet : <strong>www.aappma-gundershoffen.fr</strong></p>
-
-                    <h3>📞 CONTACTS UTILES</h3>
-                    <ul>
-                        <li>Président : René Rahm – 06.50.76.59.34</li>
-                        <li>Garde pêche : Raymond Ledig – 06.95.24.90.84 (Mail : gpp67110@free.fr)</li>
-                        <li>Réservation pêche de nuit (Hardt) : Jean François Klein – 06.76.57.85.03</li>
-                        <li>Urgences : POMPIERS 18 – POLICE 17 – SAMU 15</li>
-                    </ul>
-                `
-            },
-            breitmatt: {
-                title: "🐟 RÈGLEMENT ETANG DE LA BREITMATT 2026",
-                content: `
-                    <h3>🗓️ PÉRIODES ET HORAIRES D'OUVERTURE</h3>
-                    <p>Les horaires de pêche : <strong>30 minutes avant le lever du soleil → 30 minutes après le coucher</strong></p>
-                    <ul>
-                        <li>Du <strong>1er mars au 4 mai</strong> : samedis, dimanches et jours fériés</li>
-                        <li>Du <strong>5 mai au 30 octobre</strong> : tous les jours</li>
-                        <li>Du <strong>1er novembre au 31 décembre</strong> : samedis, dimanches et jours fériés</li>
-                    </ul>
-                    <p><strong>La pêche aux carnassiers est autorisée :</strong></p>
-                    <ul>
-                        <li>Du <strong>1er novembre au 31 décembre</strong></li>
-                        <li>Weekends et jours fériés uniquement</li>
-                        <li>Carte annuelle AAPPMA Gundershoffen <strong>obligatoire</strong></li>
-                        <li>❌ <strong>Carte journalière refusée</strong></li>
-                    </ul>
-                    <p><strong>L'AAPPMA peut à tout moment fermer les étangs pour cause d'évènement indépendant de notre volonté (manque d'eau, cyanobactéries, etc...)</strong></p>
-
-                    <h3>🎫 CARTES ET TARIFS</h3>
-                    <ul>
-                        <li>Carte <strong>journalière</strong> : <strong>10 €</strong></li>
-                        <li>Carte <strong>demi-journée</strong> : <strong>6 €</strong></li>
-                        <li>Carte <strong>annuelle</strong> : obligatoire pour la pêche aux carnassiers</li>
-                        <li><strong>Jours d'événements : pêche payante pour tous (10 €)</strong></li>
-                    </ul>
-                    <p><strong>⚠️ Il est impératif que chaque pêcheur dispose de la somme exacte pour l'achat d'une carte journalière. L'association ne peut assurer la disponibilité de monnaie.</strong></p>
-
-                    <h3>🎣 MODALITÉS DE PÊCHE</h3>
-                    <ul>
-                        <li>Pêche <strong>No Kill obligatoire</strong></li>
-                        <li><strong>Amorçage et pêche depuis le poste</strong></li>
-                        <li>Matériel requis : <strong>bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée</strong></li>
-                        <li>Kit de soins conseillé</li>
-                        <li>Graines <strong>cuites obligatoirement</strong></li>
-                        <li>Esches autorisées : végétales, vers, asticots, teignes, vers de lune...</li>
-                        <li>Canne toujours sous surveillance</li>
-                        <li>Respect des zones de pêche et des autres pêcheurs</li>
-                        <li>2 lignes par pêcheur</li>
-                    </ul>
-
-                    <h3>👶 PÊCHE DES MINEURS</h3>
-                    <ul>
-                        <li>Autorisée à partir de <strong>12 ans</strong>, en journée uniquement</li>
-                        <li>Moins de 12 ans : accompagnement obligatoire (sous responsabilité parentale)</li>
-                    </ul>
-
-                    <h3>👮 CONTRÔLES ET SANCTIONS</h3>
-                    <ul>
-                        <li>Carte de pêche à présenter</li>
-                        <li>Contrôles réguliers et imprévus</li>
-                    </ul>
-                    <p><strong>Sanctions :</strong></p>
-                    <ul>
-                        <li>1ère infraction → avertissement</li>
-                        <li>2ème infraction → exclusion temporaire ou définitive</li>
-                        <li>Aucun remboursement en cas d'exclusion</li>
-                    </ul>
-
-                    <h3>⛔ INTERDICTIONS</h3>
-                    <ul>
-                        <li>❌ Feux au sol et barbecues</li>
-                        <li>❌ Camping (seuls parapluies ou demi-tentes autorisés)</li>
-                        <li>❌ Baignade, canotage</li>
-                        <li>❌ Mutilation ou marquage des poissons</li>
-                        <li>❌ Canne laissée sans surveillance</li>
-                        <li>❌ Pêche en dehors des postes et dans la frayère</li>
-                        <li>❌ Sacs de conservation</li>
-                        <li>❌ Bateau amorceur</li>
-                        <li>❌ Poisson posé au sol ou tenu avec un chiffon</li>
-                        <li>❌ Graines crues</li>
-                        <li>❌ Pêche au pain</li>
-                        <li>❌ Hameçons avec ardillons</li>
-                        <li>❌ Bas de ligne en tresse (sauf corps de ligne)</li>
-                        <li>❌ Pêche en surface</li>
-                        <li>❌ Stationnement sur le chemin et la berge côté étang</li>
-                    </ul>
-
-                    <h3>🎣 Pêche aux carnassiers - INTERDICTIONS</h3>
-                    <ul>
-                        <li>❌ Carte journalière (non autorisée)</li>
-                        <li>❌ Filets, nasses, pêche à la main ou sous glace</li>
-                        <li>❌ Troubler l'eau, fouiller</li>
-                        <li>❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)</li>
-                        <li>❌ Appâts à base d'œufs de poissons</li>
-                        <li>❌ Quota : <strong>3 carnassiers/jour max, dont 2 brochets (min. 50 cm)</strong></li>
-                    </ul>
-
-                    <h3>🗑️ GESTION DES DÉCHETS</h3>
-                    <p>Règle commune aux deux étangs :</p>
-                    <ul>
-                        <li>Ramener ses déchets</li>
-                        <li>Amende possible : <strong>150 €</strong> (art. 632-1 du code pénal)</li>
-                    </ul>
-
-                    <h3>🤝 UN COUP DE MAIN, UNE RÉCOMPENSE !</h3>
-                    <p>Tu donnes de ton temps pour une journée de travail avec l'AAPPMA ?</p>
-                    <p>👉 En remerciement, tu gagnes 2 jours de pêche gratuite soit au carpodrome, aux étangs concours, ou nuit de pêche à la Hardt (après réservation). Valable pendant le mois de ta participation.</p>
-                    <p>Parce qu'ensemble, on fait vivre nos étangs et l'AAPPMA.</p>
-
-                    <h3>🌐 INFORMATIONS EN LIGNE</h3>
-                    <p>Retrouvez toutes nos informations, règlements, actualités et formulaires sur notre site internet : <strong>www.aappma-gundershoffen.fr</strong></p>
-
-                    <h3>📞 CONTACTS UTILES</h3>
-                    <ul>
-                        <li>Président : René Rahm – 06.50.76.59.34</li>
-                        <li>Garde pêche : Raymond Ledig – 06.95.24.90.84 (Mail : gpp67110@free.fr)</li>
-                        <li>Urgences : POMPIERS 18 – POLICE 17 – SAMU 15</li>
-                    </ul>
-                `
-            }
+            carpodrome: { title: "🎣 RÈGLEMENT CARPODROME 2026", content: "<h3>Horaires</h3><p>30 min avant lever → 30 min après coucher</p><h3>Tarifs</h3><ul><li>Journée: 10€ (5€ carte annuelle)</li><li>Demi-journée: 6€</li></ul><h3>Règles</h3><ul><li>No Kill obligatoire</li><li>1 ligne, canne max 13m</li><li>Graines cuites obligatoires</li></ul><h3>Interdictions</h3><ul><li>❌ Pêche de nuit, Camping</li><li>❌ Franglaise, Feeder</li><li>❌ Graines crues, Pain</li></ul>" },
+            hardt: { title: "🐟 RÈGLEMENT HARDT 2026", content: "<h3>Horaires</h3><p>30 min avant lever → 30 min après coucher</p><p>Nuit: 20h-8h (sur réservation)</p><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Nuit: 10€</li></ul><h3>Règles</h3><ul><li>No Kill obligatoire</li><li>2 lignes, 12 postes carpistes</li></ul><h3>Interdictions</h3><ul><li>❌ Bateau amorceur</li><li>❌ Sacs conservation</li></ul>" },
+            breitmatt: { title: "🌊 RÈGLEMENT BREITMATT 2026", content: "<h3>Horaires</h3><p>30 min avant lever → 30 min après coucher</p><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>Règles</h3><ul><li>No Kill obligatoire</li><li>2 lignes</li></ul><h3>Interdictions</h3><ul><li>❌ Feux, Camping</li><li>❌ Bateau amorceur</li></ul>" }
         };
 
-        // ========== VARIABLES GLOBALES ==========
-        const CODE_ACCESS = "911";
-        let selectedReglement = null;
-        let reglementRead = false;
-        let allInfractions = [];
-        let allFiches = [];
+        let currentPage = 'menu', pageHistory = [], selectedReglement = null, reglementRead = false, allFiches = [], allInfractions = [], selectedInfractionType = 'avertissement';
 
-        // ========== ÉLÉMENTS DOM ==========
-        const loginPage = document.getElementById('loginPage');
-        const appContainer = document.getElementById('appContainer');
-        const loginCode = document.getElementById('loginCode');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const navTabs = document.querySelectorAll('.nav-tab');
-        const sections = document.querySelectorAll('.section');
-        const ficheForm = document.getElementById('ficheForm');
-        const reglementCards = document.querySelectorAll('.reglement-card');
-        const readReglementBtn = document.getElementById('readReglementBtn');
-        const reglementModal = document.getElementById('reglementModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
-        const modalClose = document.getElementById('modalClose');
-        const readConfirmCheckbox = document.getElementById('readConfirmCheckbox');
-        const modalValidateBtn = document.getElementById('modalValidateBtn');
-        const validateBtn = document.getElementById('validateBtn');
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        const personInfoCard = document.getElementById('personInfoCard');
-        const alertBox = document.getElementById('alert');
-        const codePostalInput = document.getElementById('codePostal');
-        const villeInput = document.getElementById('ville');
-        const villeSelect = document.getElementById('villeSelect');
-        const villeOptions = document.getElementById('villeOptions');
-
-        // ========== CONNEXION ==========
-        loginBtn.addEventListener('click', handleLogin);
-        loginCode.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleLogin();
+        // NAVIGATION
+        function showPage(id) {
+            if (currentPage !== id) pageHistory.push(currentPage);
+            currentPage = id;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+            document.getElementById('backBtn').classList.toggle('visible', id !== 'menu');
+        }
+        document.getElementById('backBtn').addEventListener('click', () => {
+            if (pageHistory.length > 0) {
+                currentPage = pageHistory.pop();
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active');
+                document.getElementById('backBtn').classList.toggle('visible', currentPage !== 'menu');
+            }
         });
+        document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
 
-        function handleLogin() {
-            const code = loginCode.value;
-            if (code === CODE_ACCESS) {
-                loginPage.style.display = 'none';
-                appContainer.style.display = 'block';
+        // LOGIN
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        function login() {
+            if (document.getElementById('loginCode').value === '911') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
                 loadAllData();
             } else {
-                loginCode.classList.add('error');
-                loginError.style.display = 'block';
-                setTimeout(() => {
-                    loginCode.classList.remove('error');
-                    loginError.style.display = 'none';
-                }, 2000);
+                document.getElementById('loginCode').classList.add('error');
+                document.getElementById('loginError').style.display = 'block';
+                setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000);
             }
         }
-
-        logoutBtn.addEventListener('click', () => {
-            appContainer.style.display = 'none';
-            loginPage.style.display = 'flex';
-            loginCode.value = '';
-            resetForm();
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginCode').value = '';
+            pageHistory = []; showPage('menu');
         });
 
-        // ========== NAVIGATION ==========
-        navTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                navTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                const tabName = tab.dataset.tab;
-                sections.forEach(s => s.classList.remove('active'));
-                document.getElementById(`section${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
-            });
-        });
-
-        // ========== RECHERCHE CODE POSTAL → VILLE ==========
-        codePostalInput.addEventListener('input', async () => {
-            const cp = codePostalInput.value.trim();
-            
+        // CODE POSTAL
+        document.getElementById('codePostal').addEventListener('input', async function() {
+            const cp = this.value.trim(), sel = document.getElementById('ville');
             if (cp.length === 5) {
-                villeOptions.innerHTML = '<div class="ville-loading">🔄 Recherche des villes...</div>';
-                villeSelect.classList.add('visible');
-                villeInput.value = '';
-                
+                sel.innerHTML = '<option>🔄 Recherche...</option>'; sel.disabled = true;
                 try {
-                    const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${cp}&fields=nom&format=json`);
-                    const villes = await response.json();
-                    
-                    if (villes.length === 0) {
-                        villeOptions.innerHTML = '<div class="ville-loading">❌ Aucune ville trouvée pour ce code postal</div>';
-                    } else if (villes.length === 1) {
-                        // Une seule ville, on la sélectionne automatiquement
-                        villeInput.value = villes[0].nom;
-                        villeSelect.classList.remove('visible');
-                        updateValidateButton();
-                    } else {
-                        // Plusieurs villes, on affiche les options
-                        villeOptions.innerHTML = villes.map(v => 
-                            `<div class="ville-option" data-ville="${v.nom}">${v.nom}</div>`
-                        ).join('');
-                        
-                        // Event listeners pour les options
-                        villeOptions.querySelectorAll('.ville-option').forEach(opt => {
-                            opt.addEventListener('click', () => {
-                                villeOptions.querySelectorAll('.ville-option').forEach(o => o.classList.remove('selected'));
-                                opt.classList.add('selected');
-                                villeInput.value = opt.dataset.ville;
-                                updateValidateButton();
-                            });
-                        });
-                    }
-                } catch (error) {
-                    console.error('Erreur API Geo:', error);
-                    villeOptions.innerHTML = '<div class="ville-loading">❌ Erreur de connexion</div>';
-                }
-            } else {
-                villeSelect.classList.remove('visible');
-                villeInput.value = '';
-            }
+                    const r = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${cp}&fields=nom&format=json`);
+                    const v = await r.json();
+                    if (v.length === 0) sel.innerHTML = '<option value="">❌ Aucune ville</option>';
+                    else { sel.innerHTML = '<option value="">-- Sélectionnez --</option>' + v.map(x => `<option value="${x.nom}">${x.nom}</option>`).join(''); sel.disabled = false; if (v.length === 1) sel.value = v[0].nom; }
+                    updateValidateBtn();
+                } catch(e) { sel.innerHTML = '<option value="">❌ Erreur</option>'; }
+            } else { sel.innerHTML = '<option value="">Entrez le code postal</option>'; sel.disabled = true; }
         });
+        document.getElementById('ville').addEventListener('change', updateValidateBtn);
 
-        // ========== SÉLECTION RÈGLEMENT ==========
-        reglementCards.forEach(card => {
-            card.addEventListener('click', () => {
-                reglementCards.forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                selectedReglement = card.dataset.reglement;
-                reglementRead = false;
-                readReglementBtn.classList.add('visible');
-                readReglementBtn.textContent = '📖 Lire le règlement (obligatoire)';
-                readReglementBtn.style.background = '#ff9800';
-                updateValidateButton();
-            });
-        });
-
-        // ========== MODAL RÈGLEMENT ==========
-        readReglementBtn.addEventListener('click', () => {
+        // REGLEMENT
+        document.querySelectorAll('.reglement-card').forEach(c => c.addEventListener('click', () => {
+            document.querySelectorAll('.reglement-card').forEach(x => x.classList.remove('selected'));
+            c.classList.add('selected'); selectedReglement = c.dataset.reglement; reglementRead = false;
+            const btn = document.getElementById('readReglementBtn'); btn.classList.add('visible'); btn.textContent = '📖 Lire le règlement (obligatoire)'; btn.style.background = '#ff9800';
+            updateValidateBtn();
+        }));
+        document.getElementById('readReglementBtn').addEventListener('click', () => {
             if (!selectedReglement) return;
-            
-            const reglement = reglements[selectedReglement];
-            modalTitle.textContent = reglement.title;
-            modalBody.innerHTML = reglement.content;
-            readConfirmCheckbox.checked = false;
-            modalValidateBtn.classList.remove('enabled');
-            reglementModal.classList.add('visible');
+            document.getElementById('modalTitle').textContent = reglements[selectedReglement].title;
+            document.getElementById('modalBody').innerHTML = reglements[selectedReglement].content;
+            document.getElementById('readConfirmCheckbox').checked = false;
+            document.getElementById('modalValidateBtn').classList.remove('enabled');
+            document.getElementById('reglementModal').classList.add('visible');
         });
-
-        modalClose.addEventListener('click', () => {
-            reglementModal.classList.remove('visible');
-        });
-
-        reglementModal.addEventListener('click', (e) => {
-            if (e.target === reglementModal) {
-                reglementModal.classList.remove('visible');
+        document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
+        document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
+        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
+        document.getElementById('modalValidateBtn').addEventListener('click', () => {
+            if (document.getElementById('readConfirmCheckbox').checked) {
+                reglementRead = true; document.getElementById('reglementModal').classList.remove('visible');
+                const btn = document.getElementById('readReglementBtn'); btn.textContent = '✅ Règlement lu'; btn.style.background = '#2d5a3d';
+                updateValidateBtn();
             }
         });
-
-        readConfirmCheckbox.addEventListener('change', () => {
-            if (readConfirmCheckbox.checked) {
-                modalValidateBtn.classList.add('enabled');
-            } else {
-                modalValidateBtn.classList.remove('enabled');
-            }
-        });
-
-        modalValidateBtn.addEventListener('click', () => {
-            if (readConfirmCheckbox.checked) {
-                reglementRead = true;
-                reglementModal.classList.remove('visible');
-                readReglementBtn.textContent = '✅ Règlement lu';
-                readReglementBtn.style.background = '#2d5a3d';
-                updateValidateButton();
-            }
-        });
-
-        // ========== VALIDATION FORMULAIRE ==========
-        function updateValidateButton() {
-            const formValid = ficheForm.checkValidity() && villeInput.value.trim() !== '';
-            validateBtn.disabled = !(formValid && selectedReglement && reglementRead);
-        }
-
-        ficheForm.addEventListener('input', updateValidateButton);
-
-        ficheForm.addEventListener('submit', async (e) => {
+        function updateValidateBtn() { document.getElementById('validateBtn').disabled = !(document.getElementById('ficheForm').checkValidity() && document.getElementById('ville').value && selectedReglement && reglementRead); }
+        document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
+        document.getElementById('ficheForm').addEventListener('submit', async e => {
             e.preventDefault();
-            
-            if (!selectedReglement || !reglementRead) {
-                showAlert('Veuillez sélectionner et lire un règlement', 'error');
-                return;
-            }
-
-            const formData = {
-                nom: document.getElementById('nom').value.toUpperCase().trim(),
-                prenom: document.getElementById('prenom').value.trim(),
-                adresse: document.getElementById('adresse').value.trim(),
-                codePostal: document.getElementById('codePostal').value.trim(),
-                ville: document.getElementById('ville').value.trim(),
-                telephone: document.getElementById('telephone').value.trim(),
-                urgence: {
-                    nom: document.getElementById('urgenceNom').value.toUpperCase().trim(),
-                    prenom: document.getElementById('urgencePrenom').value.trim(),
-                    telephone: document.getElementById('urgenceTel').value.trim()
-                },
-                reglement: selectedReglement,
-                dateControle: new Date().toISOString(),
-                timestamp: Date.now()
-            };
-
+            const data = { nom: document.getElementById('nom').value.toUpperCase().trim(), prenom: document.getElementById('prenom').value.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglement: selectedReglement, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() };
             try {
-                await db.ref('fiches').push(formData);
-                showAlert('✅ Contrôle enregistré avec succès !', 'success');
-                resetForm();
+                const snap = await dbMain.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0;
+                await dbMain.ref(`fiches/${idx}`).set(data);
+                showAlert('✅ Fiche enregistrée !', 'success');
+                document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-card').forEach(c => c.classList.remove('selected')); selectedReglement = null; reglementRead = false; document.getElementById('readReglementBtn').classList.remove('visible'); document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true;
                 loadAllData();
-            } catch (error) {
-                console.error('Erreur:', error);
-                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
-            }
+            } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); }
         });
 
-        function resetForm() {
-            ficheForm.reset();
-            reglementCards.forEach(c => c.classList.remove('selected'));
-            selectedReglement = null;
-            reglementRead = false;
-            readReglementBtn.classList.remove('visible');
-            readReglementBtn.style.background = '#ff9800';
-            validateBtn.disabled = true;
-            villeSelect.classList.remove('visible');
-        }
-
-        // ========== CHARGEMENT DES DONNÉES ==========
-        async function loadAllData() {
-            await loadInfractions();
-            await loadFiches();
-            loadHistory();
-            loadRecentInfractions();
-        }
-
-        async function loadInfractions() {
+        // LOAD DATA
+        async function loadAllData() { await loadFiches(); await loadAllInfractions(); loadRecentInfractions(); }
+        async function loadFiches() { allFiches = []; try { const s = await dbMain.ref('fiches').once('value'); if (s.val()) Object.values(s.val()).forEach(v => { if (v && v.nom) allFiches.push(v); }); } catch(e) {} console.log('📋 Fiches:', allFiches.length); }
+        async function loadAllInfractions() {
             allInfractions = [];
-            
+            await loadInfFromDB(dbMain, 'Breitmatt');
+            if (dbCarpodrome) await loadInfFromDB(dbCarpodrome, 'Carpodrome');
+            if (dbHardt) await loadInfFromDB(dbHardt, 'Hardt');
+            console.log('⚠️ Infractions:', allInfractions.length);
+        }
+        async function loadInfFromDB(db, src) {
             try {
-                const snapshot = await db.ref('infractions').once('value');
-                const data = snapshot.val();
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, val]) => {
-                        allInfractions.push({
-                            ...val,
-                            id: key
-                        });
-                    });
-                }
-                
-                console.log('Infractions chargées:', allInfractions.length);
-            } catch (error) {
-                console.error('Erreur chargement infractions:', error);
-            }
+                const a = await db.ref('infractions/avertissements').once('value');
+                if (a.val()) Object.values(a.val()).forEach(v => { if (v && v.nom) allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'avertissement', motif: v.motif || '', date: v.date || '', id: v.id || '', source: src }); });
+                const b = await db.ref('infractions/bannis').once('value');
+                if (b.val()) Object.values(b.val()).forEach(v => { if (v && v.nom) allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'bannissement', motif: v.motifs || v.motif || '', date: v.date || '', id: v.id || '', source: src }); });
+            } catch(e) {}
         }
 
-        async function loadFiches() {
-            allFiches = [];
-            
-            try {
-                const snapshot = await db.ref('fiches').once('value');
-                const data = snapshot.val();
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, val]) => {
-                        allFiches.push({
-                            ...val,
-                            id: key
-                        });
-                    });
-                }
-                
-                console.log('Fiches chargées:', allFiches.length);
-            } catch (error) {
-                console.error('Erreur chargement fiches:', error);
-            }
-        }
-
-        // ========== RECHERCHE ==========
-        searchInput.addEventListener('input', () => {
-            const query = searchInput.value.toLowerCase().trim();
-            
-            if (query.length < 2) {
-                searchResults.classList.remove('visible');
-                return;
-            }
-
-            // Combiner fiches et infractions pour la recherche
-            const allPersons = [];
-            const seen = new Set();
-
-            // Ajouter les personnes des fiches
-            allFiches.forEach(f => {
-                const key = `${(f.nom || '').toUpperCase()}-${(f.prenom || '').toLowerCase()}`;
-                if (!seen.has(key) && f.nom && f.prenom) {
-                    seen.add(key);
-                    allPersons.push({ nom: f.nom, prenom: f.prenom });
-                }
-            });
-
-            // Ajouter les personnes des infractions
-            allInfractions.forEach(inf => {
-                const key = `${(inf.nom || '').toUpperCase()}-${(inf.prenom || '').toLowerCase()}`;
-                if (!seen.has(key) && inf.nom && inf.prenom) {
-                    seen.add(key);
-                    allPersons.push({ nom: inf.nom, prenom: inf.prenom });
-                }
-            });
-
-            // Filtrer par la recherche
-            const results = allPersons.filter(p => {
-                const nom = (p.nom || '').toLowerCase();
-                const prenom = (p.prenom || '').toLowerCase();
-                return nom.includes(query) || prenom.includes(query);
-            });
-
-            displaySearchResults(results);
-        });
-
-        function displaySearchResults(results) {
-            if (results.length === 0) {
-                searchResults.innerHTML = '<div class="search-result-item">Aucun résultat trouvé</div>';
-                searchResults.classList.add('visible');
-                return;
-            }
-
-            searchResults.innerHTML = results.map(r => {
-                const isBanned = allInfractions.some(inf => 
-                    (inf.nom || '').toUpperCase() === (r.nom || '').toUpperCase() && 
-                    (inf.prenom || '').toLowerCase() === (r.prenom || '').toLowerCase() && 
-                    inf.type === 'bannissement'
-                );
-                const hasWarning = allInfractions.some(inf => 
-                    (inf.nom || '').toUpperCase() === (r.nom || '').toUpperCase() && 
-                    (inf.prenom || '').toLowerCase() === (r.prenom || '').toLowerCase() && 
-                    inf.type === 'avertissement'
-                );
-
-                let statusClass = 'status-ok';
-                let statusText = '✅ OK';
-                if (isBanned) {
-                    statusClass = 'status-banned';
-                    statusText = '🚫 BANNI';
-                } else if (hasWarning) {
-                    statusClass = 'status-warning';
-                    statusText = '⚠️ Avertissement';
-                }
-
-                return `
-                    <div class="search-result-item" data-nom="${r.nom}" data-prenom="${r.prenom}">
-                        <div>
-                            <div class="search-result-name">${r.nom} ${r.prenom}</div>
-                            <span class="search-result-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <button class="view-info-btn">👁️ Voir infos</button>
-                    </div>
-                `;
+        // SEARCH
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim(), c = document.getElementById('searchResults');
+            if (q.length < 2) { c.innerHTML = '<div class="no-results">Tapez au moins 2 caractères</div>'; return; }
+            const r = allFiches.filter(f => (f.nom||'').toLowerCase().includes(q) || (f.prenom||'').toLowerCase().includes(q));
+            if (r.length === 0) { c.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; }
+            c.innerHTML = r.map((f,i) => {
+                const inf = getInf(f.nom, f.prenom), banned = inf.some(x => x.type === 'bannissement'), warn = inf.some(x => x.type === 'avertissement');
+                let badge = '<span class="badge badge-ok">✅ OK</span>';
+                if (banned) badge = '<span class="badge badge-banned">🚫 BANNI</span>';
+                else if (warn) badge = '<span class="badge badge-warning">⚠️ AVERTISSEMENT</span>';
+                return `<div class="search-result-item" data-i="${i}"><div class="search-result-name">${f.nom} ${f.prenom} ${badge}</div><div class="search-result-address">📍 ${f.codePostal} ${f.ville}</div></div>`;
             }).join('');
-
-            searchResults.classList.add('visible');
-
-            // Event listeners pour les résultats
-            searchResults.querySelectorAll('.search-result-item').forEach(item => {
-                item.querySelector('.view-info-btn')?.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const nom = item.dataset.nom;
-                    const prenom = item.dataset.prenom;
-                    showPersonInfo(nom, prenom);
-                    searchResults.classList.remove('visible');
-                    searchInput.value = `${nom} ${prenom}`;
-                });
-            });
+            c.querySelectorAll('.search-result-item').forEach(x => x.addEventListener('click', () => showDetail(r[x.dataset.i])));
+        });
+        function getInf(nom, prenom) { return allInfractions.filter(i => (i.nom||'').toUpperCase() === (nom||'').toUpperCase() && (i.prenom||'').toLowerCase() === (prenom||'').toLowerCase()); }
+        function showDetail(f) {
+            const inf = getInf(f.nom, f.prenom), banned = inf.some(x => x.type === 'bannissement'), warn = inf.some(x => x.type === 'avertissement');
+            document.getElementById('detailName').textContent = `${f.nom} ${f.prenom}`;
+            const st = document.getElementById('detailStatus');
+            if (banned) { st.textContent = '🚫 BANNI'; st.className = 'detail-status badge-banned'; }
+            else if (warn) { st.textContent = '⚠️ Avertissement'; st.className = 'detail-status badge-warning'; }
+            else { st.textContent = '✅ RAS'; st.className = 'detail-status badge-ok'; }
+            document.getElementById('detailInfo').innerHTML = `<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">${f.adresse}<br>${f.codePostal} ${f.ville}</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">${f.telephone}</div></div><div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">${f.urgence?.nom||''} ${f.urgence?.prenom||''}<br>${f.urgence?.telephone||''}</div></div><div class="info-item"><div class="info-item-label">📜 Règlement</div><div class="info-item-value">${(f.reglement||'').toUpperCase()}</div></div><div class="info-item"><div class="info-item-label">📅 Date</div><div class="info-item-value">${f.date||''}</div></div>`;
+            const is = document.getElementById('detailInfractions');
+            if (inf.length > 0) {
+                is.style.display = 'block'; is.className = 'infractions-section' + (banned ? ' banned' : '');
+                is.innerHTML = `<div class="infractions-header">${banned ? '🚫' : '⚠️'} Infractions (${inf.length})</div>` + inf.map(x => {
+                    let sc = 'source-breitmatt'; if (x.source === 'Carpodrome') sc = 'source-carpodrome'; else if (x.source === 'Hardt') sc = 'source-hardt';
+                    return `<div class="infraction-item ${x.type === 'bannissement' ? 'banned' : ''}"><div class="infraction-meta"><span class="badge-source ${sc}">${x.source}</span><span class="infraction-date">📅 ${x.date||''}</span></div><div class="infraction-motif">${x.type === 'bannissement' ? '🚫 <strong>BANNI</strong>' : '⚠️ <strong>Avertissement</strong>'}${x.motif ? '<br>' + x.motif : ''}</div></div>`;
+                }).join('');
+            } else is.style.display = 'none';
+            showPage('detail');
         }
 
-        function showPersonInfo(nom, prenom) {
-            const infractions = allInfractions.filter(inf => 
-                (inf.nom || '').toUpperCase() === (nom || '').toUpperCase() && 
-                (inf.prenom || '').toLowerCase() === (prenom || '').toLowerCase()
-            );
-
-            const isBanned = infractions.some(inf => inf.type === 'bannissement');
-            const hasWarning = infractions.some(inf => inf.type === 'avertissement');
-
-            document.getElementById('personName').textContent = `${nom} ${prenom}`;
-            
-            const statusEl = document.getElementById('personStatus');
-            if (isBanned) {
-                statusEl.textContent = '🚫 BANNI';
-                statusEl.className = 'person-info-status status-banned';
-            } else if (hasWarning) {
-                statusEl.textContent = '⚠️ Avertissement en cours';
-                statusEl.className = 'person-info-status status-warning';
-            } else {
-                statusEl.textContent = '✅ RAS';
-                statusEl.className = 'person-info-status status-ok';
-            }
-
-            const infractionsContainer = document.getElementById('personInfractions');
-            if (infractions.length === 0) {
-                infractionsContainer.innerHTML = '<div class="no-infraction">✅ Aucune infraction enregistrée</div>';
-            } else {
-                infractionsContainer.innerHTML = `
-                    <h4 style="margin-bottom: 10px;">📋 Infractions (${infractions.length})</h4>
-                    <div class="infractions-list">
-                        ${infractions.map(inf => `
-                            <div class="infraction-item ${inf.type === 'bannissement' ? 'banned' : ''}">
-                                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
-                                    <span class="infraction-date">📅 ${formatDate(inf.date || inf.timestamp)}</span>
-                                    <span class="infraction-source">📍 ${inf.lieu || 'Non précisé'}</span>
-                                </div>
-                                <div class="infraction-motif">
-                                    ${inf.type === 'bannissement' ? '🚫' : '⚠️'} 
-                                    <strong>${inf.type === 'bannissement' ? 'BANNISSEMENT' : 'Avertissement'}</strong>
-                                    ${inf.motif ? '<br>' + inf.motif : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-
-            personInfoCard.classList.add('visible');
-        }
-
-        // Cacher les résultats quand on clique ailleurs
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                searchResults.classList.remove('visible');
-            }
-        });
-
-        // ========== GESTION INFRACTIONS ==========
-        const infractionForm = document.getElementById('infractionForm');
-        const infractionTypeBtns = document.querySelectorAll('.infraction-type-btn');
-        let selectedInfractionType = 'avertissement';
-
-        infractionTypeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                infractionTypeBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedInfractionType = btn.dataset.type;
-            });
-        });
-
-        infractionForm.addEventListener('submit', async (e) => {
+        // INFRACTION
+        document.querySelectorAll('.infraction-type-btn').forEach(b => b.addEventListener('click', () => {
+            document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected'));
+            b.classList.add('selected'); selectedInfractionType = b.dataset.type;
+        }));
+        document.getElementById('infractionForm').addEventListener('submit', async e => {
             e.preventDefault();
-
-            const infData = {
-                nom: document.getElementById('infNom').value.toUpperCase().trim(),
-                prenom: document.getElementById('infPrenom').value.trim(),
-                type: selectedInfractionType,
-                motif: document.getElementById('infMotif').value.trim(),
-                lieu: document.getElementById('infLieu').value,
-                date: new Date().toISOString(),
-                timestamp: Date.now()
-            };
-
+            const data = { nom: document.getElementById('infNom').value.toUpperCase().trim(), prenom: document.getElementById('infPrenom').value.trim(), motif: document.getElementById('infMotif').value.trim(), date: new Date().toLocaleString('fr-FR'), id: Date.now().toString(), lieu: document.getElementById('infLieu').value };
             try {
-                await db.ref('infractions').push(infData);
+                const path = selectedInfractionType === 'bannissement' ? 'infractions/bannis' : 'infractions/avertissements';
+                const snap = await dbMain.ref(path).once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0;
+                await dbMain.ref(`${path}/${idx}`).set(data);
                 showAlert(`✅ ${selectedInfractionType === 'bannissement' ? 'Bannissement' : 'Avertissement'} enregistré !`, 'success');
-                infractionForm.reset();
-                infractionTypeBtns.forEach(b => b.classList.remove('selected'));
-                infractionTypeBtns[0].classList.add('selected');
-                selectedInfractionType = 'avertissement';
+                document.getElementById('infractionForm').reset(); document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); document.querySelector('.infraction-type-btn').classList.add('selected'); selectedInfractionType = 'avertissement';
                 loadAllData();
-            } catch (error) {
-                console.error('Erreur:', error);
-                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
-            }
+            } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); }
         });
-
         function loadRecentInfractions() {
-            const container = document.getElementById('recentInfractions');
-            
-            const recent = allInfractions
-                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-                .slice(0, 10);
-
-            if (recent.length === 0) {
-                container.innerHTML = '<p style="color: #666; text-align: center;">Aucune infraction enregistrée</p>';
-                return;
-            }
-
-            container.innerHTML = recent.map(inf => `
-                <div class="infraction-item ${inf.type === 'bannissement' ? 'banned' : ''}">
-                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
-                        <strong>${inf.nom} ${inf.prenom}</strong>
-                        <span class="infraction-source">📍 ${inf.lieu || 'Non précisé'}</span>
-                    </div>
-                    <div style="font-size: 12px; color: #666; margin: 5px 0;">📅 ${formatDate(inf.date || inf.timestamp)}</div>
-                    <div>
-                        ${inf.type === 'bannissement' ? '🚫 <strong>BANNISSEMENT</strong>' : '⚠️ Avertissement'}
-                        ${inf.motif ? ' - ' + inf.motif : ''}
-                    </div>
-                </div>
-            `).join('');
+            const c = document.getElementById('recentInfractions'), r = allInfractions.sort((a,b) => parseInt(b.id||0) - parseInt(a.id||0)).slice(0, 10);
+            if (r.length === 0) { c.innerHTML = '<div class="no-results">Aucune infraction</div>'; return; }
+            c.innerHTML = r.map(x => {
+                let sc = 'source-breitmatt'; if (x.source === 'Carpodrome') sc = 'source-carpodrome'; else if (x.source === 'Hardt') sc = 'source-hardt';
+                return `<div class="infraction-item ${x.type === 'bannissement' ? 'banned' : ''}"><div class="infraction-meta"><strong>${x.nom} ${x.prenom}</strong><span class="badge-source ${sc}">${x.source}</span></div><div class="infraction-date">📅 ${x.date||''}</div><div class="infraction-motif">${x.type === 'bannissement' ? '🚫 BANNI' : '⚠️ Avertissement'}${x.motif ? ' - ' + x.motif : ''}</div></div>`;
+            }).join('');
         }
 
-        // ========== HISTORIQUE ==========
-        function loadHistory() {
-            const historyLoading = document.getElementById('historyLoading');
-            const historyList = document.getElementById('historyList');
-            
-            historyLoading.classList.remove('visible');
-            
-            const controles = allFiches.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 50);
-
-            if (controles.length === 0) {
-                historyList.innerHTML = '<p style="text-align: center; color: #666;">Aucun contrôle enregistré</p>';
-                return;
-            }
-
-            historyList.innerHTML = controles.map(c => `
-                <div class="history-item">
-                    <div class="history-item-header">
-                        <span class="history-item-name">${c.nom} ${c.prenom}</span>
-                        <span class="history-item-reglement">${(c.reglement || '').toUpperCase()}</span>
-                    </div>
-                    <div class="history-item-date">📅 ${formatDate(c.dateControle || c.timestamp)}</div>
-                    <div style="font-size: 13px; color: #666; margin-top: 5px;">
-                        📍 ${c.codePostal || ''} ${c.ville || ''} | 📞 ${c.telephone || 'N/A'}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ========== UTILITAIRES ==========
-        function formatDate(dateStr) {
-            if (!dateStr) return 'Date inconnue';
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            } catch {
-                return String(dateStr);
-            }
-        }
-
-        function showAlert(message, type) {
-            alertBox.textContent = message;
-            alertBox.className = `alert visible alert-${type}`;
-            setTimeout(() => {
-                alertBox.classList.remove('visible');
-            }, 4000);
-        }
+        function showAlert(msg, type) { const a = document.getElementById('alert'); a.textContent = msg; a.className = `alert visible alert-${type}`; setTimeout(() => a.classList.remove('visible'), 4000); }
     </script>
 </body>
 </html>
