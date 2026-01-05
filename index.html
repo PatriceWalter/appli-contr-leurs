@@ -317,6 +317,7 @@
                 <p style="margin-bottom:20px;color:#666">Entrez le mot de passe administrateur</p>
                 <input type="password" class="admin-input" id="adminPassword" placeholder="Mot de passe">
                 <button class="admin-submit-btn" id="adminSubmitBtn">Accéder</button>
+                <button class="admin-submit-btn" id="closePageBtn" style="background:#dc3545; margin-top:10px;">❌ Fermer la page</button>
             </div>
         </div>
     </div>
@@ -423,6 +424,7 @@
             document.getElementById('adminModal').classList.add('visible');
         });
         document.getElementById('adminModalClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('visible'));
+        document.getElementById('closePageBtn').addEventListener('click', () => window.close());
         document.getElementById('adminModal').addEventListener('click', e => { if (e.target.id === 'adminModal') e.target.classList.remove('visible'); });
         document.getElementById('adminSubmitBtn').addEventListener('click', checkAdminPassword);
         document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
@@ -705,15 +707,41 @@
                 }); 
                 const b = await db.ref('infractions/bannis').once('value'); 
                 if (b.val()) Object.values(b.val()).forEach(v => { 
-                    if (v && v.nom) allInfractions.push({ 
-                        nom: v.nom, 
-                        prenom: v.prenom || '', 
-                        type: 'bannissement', 
-                        motif: v.motif || v.motifs || v.description || '', 
-                        date: v.date || '', 
-                        id: v.id || '', 
-                        source: src 
-                    }); 
+                    if (v && v.nom) {
+                        // Traiter les motifs (peut être un tableau ou une chaîne)
+                        let motifStr = '';
+                        if (v.motifs) {
+                            if (Array.isArray(v.motifs)) {
+                                motifStr = v.motifs.map((m, i) => {
+                                    const txt = typeof m === 'string' ? m : (m.motif || '');
+                                    const dt = typeof m === 'object' && m.date ? ' (' + m.date + ')' : '';
+                                    return '#' + (i+1) + ': ' + txt + dt;
+                                }).join(' | ');
+                            } else if (typeof v.motifs === 'object') {
+                                const arr = Object.values(v.motifs);
+                                motifStr = arr.map((m, i) => {
+                                    const txt = typeof m === 'string' ? m : (m.motif || '');
+                                    const dt = typeof m === 'object' && m.date ? ' (' + m.date + ')' : '';
+                                    return '#' + (i+1) + ': ' + txt + dt;
+                                }).join(' | ');
+                            } else {
+                                motifStr = v.motifs;
+                            }
+                        } else if (v.motif) {
+                            motifStr = v.motif;
+                        } else if (v.description) {
+                            motifStr = v.description;
+                        }
+                        allInfractions.push({ 
+                            nom: v.nom, 
+                            prenom: v.prenom || '', 
+                            type: 'bannissement', 
+                            motif: motifStr, 
+                            date: v.date || '', 
+                            id: v.id || '', 
+                            source: src 
+                        });
+                    } 
                 }); 
             } catch(e) { console.log('Erreur chargement', src, e); } 
         }
@@ -807,7 +835,8 @@
                 document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); 
                 document.querySelector('.infraction-type-btn').classList.add('selected'); 
                 selectedInfractionType = 'avertissement'; 
-                loadAllData(); 
+                loadAllData();
+                showPage('menu'); // Retour à l'accueil 
             } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } 
         });
         
