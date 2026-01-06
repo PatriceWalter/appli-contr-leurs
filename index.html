@@ -193,7 +193,7 @@
             <div class="login-logo">👮</div>
             <h1 class="login-title">Contrôleur / Garde de Pêche</h1>
             <p class="login-subtitle">AAPPMA Gundershoffen</p>
-            <input type="password" class="login-input" id="loginCode" maxlength="3" placeholder="•••" autocomplete="off">
+            <input type="password" class="login-input" id="loginCode" placeholder="Code d'accès" autocomplete="off">
             <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
             <p class="login-error" id="loginError">❌ Code incorrect</p>
         </div>
@@ -450,6 +450,7 @@
         function showPage(id) { 
             if (currentPage !== id) pageHistory.push(currentPage); 
             currentPage = id; 
+            sessionStorage.setItem('currentPage', id);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
             document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
             document.getElementById('backBtn').classList.toggle('visible', id !== 'menu'); 
@@ -457,12 +458,28 @@
         document.getElementById('backBtn').addEventListener('click', () => { 
             if (pageHistory.length > 0) { 
                 currentPage = pageHistory.pop(); 
+                sessionStorage.setItem('currentPage', currentPage);
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
                 document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); 
                 document.getElementById('backBtn').classList.toggle('visible', currentPage !== 'menu'); 
             } 
         });
         document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
+
+        // SESSION PERSISTENCE (garder la connexion après actualisation)
+        function checkSession() {
+            if (sessionStorage.getItem('logged') === 'true') {
+                document.getElementById('loginPage').style.display = 'none'; 
+                document.getElementById('appContainer').style.display = 'block'; 
+                loadAllData();
+                // Restaurer la page si sauvegardée
+                const savedPage = sessionStorage.getItem('currentPage');
+                if (savedPage && savedPage !== 'menu') {
+                    setTimeout(() => showPage(savedPage), 100);
+                }
+            }
+        }
+        checkSession();
 
         // LOGIN
         document.getElementById('loginBtn').addEventListener('click', login);
@@ -471,6 +488,7 @@
             if (document.getElementById('loginCode').value === '911') { 
                 document.getElementById('loginPage').style.display = 'none'; 
                 document.getElementById('appContainer').style.display = 'block'; 
+                sessionStorage.setItem('logged', 'true');
                 loadAllData(); 
             } else { 
                 document.getElementById('loginCode').classList.add('error'); 
@@ -482,6 +500,8 @@
             document.getElementById('appContainer').style.display = 'none'; 
             document.getElementById('loginPage').style.display = 'flex'; 
             document.getElementById('loginCode').value = ''; 
+            sessionStorage.removeItem('logged');
+            sessionStorage.removeItem('currentPage');
             pageHistory = []; 
             showPage('menu'); 
         });
