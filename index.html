@@ -351,7 +351,7 @@
                     <div class="form-group required"><label for="infLieu">Lieu de l'infraction</label><select id="infLieu" required><option value="Breitmatt">🌊 Breitmatt</option><option value="Carpodrome">🎣 Carpodrome</option><option value="Hardt">🐟 Hardt</option></select><small style="color:#666;display:block;margin-top:5px">⚠️ L'infraction sera enregistrée dans la base du lieu sélectionné</small></div>
                     <button type="submit" class="btn btn-warning">⚠️ Enregistrer l'infraction</button>
                 </form>
-                <div style="margin-top:30px"><h3 style="color:#1a472a;margin-bottom:15px">📋 Dernières infractions (toutes bases)</h3><div id="recentInfractions"></div></div>
+
             </div></div>
         </div>
         
@@ -851,7 +851,7 @@
         });
 
         // LOAD DATA
-        async function loadAllData() { await loadFiches(); await loadAllInfractions(); loadRecentInfractions(); updateHistoriqueCounts(); }
+        async function loadAllData() { await loadFiches(); await loadAllInfractions(); updateHistoriqueCounts(); }
         
         async function loadFiches() { 
             allFiches = []; 
@@ -1082,25 +1082,6 @@
                 showPage('menu'); // Retour à l'accueil 
             } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } 
         });
-        
-        function loadRecentInfractions() { 
-            const c = document.getElementById('recentInfractions'), r = allInfractions.sort((a,b) => parseInt(b.id||0) - parseInt(a.id||0)).slice(0, 10); 
-            if (r.length === 0) { c.innerHTML = '<div class="no-results">Aucune infraction</div>'; return; } 
-            c.innerHTML = r.map(x => { 
-                let sc = 'source-breitmatt'; 
-                if (x.source === 'Carpodrome') sc = 'source-carpodrome'; 
-                else if (x.source === 'Hardt') sc = 'source-hardt'; 
-                return `<div class="infraction-item ${x.type === 'bannissement' ? 'banned' : ''}">
-                    <div class="infraction-meta">
-                        <strong>${x.nom} ${x.prenom}</strong>
-                        <span class="badge-source ${sc}">${x.source}</span>
-                    </div>
-                    <div class="infraction-date">📅 ${x.date || ''}</div>
-                    <div class="infraction-type">${x.type === 'bannissement' ? '🚫 BANNI' : '⚠️ Avertissement'}</div>
-                    ${x.motif ? '<div class="infraction-motif"><strong>Motif :</strong> '+x.motif+'</div>' : ''}
-                </div>`; 
-            }).join(''); 
-        }
         
         // =============================================
         // HISTORIQUE PAR ÉTANG
