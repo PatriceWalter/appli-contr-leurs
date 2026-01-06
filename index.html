@@ -739,10 +739,12 @@
                 try {
                     const snap = await base.db.ref('validUsers').once('value');
                     const data = snap.val();
-                    if (data && Array.isArray(data)) {
-                        data.forEach(u => {
+                    if (data) {
+                        // Convertir en array si c'est un objet
+                        const users = Array.isArray(data) ? data : Object.values(data);
+                        users.forEach(u => {
                             if (u && u.nom) {
-                                const key = (u.nom + '_' + u.prenom).toUpperCase();
+                                const key = (u.nom + '_' + (u.prenom || '')).toUpperCase();
                                 if (!seen.has(key)) {
                                     seen.add(key);
                                     allCartesValides.push({
@@ -839,10 +841,16 @@
                 { db: dbHardt, name: 'Hardt' }
             ];
             
+            // Convertir en objet avec clés user_X (format attendu par Hardt/Carpodrome)
+            const usersObj = {};
+            allCartesValides.forEach((u, i) => {
+                usersObj['user_' + i] = u;
+            });
+            
             for (const base of bases) {
                 if (!base.db) continue;
                 try {
-                    await base.db.ref('validUsers').set(allCartesValides);
+                    await base.db.ref('validUsers').set(usersObj);
                     console.log('✅ Cartes sauvegardées dans ' + base.name);
                 } catch(e) {
                     console.error('❌ Erreur sauvegarde ' + base.name + ':', e);
