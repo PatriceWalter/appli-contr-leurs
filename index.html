@@ -176,6 +176,11 @@
         /* Infraction list historique */
         .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
         .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
+        .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
+        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
+        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
+        .archive-delete { background: #616161 !important; }
+        .archive-delete:hover { background: #424242 !important; }
         .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
         .hist-infraction-date { font-size: 12px; color: #666; }
@@ -429,6 +434,7 @@
                 <div class="tabs-container">
                     <button class="tab-btn active" onclick="switchTab('avertissements')">⚠️ Avertissements <span id="tabCountAvert">0</span></button>
                     <button class="tab-btn" onclick="switchTab('bannis')">🚫 Bannissements <span id="tabCountBan">0</span></button>
+                    <button class="tab-btn" onclick="switchTab('archives')">📦 Archives <span id="tabCountArchives">0</span></button>
                 </div>
                 <div id="etangInfractionsList"></div>
             </div></div>
@@ -956,24 +962,106 @@
             ); 
         }
         
-        function showDetail(f) { 
-            const inf = getInf(f.nom, f.prenom), banned = inf.some(x => x.type === 'bannissement'), warn = inf.some(x => x.type === 'avertissement'); 
+        async function showDetail(f) { 
+            // Afficher la page immédiatement avec un état "chargement"
             document.getElementById('detailName').textContent = f.nom+' '+f.prenom; 
             const st = document.getElementById('detailStatus'); 
-            if (banned) { st.textContent = '🚫 BANNI'; st.className = 'detail-status badge-banned'; } 
-            else if (warn) { st.textContent = '⚠️ Avertissement'; st.className = 'detail-status badge-warning'; } 
-            else { st.textContent = '✅ RAS'; st.className = 'detail-status badge-ok'; } 
+            st.textContent = '⏳ Chargement...'; 
+            st.className = 'detail-status'; 
             
             const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement || '').toUpperCase();
             
             document.getElementById('detailInfo').innerHTML = '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">'+f.adresse+'<br>'+f.codePostal+' '+f.ville+'</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">'+f.telephone+'</div></div><div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">'+(f.urgence?.nom||'')+' '+(f.urgence?.prenom||'')+'<br>'+(f.urgence?.telephone||'')+'</div></div><div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">'+reglementsList+'</div></div><div class="info-item"><div class="info-item-label">📅 Date inscription</div><div class="info-item-value">'+(f.date||'')+'</div></div>'; 
             
+            showPage('detail');
+            
+            // Charger les infractions en temps réel depuis Firebase
+            let infractions = [];
+            const nomUpper = (f.nom||'').toUpperCase();
+            const prenomLower = (f.prenom||'').toLowerCase();
+            
+            // Charger depuis les 3 bases
+            const bases = [
+                { db: dbBreitmatt, name: 'Breitmatt' },
+                { db: dbCarpodrome, name: 'Carpodrome' },
+                { db: dbHardt, name: 'Hardt' }
+            ];
+            
+            for (const base of bases) {
+                if (!base.db) continue;
+                
+                try {
+                    // Avertissements
+                    const avertSnap = await base.db.ref('infractions/avertissements').once('value');
+                    if (avertSnap.val()) {
+                        Object.values(avertSnap.val()).forEach(v => {
+                            if (v && !v.archived && 
+                                (v.nom||'').toUpperCase() === nomUpper && 
+                                (v.prenom||'').toLowerCase() === prenomLower) {
+                                infractions.push({
+                                    type: 'avertissement',
+                                    source: base.name,
+                                    date: v.date || '',
+                                    motif: v.motif || v.description || ''
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Bannissements
+                    const banSnap = await base.db.ref('infractions/bannis').once('value');
+                    if (banSnap.val()) {
+                        Object.values(banSnap.val()).forEach(v => {
+                            if (v && 
+                                (v.nom||'').toUpperCase() === nomUpper && 
+                                (v.prenom||'').toLowerCase() === prenomLower) {
+                                let motifStr = '';
+                                if (v.motifs) {
+                                    if (Array.isArray(v.motifs)) {
+                                        motifStr = v.motifs.map((m, i) => {
+                                            const txt = typeof m === 'string' ? m : (m.motif || '');
+                                            return '#' + (i+1) + ': ' + txt;
+                                        }).join(' | ');
+                                    } else if (typeof v.motifs === 'object') {
+                                        motifStr = Object.values(v.motifs).map((m, i) => {
+                                            const txt = typeof m === 'string' ? m : (m.motif || '');
+                                            return '#' + (i+1) + ': ' + txt;
+                                        }).join(' | ');
+                                    } else {
+                                        motifStr = v.motifs;
+                                    }
+                                } else if (v.motif) {
+                                    motifStr = v.motif;
+                                }
+                                infractions.push({
+                                    type: 'bannissement',
+                                    source: base.name,
+                                    date: v.date || '',
+                                    motif: motifStr
+                                });
+                            }
+                        });
+                    }
+                } catch(e) {
+                    console.error('Erreur chargement ' + base.name + ':', e);
+                }
+            }
+            
+            // Mettre à jour le statut
+            const banned = infractions.some(x => x.type === 'bannissement');
+            const warn = infractions.some(x => x.type === 'avertissement');
+            
+            if (banned) { st.textContent = '🚫 BANNI'; st.className = 'detail-status badge-banned'; } 
+            else if (warn) { st.textContent = '⚠️ Avertissement'; st.className = 'detail-status badge-warning'; } 
+            else { st.textContent = '✅ RAS'; st.className = 'detail-status badge-ok'; } 
+            
+            // Afficher les infractions
             const is = document.getElementById('detailInfractions'); 
-            if (inf.length > 0) { 
+            if (infractions.length > 0) { 
                 is.style.display = 'block'; 
                 is.className = 'infractions-section' + (banned ? ' banned' : ''); 
-                is.innerHTML = '<div class="infractions-header">'+(banned ? '🚫' : '⚠️')+' Infractions ('+inf.length+')</div>' + 
-                    inf.map(x => { 
+                is.innerHTML = '<div class="infractions-header">'+(banned ? '🚫' : '⚠️')+' Infractions ('+infractions.length+')</div>' + 
+                    infractions.map(x => { 
                         let sc = 'source-breitmatt'; 
                         if (x.source === 'Carpodrome') sc = 'source-carpodrome'; 
                         else if (x.source === 'Hardt') sc = 'source-hardt'; 
@@ -987,7 +1075,6 @@
                         </div>`; 
                     }).join(''); 
             } else is.style.display = 'none'; 
-            showPage('detail'); 
         }
 
         // INFRACTIONS
@@ -1130,7 +1217,7 @@
             if (etang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome;
             else if (etang === 'Hardt' && dbHardt) db = dbHardt;
             
-            etangData = { avertissements: [], bannis: [] };
+            etangData = { avertissements: [], bannis: [], archives: [] };
             
             try {
                 const avertSnap = await db.ref('infractions/avertissements').once('value');
@@ -1186,6 +1273,40 @@
                         }
                     });
                 }
+                
+                // Charger les archives
+                const archivesSnap = await db.ref('infractions/archives').once('value');
+                if (archivesSnap.val()) {
+                    Object.entries(archivesSnap.val()).forEach(([key, v]) => {
+                        if (v && v.nom) {
+                            let motifStr = v.motif || '';
+                            if (v.motifs) {
+                                if (Array.isArray(v.motifs)) {
+                                    motifStr = v.motifs.map((m, i) => {
+                                        const txt = typeof m === 'string' ? m : (m.motif || '');
+                                        return '#' + (i+1) + ': ' + txt;
+                                    }).join(' | ');
+                                } else if (typeof v.motifs === 'object') {
+                                    motifStr = Object.values(v.motifs).map((m, i) => {
+                                        const txt = typeof m === 'string' ? m : (m.motif || '');
+                                        return '#' + (i+1) + ': ' + txt;
+                                    }).join(' | ');
+                                } else {
+                                    motifStr = v.motifs;
+                                }
+                            }
+                            etangData.archives.push({
+                                key: key,
+                                nom: v.nom,
+                                prenom: v.prenom || '',
+                                motif: motifStr,
+                                date: v.date || '',
+                                type: v.type || 'avertissement',
+                                dateArchive: v.dateArchive || ''
+                            });
+                        }
+                    });
+                }
             } catch(e) {
                 console.error('Erreur chargement étang:', e);
             }
@@ -1193,6 +1314,7 @@
             // Mettre à jour les compteurs
             document.getElementById('tabCountAvert').textContent = etangData.avertissements.filter(a => !a.archived).length;
             document.getElementById('tabCountBan').textContent = etangData.bannis.length;
+            document.getElementById('tabCountArchives').textContent = etangData.archives.length;
         }
         
         function switchTab(tab) {
@@ -1200,45 +1322,72 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             if (tab === 'avertissements') {
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            } else {
+            } else if (tab === 'bannis') {
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
             }
             renderEtangInfractions();
         }
         
         function renderEtangInfractions() {
             const container = document.getElementById('etangInfractionsList');
-            const list = currentTab === 'avertissements' 
-                ? etangData.avertissements.filter(a => !a.archived)
-                : etangData.bannis;
+            let list;
+            
+            if (currentTab === 'avertissements') {
+                list = etangData.avertissements.filter(a => !a.archived);
+            } else if (currentTab === 'bannis') {
+                list = etangData.bannis;
+            } else {
+                list = etangData.archives;
+            }
             
             if (list.length === 0) {
                 container.innerHTML = '<div class="no-infractions">Aucune infraction dans cette catégorie</div>';
                 return;
             }
             
-            container.innerHTML = list.map(item => `
-                <div class="hist-infraction-item ${currentTab === 'bannis' ? 'banned' : ''}">
-                    <div class="hist-infraction-header">
-                        <div>
-                            <div class="hist-infraction-name">${item.nom} ${item.prenom}</div>
-                            <div class="hist-infraction-date">📅 ${item.date || 'Date inconnue'}</div>
+            if (currentTab === 'archives') {
+                // Affichage archives avec bouton suppression définitive
+                container.innerHTML = list.map(item => `
+                    <div class="hist-infraction-item archive-item">
+                        <div class="hist-infraction-header">
+                            <div>
+                                <div class="hist-infraction-name">${item.nom} ${item.prenom}</div>
+                                <div class="hist-infraction-date">📅 ${item.date || 'Date inconnue'}</div>
+                                <div class="archive-type">${item.type === 'bannissement' ? '🚫 Bannissement' : '⚠️ Avertissement'}</div>
+                                ${item.dateArchive ? '<div class="archive-date">📦 Archivé le ' + item.dateArchive + '</div>' : ''}
+                            </div>
+                            <button class="hist-delete-btn archive-delete" onclick="deleteArchive('${item.key}')">🗑️ Supprimer définitivement</button>
                         </div>
-                        <button class="hist-delete-btn" onclick="deleteInfraction('${item.key}', '${currentTab}')">🗑️ Supprimer</button>
+                        ${item.motif ? '<div class="hist-infraction-motif"><strong>Motif :</strong> ' + item.motif + '</div>' : '<div class="hist-infraction-motif" style="color:#999"><em>Aucun motif renseigné</em></div>'}
                     </div>
-                    ${item.motif ? '<div class="hist-infraction-motif"><strong>Motif :</strong> ' + item.motif + '</div>' : '<div class="hist-infraction-motif" style="color:#999"><em>Aucun motif renseigné</em></div>'}
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                // Affichage normal avertissements/bannissements
+                container.innerHTML = list.map(item => `
+                    <div class="hist-infraction-item ${currentTab === 'bannis' ? 'banned' : ''}">
+                        <div class="hist-infraction-header">
+                            <div>
+                                <div class="hist-infraction-name">${item.nom} ${item.prenom}</div>
+                                <div class="hist-infraction-date">📅 ${item.date || 'Date inconnue'}</div>
+                            </div>
+                            <button class="hist-delete-btn" onclick="deleteInfraction('${item.key}', '${currentTab}')">🗑️ Archiver</button>
+                        </div>
+                        ${item.motif ? '<div class="hist-infraction-motif"><strong>Motif :</strong> ' + item.motif + '</div>' : '<div class="hist-infraction-motif" style="color:#999"><em>Aucun motif renseigné</em></div>'}
+                    </div>
+                `).join('');
+            }
         }
         
         async function deleteInfraction(key, type) {
-            const pwd = prompt('🔐 Mot de passe administrateur pour supprimer :');
+            const pwd = prompt('🔐 Mot de passe administrateur pour archiver :');
             if (pwd !== ADMIN_PASSWORD) {
                 showAlert('❌ Mot de passe incorrect !', 'error');
                 return;
             }
             
-            if (!confirm('Êtes-vous sûr de vouloir supprimer cette infraction ?')) return;
+            if (!confirm('Êtes-vous sûr de vouloir archiver cette infraction ?')) return;
             
             let db = dbBreitmatt;
             if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome;
@@ -1247,14 +1396,65 @@
             const path = type === 'avertissements' ? 'infractions/avertissements/' : 'infractions/bannis/';
             
             try {
-                await db.ref(path + key).remove();
-                showAlert('✅ Infraction supprimée !', 'success');
+                // Récupérer les données de l'infraction
+                const snap = await db.ref(path + key).once('value');
+                const data = snap.val();
+                
+                if (data) {
+                    // Ajouter à archives avec métadonnées
+                    const archiveData = {
+                        ...data,
+                        type: type === 'avertissements' ? 'avertissement' : 'bannissement',
+                        dateArchive: new Date().toLocaleDateString('fr-FR')
+                    };
+                    await db.ref('infractions/archives').push(archiveData);
+                    
+                    // Supprimer de l'emplacement original
+                    await db.ref(path + key).remove();
+                    
+                    showAlert('✅ Infraction archivée !', 'success');
+                } else {
+                    showAlert('❌ Infraction introuvable', 'error');
+                }
                 
                 // Recharger les données
                 await loadEtangData(currentEtang);
                 renderEtangInfractions();
                 
                 // Recharger toutes les données pour synchroniser
+                loadAllData();
+            } catch(e) {
+                showAlert('❌ Erreur: ' + e.message, 'error');
+            }
+        }
+        
+        async function deleteArchive(key) {
+            // ÉTAPE 1 : Mot de passe admin
+            const pwd = prompt('🔐 Mot de passe administrateur pour supprimer définitivement :');
+            if (pwd !== ADMIN_PASSWORD) {
+                showAlert('❌ Mot de passe incorrect !', 'error');
+                return;
+            }
+            
+            // ÉTAPE 2 : Première confirmation
+            if (!confirm('⚠️ ATTENTION !\n\nVous êtes sur le point de supprimer DÉFINITIVEMENT cette archive.\n\nCette action est IRRÉVERSIBLE.\n\nVoulez-vous continuer ?')) return;
+            
+            // ÉTAPE 3 : Deuxième confirmation
+            if (!confirm('🚨 DERNIÈRE CONFIRMATION !\n\nUne fois supprimée, cette archive ne pourra plus être récupérée.\n\nConfirmez-vous la suppression définitive ?')) return;
+            
+            let db = dbBreitmatt;
+            if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome;
+            else if (currentEtang === 'Hardt' && dbHardt) db = dbHardt;
+            
+            try {
+                await db.ref('infractions/archives/' + key).remove();
+                showAlert('✅ Archive supprimée définitivement !', 'success');
+                
+                // Recharger les données
+                await loadEtangData(currentEtang);
+                renderEtangInfractions();
+                
+                // Recharger toutes les données
                 loadAllData();
             } catch(e) {
                 showAlert('❌ Erreur: ' + e.message, 'error');
