@@ -14,6 +14,7 @@
         .login-title { color: #1a472a; font-size: 24px; margin-bottom: 10px; font-weight: 700; }
         .login-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
         .login-input { width: 100%; padding: 15px 20px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 20px; letter-spacing: 10px; font-weight: bold; }
+        .login-input::placeholder { font-size: 14px; letter-spacing: normal; font-weight: normal; color: #999; }
         .login-input:focus { outline: none; border-color: #2d5a3d; }
         .login-input.error { border-color: #e74c3c; animation: shake 0.5s; }
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
@@ -217,7 +218,27 @@
         .controle-big-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
         .controle-big-desc { font-size: 14px; opacity: 0.9; }
         
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } }
+        /* Onglets Admin */
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .admin-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .admin-tab:hover { border-color: #2d5a3d; }
+        .admin-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+        
+        /* Cartes valides */
+        .cartes-header { margin-bottom: 20px; }
+        .add-carte-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .carte-input { flex: 1; min-width: 120px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+        .carte-input:focus { outline: none; border-color: #2d5a3d; }
+        .carte-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #4caf50; }
+        .carte-item-name { font-weight: 600; color: #333; }
+        .carte-item-badge { font-size: 11px; color: #666; margin-top: 3px; }
+        .carte-delete-btn { background: #ffebee; color: #c62828; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .carte-delete-btn:hover { background: #c62828; color: white; }
+        .cartes-count { background: #e8f5e9; color: #2e7d32; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; text-align: center; }
+        
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -362,8 +383,31 @@
         
         <div class="page" id="pageAdmin">
             <div class="page-content"><div class="page-card">
-                <h1 class="page-title">⚙️ Administration des Fiches</h1>
-                <div id="adminFichesList"></div>
+                <h1 class="page-title">⚙️ Administration</h1>
+                
+                <!-- Onglets Admin -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches pêcheurs</button>
+                    <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes valides</button>
+                </div>
+                
+                <!-- Onglet Fiches -->
+                <div id="adminTabFiches" class="admin-tab-content active">
+                    <div id="adminFichesList"></div>
+                </div>
+                
+                <!-- Onglet Cartes valides -->
+                <div id="adminTabCartes" class="admin-tab-content">
+                    <div class="cartes-header">
+                        <p style="color:#666;margin-bottom:15px;">Pêcheurs ayant une carte de pêche valide (synchronisé sur Hardt, Carpodrome et Breitmatt)</p>
+                        <div class="add-carte-form">
+                            <input type="text" id="newCarteNom" placeholder="Nom" class="carte-input">
+                            <input type="text" id="newCartePrenom" placeholder="Prénom" class="carte-input">
+                            <button class="btn btn-primary" onclick="addCarteValide()">➕ Ajouter</button>
+                        </div>
+                    </div>
+                    <div id="cartesValidesList"></div>
+                </div>
             </div></div>
         </div>
         
@@ -655,6 +699,155 @@
                         <div class="admin-fiche-info">📍 ${item.fiche.codePostal} ${item.fiche.ville} | 📞 ${item.fiche.telephone} | 📅 ${item.fiche.date || ''}</div>
                     </div>
                 `).join('');
+        }
+        
+        // =============================================
+        // CARTES VALIDES - SYNCHRONISATION 3 BASES
+        // =============================================
+        let allCartesValides = [];
+        
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'fiches') {
+                document.querySelectorAll('.admin-tab')[0].classList.add('active');
+                document.getElementById('adminTabFiches').classList.add('active');
+            } else {
+                document.querySelectorAll('.admin-tab')[1].classList.add('active');
+                document.getElementById('adminTabCartes').classList.add('active');
+                loadCartesValides();
+            }
+        }
+        
+        async function loadCartesValides() {
+            const container = document.getElementById('cartesValidesList');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">⏳ Chargement...</div>';
+            
+            allCartesValides = [];
+            const seen = new Set(); // Pour éviter les doublons
+            
+            // Charger depuis les 3 bases
+            const bases = [
+                { db: dbBreitmatt, name: 'Breitmatt' },
+                { db: dbCarpodrome, name: 'Carpodrome' },
+                { db: dbHardt, name: 'Hardt' }
+            ];
+            
+            for (const base of bases) {
+                if (!base.db) continue;
+                try {
+                    const snap = await base.db.ref('validUsers').once('value');
+                    const data = snap.val();
+                    if (data && Array.isArray(data)) {
+                        data.forEach(u => {
+                            if (u && u.nom) {
+                                const key = (u.nom + '_' + u.prenom).toUpperCase();
+                                if (!seen.has(key)) {
+                                    seen.add(key);
+                                    allCartesValides.push({
+                                        nom: u.nom,
+                                        prenom: u.prenom || ''
+                                    });
+                                }
+                            }
+                        });
+                    }
+                } catch(e) {
+                    console.error('Erreur chargement cartes ' + base.name + ':', e);
+                }
+            }
+            
+            // Tri alphabétique
+            allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+            
+            renderCartesValides();
+        }
+        
+        function renderCartesValides() {
+            const container = document.getElementById('cartesValidesList');
+            
+            if (allCartesValides.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun pêcheur avec carte valide</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="cartes-count">🎫 ' + allCartesValides.length + ' pêcheur(s) avec carte valide</div>' +
+                allCartesValides.map((u, i) => `
+                    <div class="carte-item">
+                        <div>
+                            <div class="carte-item-name">${u.nom} ${u.prenom}</div>
+                        </div>
+                        <button class="carte-delete-btn" onclick="removeCarteValide(${i})">🗑️ Retirer</button>
+                    </div>
+                `).join('');
+        }
+        
+        async function addCarteValide() {
+            const nom = document.getElementById('newCarteNom').value.trim();
+            const prenom = document.getElementById('newCartePrenom').value.trim();
+            
+            if (!nom) {
+                showAlert('❌ Le nom est obligatoire', 'error');
+                return;
+            }
+            
+            // Vérifier si déjà existant
+            const exists = allCartesValides.some(u => 
+                u.nom.toUpperCase() === nom.toUpperCase() && 
+                (u.prenom || '').toUpperCase() === prenom.toUpperCase()
+            );
+            
+            if (exists) {
+                showAlert('⚠️ Ce pêcheur est déjà dans la liste', 'error');
+                return;
+            }
+            
+            // Ajouter à la liste locale
+            allCartesValides.push({ nom: nom.toUpperCase(), prenom });
+            allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+            
+            // Sauvegarder dans les 3 bases
+            await saveCartesValidesToAllBases();
+            
+            // Vider les champs
+            document.getElementById('newCarteNom').value = '';
+            document.getElementById('newCartePrenom').value = '';
+            
+            renderCartesValides();
+            showAlert('✅ Pêcheur ajouté aux 3 bases', 'success');
+        }
+        
+        async function removeCarteValide(index) {
+            const u = allCartesValides[index];
+            if (!confirm('Retirer ' + u.nom + ' ' + u.prenom + ' de la liste des cartes valides ?')) return;
+            
+            // Retirer de la liste locale
+            allCartesValides.splice(index, 1);
+            
+            // Sauvegarder dans les 3 bases
+            await saveCartesValidesToAllBases();
+            
+            renderCartesValides();
+            showAlert('✅ Pêcheur retiré des 3 bases', 'success');
+        }
+        
+        async function saveCartesValidesToAllBases() {
+            const bases = [
+                { db: dbBreitmatt, name: 'Breitmatt' },
+                { db: dbCarpodrome, name: 'Carpodrome' },
+                { db: dbHardt, name: 'Hardt' }
+            ];
+            
+            for (const base of bases) {
+                if (!base.db) continue;
+                try {
+                    await base.db.ref('validUsers').set(allCartesValides);
+                    console.log('✅ Cartes sauvegardées dans ' + base.name);
+                } catch(e) {
+                    console.error('❌ Erreur sauvegarde ' + base.name + ':', e);
+                }
+            }
         }
 
         function editFiche(index) {
