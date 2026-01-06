@@ -203,33 +203,16 @@
         .envoyer-status.loading { display: block; background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
         
         /* Page Contrôle */
-        .controle-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
-        .controle-tab { flex: 1; padding: 16px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 16px; }
-        .controle-tab:hover { border-color: #2d5a3d; }
-        .controle-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
-        .controle-content { display: none; }
-        .controle-content.active { display: block; }
-        .controle-section { margin-bottom: 25px; }
-        .controle-section-title { font-size: 16px; font-weight: 700; color: #1a472a; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f5e9; display: flex; align-items: center; gap: 10px; }
-        .badge-count { background: #e0e0e0; color: #333; font-size: 12px; padding: 3px 10px; border-radius: 20px; }
-        .controle-list { display: flex; flex-direction: column; gap: 10px; }
-        .controle-item { background: #f8f9fa; border-radius: 12px; padding: 15px; border-left: 4px solid #2d5a3d; }
-        .controle-item.warning { border-left-color: #ff9800; background: #fff8e1; }
-        .controle-item.banned { border-left-color: #f44336; background: #ffebee; }
-        .controle-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .controle-item-name { font-weight: 700; color: #333; font-size: 15px; }
-        .controle-item-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
-        .controle-item-badge.poste { background: #e3f2fd; color: #1565c0; }
-        .controle-item-badge.creneau { background: #f3e5f5; color: #7b1fa2; }
-        .controle-item-info { color: #666; font-size: 13px; margin-bottom: 5px; }
-        .controle-item-motif { color: #c62828; font-size: 13px; font-style: italic; margin-top: 8px; }
-        .controle-item-date { color: #999; font-size: 12px; margin-top: 5px; }
-        .controle-item-actions { margin-top: 10px; }
-        .controle-delete-btn { background: #ffebee; color: #c62828; border: none; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; }
-        .controle-delete-btn:hover { background: #f44336; color: white; }
-        .no-data { text-align: center; color: #999; padding: 20px; font-style: italic; }
+        .controle-buttons { display: flex; flex-direction: column; gap: 20px; }
+        .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 30px; border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s; }
+        .controle-big-btn.hardt { background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%); color: white; }
+        .controle-big-btn.carpodrome { background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white; }
+        .controle-big-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .controle-big-icon { font-size: 50px; margin-bottom: 10px; }
+        .controle-big-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .controle-big-desc { font-size: 14px; opacity: 0.9; }
         
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .controle-tabs { flex-direction: column; } }
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -260,9 +243,9 @@
             <div class="menu-cards">
                 <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou bannissement</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Voir par étang (Breitmatt, Carpodrome, Hardt)</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
@@ -455,44 +438,19 @@
         <div class="page" id="pageControle">
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">🎯 Contrôle du Jour</h1>
-                <p style="text-align:center;color:#666;margin-bottom:20px;">📅 <span id="dateControle"></span></p>
+                <p style="text-align:center;color:#666;margin-bottom:30px;">Accéder aux contrôles des étangs</p>
                 
-                <!-- Onglets Hardt / Carpodrome -->
-                <div class="controle-tabs">
-                    <button class="controle-tab active" onclick="switchControleTab('hardt')">🐟 Hardt</button>
-                    <button class="controle-tab" onclick="switchControleTab('carpodrome')">🎣 Carpodrome</button>
-                </div>
-                
-                <!-- Contenu Hardt -->
-                <div id="controleHardt" class="controle-content active">
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">📅 Réservations du jour</h3>
-                        <div id="resaHardtList" class="controle-list"></div>
-                    </div>
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">⚠️ Avertissements <span id="avertHardtCount" class="badge-count">0</span></h3>
-                        <div id="avertHardtList" class="controle-list"></div>
-                    </div>
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">🚫 Bannissements <span id="banHardtCount" class="badge-count">0</span></h3>
-                        <div id="banHardtList" class="controle-list"></div>
-                    </div>
-                </div>
-                
-                <!-- Contenu Carpodrome -->
-                <div id="controleCarpodrome" class="controle-content">
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">📅 Réservations du jour</h3>
-                        <div id="resaCarpList" class="controle-list"></div>
-                    </div>
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">⚠️ Avertissements <span id="avertCarpCount" class="badge-count">0</span></h3>
-                        <div id="avertCarpList" class="controle-list"></div>
-                    </div>
-                    <div class="controle-section">
-                        <h3 class="controle-section-title">🚫 Bannissements <span id="banCarpCount" class="badge-count">0</span></h3>
-                        <div id="banCarpList" class="controle-list"></div>
-                    </div>
+                <div class="controle-buttons">
+                    <button class="controle-big-btn hardt" onclick="window.open('https://patricewalter.github.io/r-saHardt/?autoconnect=911#controleur', '_blank')">
+                        <span class="controle-big-icon">🐟</span>
+                        <span class="controle-big-title">Hardt</span>
+                        <span class="controle-big-desc">Réservations et infractions</span>
+                    </button>
+                    <button class="controle-big-btn carpodrome" onclick="window.open('https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911#controleur', '_blank')">
+                        <span class="controle-big-icon">🎣</span>
+                        <span class="controle-big-title">Carpodrome</span>
+                        <span class="controle-big-desc">Réservations et infractions</span>
+                    </button>
                 </div>
             </div></div>
         </div>
@@ -1385,280 +1343,6 @@
             
             document.getElementById('btnEnvoyerFormulaire').disabled = false;
         }
-        
-        // =============================================
-        // PAGE CONTRÔLE DU JOUR
-        // =============================================
-        let currentControleTab = 'hardt';
-        
-        // Formater les motifs (peut être string, array ou object)
-        function formatMotifs(motif) {
-            if (!motif) return 'Aucun motif';
-            if (typeof motif === 'string') return motif;
-            if (Array.isArray(motif)) {
-                return motif.map((m, i) => {
-                    const txt = typeof m === 'string' ? m : (m.motif || m.description || '');
-                    return `${i+1}. ${txt}`;
-                }).join('<br>');
-            }
-            if (typeof motif === 'object') {
-                const arr = Object.values(motif);
-                return arr.map((m, i) => {
-                    const txt = typeof m === 'string' ? m : (m.motif || m.description || '');
-                    return `${i+1}. ${txt}`;
-                }).join('<br>');
-            }
-            return 'Aucun motif';
-        }
-        
-        function switchControleTab(tab) {
-            currentControleTab = tab;
-            document.querySelectorAll('.controle-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.controle-content').forEach(c => c.classList.remove('active'));
-            
-            if (tab === 'hardt') {
-                document.querySelectorAll('.controle-tab')[0].classList.add('active');
-                document.getElementById('controleHardt').classList.add('active');
-            } else {
-                document.querySelectorAll('.controle-tab')[1].classList.add('active');
-                document.getElementById('controleCarpodrome').classList.add('active');
-            }
-        }
-        
-        function loadControleData() {
-            // Afficher la date du jour
-            const today = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('dateControle').textContent = today.toLocaleDateString('fr-FR', options);
-            
-            const todayStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
-            
-            // Charger Hardt
-            loadHardtReservations(todayStr);
-            loadHardtInfractions();
-            
-            // Charger Carpodrome
-            loadCarpReservations(todayStr);
-            loadCarpInfractions();
-        }
-        
-        // ===== HARDT =====
-        function loadHardtReservations(todayStr) {
-            const container = document.getElementById('resaHardtList');
-            container.innerHTML = '<div class="no-data">Chargement...</div>';
-            
-            dbHardt.ref('reservations').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, resa]) => {
-                        // Vérifier si la date correspond
-                        if (resa.date === todayStr || resa.dateDebut === todayStr) {
-                            count++;
-                            html += `<div class="controle-item">
-                                <div class="controle-item-header">
-                                    <span class="controle-item-name">${resa.nom || ''} ${resa.prenom || ''}</span>
-                                    <span class="controle-item-badge poste">Poste ${resa.poste || resa.posteId || '?'}</span>
-                                </div>
-                                <div class="controle-item-info">📞 ${resa.telephone || 'Non renseigné'}</div>
-                                <div class="controle-item-info">⏰ ${resa.creneau || resa.typePeche || 'Journée'}</div>
-                                ${resa.statut ? `<div class="controle-item-info">✅ Statut: ${resa.statut}</div>` : ''}
-                            </div>`;
-                        }
-                    });
-                }
-                
-                container.innerHTML = count > 0 ? html : '<div class="no-data">Aucune réservation aujourd\'hui</div>';
-            });
-        }
-        
-        function loadHardtInfractions() {
-            const avertContainer = document.getElementById('avertHardtList');
-            const banContainer = document.getElementById('banHardtList');
-            
-            // Avertissements
-            dbHardt.ref('avertissements').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, avert]) => {
-                        if (!avert.archived) {
-                            count++;
-                            const motifs = formatMotifs(avert.motif);
-                            html += `<div class="controle-item warning">
-                                <div class="controle-item-header">
-                                    <span class="controle-item-name">${avert.nom || ''} ${avert.prenom || ''}</span>
-                                </div>
-                                <div class="controle-item-motif">📝 ${motifs}</div>
-                                <div class="controle-item-date">📅 ${avert.date || ''}</div>
-                                <div class="controle-item-actions">
-                                    <button class="controle-delete-btn" onclick="deleteControleInfraction('hardt', 'avertissements', '${key}')">🗑️ Supprimer</button>
-                                </div>
-                            </div>`;
-                        }
-                    });
-                }
-                
-                document.getElementById('avertHardtCount').textContent = count;
-                avertContainer.innerHTML = count > 0 ? html : '<div class="no-data">Aucun avertissement</div>';
-            });
-            
-            // Bannissements
-            dbHardt.ref('bannis').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, ban]) => {
-                        count++;
-                        const motifs = formatMotifs(ban.motif);
-                        html += `<div class="controle-item banned">
-                            <div class="controle-item-header">
-                                <span class="controle-item-name">${ban.nom || ''} ${ban.prenom || ''}</span>
-                            </div>
-                            <div class="controle-item-motif">📝 ${motifs}</div>
-                            <div class="controle-item-date">📅 ${ban.date || ''}</div>
-                            <div class="controle-item-actions">
-                                <button class="controle-delete-btn" onclick="deleteControleInfraction('hardt', 'bannis', '${key}')">🗑️ Supprimer</button>
-                            </div>
-                        </div>`;
-                    });
-                }
-                
-                document.getElementById('banHardtCount').textContent = count;
-                banContainer.innerHTML = count > 0 ? html : '<div class="no-data">Aucun bannissement</div>';
-            });
-        }
-        
-        // ===== CARPODROME =====
-        function loadCarpReservations(todayStr) {
-            const container = document.getElementById('resaCarpList');
-            container.innerHTML = '<div class="no-data">Chargement...</div>';
-            
-            dbCarpodrome.ref('reservations').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, resa]) => {
-                        if (resa.date === todayStr) {
-                            count++;
-                            html += `<div class="controle-item">
-                                <div class="controle-item-header">
-                                    <span class="controle-item-name">${resa.nom || ''} ${resa.prenom || ''}</span>
-                                    <span class="controle-item-badge poste">Poste ${resa.poste || resa.posteId || '?'}</span>
-                                </div>
-                                <div class="controle-item-info">📞 ${resa.telephone || 'Non renseigné'}</div>
-                                <div class="controle-item-info">⏰ ${resa.creneau || 'Journée'}</div>
-                                ${resa.modePeche ? `<div class="controle-item-info">🎣 ${resa.modePeche}</div>` : ''}
-                                ${resa.statut ? `<div class="controle-item-info">✅ Statut: ${resa.statut}</div>` : ''}
-                            </div>`;
-                        }
-                    });
-                }
-                
-                container.innerHTML = count > 0 ? html : '<div class="no-data">Aucune réservation aujourd\'hui</div>';
-            });
-        }
-        
-        function loadCarpInfractions() {
-            const avertContainer = document.getElementById('avertCarpList');
-            const banContainer = document.getElementById('banCarpList');
-            
-            // Avertissements
-            dbCarpodrome.ref('avertissements').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, avert]) => {
-                        if (!avert.archived) {
-                            count++;
-                            const motifs = formatMotifs(avert.motif);
-                            html += `<div class="controle-item warning">
-                                <div class="controle-item-header">
-                                    <span class="controle-item-name">${avert.nom || ''} ${avert.prenom || ''}</span>
-                                </div>
-                                <div class="controle-item-motif">📝 ${motifs}</div>
-                                <div class="controle-item-date">📅 ${avert.date || ''}</div>
-                                <div class="controle-item-actions">
-                                    <button class="controle-delete-btn" onclick="deleteControleInfraction('carpodrome', 'avertissements', '${key}')">🗑️ Supprimer</button>
-                                </div>
-                            </div>`;
-                        }
-                    });
-                }
-                
-                document.getElementById('avertCarpCount').textContent = count;
-                avertContainer.innerHTML = count > 0 ? html : '<div class="no-data">Aucun avertissement</div>';
-            });
-            
-            // Bannissements
-            dbCarpodrome.ref('bannis').once('value', snapshot => {
-                const data = snapshot.val();
-                let html = '';
-                let count = 0;
-                
-                if (data) {
-                    Object.entries(data).forEach(([key, ban]) => {
-                        count++;
-                        const motifs = formatMotifs(ban.motif);
-                        html += `<div class="controle-item banned">
-                            <div class="controle-item-header">
-                                <span class="controle-item-name">${ban.nom || ''} ${ban.prenom || ''}</span>
-                            </div>
-                            <div class="controle-item-motif">📝 ${motifs}</div>
-                            <div class="controle-item-date">📅 ${ban.date || ''}</div>
-                            <div class="controle-item-actions">
-                                <button class="controle-delete-btn" onclick="deleteControleInfraction('carpodrome', 'bannis', '${key}')">🗑️ Supprimer</button>
-                            </div>
-                        </div>`;
-                    });
-                }
-                
-                document.getElementById('banCarpCount').textContent = count;
-                banContainer.innerHTML = count > 0 ? html : '<div class="no-data">Aucun bannissement</div>';
-            });
-        }
-        
-        // ===== SUPPRESSION AVEC MOT DE PASSE ADMIN =====
-        function deleteControleInfraction(source, type, key) {
-            const pwd = prompt('🔐 Mot de passe administrateur :');
-            if (pwd !== ADMIN_PASSWORD) {
-                showAlert('❌ Mot de passe incorrect', 'error');
-                return;
-            }
-            
-            if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer cette infraction ?')) {
-                return;
-            }
-            
-            const dbRef = source === 'hardt' ? dbHardt : dbCarpodrome;
-            dbRef.ref(type + '/' + key).remove()
-                .then(() => {
-                    showAlert('✅ Infraction supprimée', 'success');
-                    loadControleData();
-                })
-                .catch(err => {
-                    showAlert('❌ Erreur: ' + err.message, 'error');
-                });
-        }
-        
-        // Charger les données quand on affiche la page Contrôle
-        const originalShowPage = showPage;
-        showPage = function(id) {
-            originalShowPage(id);
-            if (id === 'controle') {
-                loadControleData();
-            }
-        };
         
         function showAlert(msg, type) { 
             const a = document.getElementById('alert'); 
