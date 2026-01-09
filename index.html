@@ -387,8 +387,9 @@
                 
                 <!-- Onglets Admin -->
                 <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches pêcheurs</button>
-                    <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes valides</button>
+                    <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches</button>
+                    <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes</button>
+                    <button class="admin-tab" onclick="switchAdminTab('controleurs')">👮 Contrôleurs</button>
                 </div>
                 
                 <!-- Onglet Fiches -->
@@ -407,6 +408,18 @@
                         </div>
                     </div>
                     <div id="cartesValidesList"></div>
+                </div>
+                
+                <!-- Onglet Contrôleurs -->
+                <div id="adminTabControleurs" class="admin-tab-content">
+                    <div class="cartes-header">
+                        <p style="color:#666;margin-bottom:15px;">Liste des contrôleurs (synchronisé sur Hardt, Carpodrome et Breitmatt)</p>
+                        <div class="add-carte-form">
+                            <input type="text" id="newControleurNom" placeholder="Nom du contrôleur" class="carte-input" style="flex:2;">
+                            <button class="btn btn-primary" onclick="addControleur()">➕ Ajouter</button>
+                        </div>
+                    </div>
+                    <div id="controleursList"></div>
                 </div>
             </div></div>
         </div>
@@ -705,6 +718,7 @@
         // CARTES VALIDES - SYNCHRONISATION 3 BASES
         // =============================================
         let allCartesValides = [];
+        let allControleurs = [];
         
         function switchAdminTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -713,10 +727,14 @@
             if (tab === 'fiches') {
                 document.querySelectorAll('.admin-tab')[0].classList.add('active');
                 document.getElementById('adminTabFiches').classList.add('active');
-            } else {
+            } else if (tab === 'cartes') {
                 document.querySelectorAll('.admin-tab')[1].classList.add('active');
                 document.getElementById('adminTabCartes').classList.add('active');
                 loadCartesValides();
+            } else {
+                document.querySelectorAll('.admin-tab')[2].classList.add('active');
+                document.getElementById('adminTabControleurs').classList.add('active');
+                loadControleurs();
             }
         }
         
@@ -852,6 +870,117 @@
                 try {
                     await base.db.ref('validUsers').set(usersObj);
                     console.log('✅ Cartes sauvegardées dans ' + base.name);
+                } catch(e) {
+                    console.error('❌ Erreur sauvegarde ' + base.name + ':', e);
+                }
+            }
+        }
+        
+        // =============================================
+        // CONTRÔLEURS - SYNCHRONISATION 3 BASES
+        // =============================================
+        async function loadControleurs() {
+            const container = document.getElementById('controleursList');
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">⏳ Chargement...</div>';
+            
+            allControleurs = [];
+            
+            // Charger depuis Breitmatt (source principale)
+            try {
+                const snap = await dbBreitmatt.ref('controleurs').once('value');
+                const data = snap.val();
+                if (data) {
+                    allControleurs = Array.isArray(data) ? data : Object.values(data);
+                }
+            } catch(e) {
+                console.error('Erreur chargement contrôleurs:', e);
+            }
+            
+            // Si vide, initialiser avec la liste par défaut
+            if (allControleurs.length === 0) {
+                allControleurs = [
+                    'René',
+                    'Patrice',
+                    'Christophe',
+                    'Jean-François',
+                    'Eric',
+                    'Garde pêche Raymond'
+                ];
+                await saveControleursToAllBases();
+            }
+            
+            renderControleurs();
+        }
+        
+        function renderControleurs() {
+            const container = document.getElementById('controleursList');
+            
+            if (allControleurs.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun contrôleur</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + ' contrôleur(s)</div>' +
+                allControleurs.map((nom, i) => `
+                    <div class="carte-item" style="border-left-color:#1565c0;">
+                        <div>
+                            <div class="carte-item-name">👮 ${nom}</div>
+                        </div>
+                        <button class="carte-delete-btn" onclick="removeControleur(${i})">🗑️ Supprimer</button>
+                    </div>
+                `).join('');
+        }
+        
+        async function addControleur() {
+            const nom = document.getElementById('newControleurNom').value.trim();
+            
+            if (!nom) {
+                showAlert('❌ Le nom est obligatoire', 'error');
+                return;
+            }
+            
+            // Vérifier si déjà existant
+            const exists = allControleurs.some(c => c.toUpperCase() === nom.toUpperCase());
+            
+            if (exists) {
+                showAlert('⚠️ Ce contrôleur est déjà dans la liste', 'error');
+                return;
+            }
+            
+            allControleurs.push(nom);
+            
+            await saveControleursToAllBases();
+            
+            document.getElementById('newControleurNom').value = '';
+            
+            renderControleurs();
+            showAlert('✅ Contrôleur ajouté aux 3 bases', 'success');
+        }
+        
+        async function removeControleur(index) {
+            const nom = allControleurs[index];
+            if (!confirm('Supprimer le contrôleur "' + nom + '" ?')) return;
+            
+            allControleurs.splice(index, 1);
+            
+            await saveControleursToAllBases();
+            
+            renderControleurs();
+            showAlert('✅ Contrôleur supprimé des 3 bases', 'success');
+        }
+        
+        async function saveControleursToAllBases() {
+            const bases = [
+                { db: dbBreitmatt, name: 'Breitmatt' },
+                { db: dbCarpodrome, name: 'Carpodrome' },
+                { db: dbHardt, name: 'Hardt' }
+            ];
+            
+            for (const base of bases) {
+                if (!base.db) continue;
+                try {
+                    await base.db.ref('controleurs').set(allControleurs);
+                    console.log('✅ Contrôleurs sauvegardés dans ' + base.name);
                 } catch(e) {
                     console.error('❌ Erreur sauvegarde ' + base.name + ':', e);
                 }
