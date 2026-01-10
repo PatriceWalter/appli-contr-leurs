@@ -463,8 +463,10 @@
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
             window.addEventListener('popstate', function(e) {
-                history.pushState({ page: 'app' }, '', '');
-                showAlert('🔒 Utilisez "Déconnexion" pour quitter', 'warning');
+                if (sessionStorage.getItem('logged') === 'true') {
+                    history.pushState({ page: 'app' }, '', '');
+                    showAlert('🔒 Utilisez "Déconnexion" pour quitter', 'warning');
+                }
             });
         }
 
