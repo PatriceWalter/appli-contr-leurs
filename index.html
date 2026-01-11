@@ -3,353 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réservation Carpodrome 2026</title>
+    <title>🎣 Contrôleur / Garde de Pêche - AAPPMA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; }
-        body.login-mode { display: flex; align-items: center; justify-content: center; padding: 20px; }
-        body.app-mode { display: block; padding: 20px; }
-        #loginPage { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; }
-        #loginPage h2 { color: #764ba2; margin-bottom: 25px; font-size: 1.5em; }
-        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; font-size: 16px; outline: none; }
-        .login-input:focus { border-color: #667eea; }
-        .btn-login { width: 100%; background: #667eea; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1em; margin-top: 15px; }
-        #mainApp { display: none; max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; position: relative; }
-        .header h1 { font-size: 1.5em; }
-        .admin-gear { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; }
-        .sync-status { position: absolute; top: 15px; left: 20px; font-size: 0.8em; padding: 5px 10px; border-radius: 20px; background: rgba(255,255,255,0.2); }
-        .sync-status.online { background: #28a745; }
-        .sync-status.offline { background: #dc3545; }
-        .breadcrumb { background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .nav-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .nav-left a { color: #667eea; text-decoration: none; font-weight: bold; cursor: pointer; padding: 8px 12px; border-radius: 5px; }
-        .nav-left a:hover { background: #667eea; color: white; }
-        .nav-left .btn-infractions { background: #e53e3e; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; }
-        .nav-left .btn-controleur { background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; }
-        .nav-right a { color: #dc3545; text-decoration: none; font-weight: bold; cursor: pointer; padding: 8px 12px; border-radius: 5px; }
-        .content { padding: 20px; }
-        .hidden { display: none !important; }
-        .months-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-        .month-card { background: white; border: 3px solid #e9ecef; border-radius: 10px; padding: 25px 15px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .month-card:hover { border-color: #667eea; transform: translateY(-5px); }
-        .month-name { font-size: 1.3em; font-weight: bold; color: #667eea; }
-        .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-        .day-card { background: white; border: 2px solid #e9ecef; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; min-height: 90px; display: flex; flex-direction: column; justify-content: center; }
-        .day-number { font-size: 1em; font-weight: bold; color: #667eea; text-transform: capitalize; }
-        .closed-morning { color: #dc3545; font-size: 0.8em; margin-top: 8px; font-weight: bold; }
-        .postes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .poste-box { background: #f8f9fa; border: 3px solid #dee2e6; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
-        .poste-box.libre { border-color: #28a745; background: #e8f5e9; }
-        .poste-box.reserve { border-color: #ffc107; background: #fff9e6; }
-        .poste-box.controle { border-color: #17a2b8; background: #e7f6f8; }
-        .poste-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
-        .poste-title { font-weight: bold; font-size: 1.1em; margin-bottom: 5px; }
-        .poste-heure { color: #17a2b8; font-size: 0.85em; font-weight: bold; }
-        .poste-nom { font-weight: bold; margin-top: 8px; }
-        .badge-peche { color: #28a745; font-size: 0.75em; font-weight: bold; margin-top: 5px; border: 1.5px solid #28a745; padding: 3px 6px; border-radius: 5px; background: white; }
-        .btn-info { background: #17a2b8; color: white; padding: 5px 10px; font-size: 0.8em; margin-top: 8px; border-radius: 4px; border: none; cursor: pointer; }
-        .control-zone { width: 100%; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .control-zone input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
-        .control-zone .control-label { font-size: 0.85em; color: #666; cursor: pointer; }
-        .control-zone .control-label.checked { color: #17a2b8; font-weight: bold; }
-        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 10px; border-radius: 10px; text-align: center; }
-        .stat-number { font-size: 2em; font-weight: bold; }
-        .stat-label { font-size: 0.9em; }
-        .modal, .alert-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; padding: 20px; }
-        .modal-content, .alert-content { background: white; margin: 20px auto; border-radius: 15px; width: 100%; max-width: 500px; overflow: hidden; }
-        .modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-        .modal-body { padding: 20px; }
-        .modal-body label { font-weight: bold; color: #333; display: block; margin-top: 12px; margin-bottom: 5px; }
-        input[type="text"], input[type="password"], select { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; font-size: 1em; }
-        .btn-save { background: #28a745; color: white; }
-        .btn-delete { background: #dc3545; color: white; }
-        .btn-unban { background: #17a2b8; color: white; }
-        .btn-back { background: #6c757d; color: white; margin-bottom: 15px; display: inline-block; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; }
-        .infraction-item { padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid; }
-        .infraction-item.avertissement { border-left-color: #ffc107; }
-        .infraction-item.banni { border-left-color: #dc3545; }
-        .infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
-        .infraction-info { flex: 1; }
-        .infraction-actions { display: flex; gap: 5px; flex-wrap: wrap; }
-        .infraction-actions .btn { padding: 8px 12px; font-size: 0.85em; flex: 0; }
-        .controleur-badge { background: #3182ce; color: white; font-size: 0.75em; padding: 3px 8px; border-radius: 4px; display: inline-block; margin-top: 5px; }
-        .motifs-list { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 10px; margin-top: 10px; }
-        .motifs-list h4 { margin-bottom: 8px; color: #856404; font-size: 0.9em; }
-        .motif-item { padding: 5px 0; border-bottom: 1px solid #ffeeba; font-size: 0.85em; }
-        .motif-item:last-child { border-bottom: none; }
-        .info-motifs { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 10px; margin-top: 10px; text-align: left; }
-        .info-motifs h4 { margin-bottom: 8px; color: #856404; }
-        .info-motif-item { padding: 5px 0; border-bottom: 1px solid #ffeeba; font-size: 0.9em; }
-        .info-motif-item:last-child { border-bottom: none; }
-        @media (max-width: 480px) { .header h1 { font-size: 1em; } .months-grid, .postes-grid { grid-template-columns: repeat(2, 1fr); } .modal-content { margin: 5px; } }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%); min-height: 100vh; color: #333; }
+        .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-container { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; width: 100%; }
+        .login-logo { width: 150px; height: 150px; margin: 0 auto 20px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 70px; }
+        .login-title { color: #1a472a; font-size: 24px; margin-bottom: 10px; font-weight: 700; }
+        .login-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
+        .login-input { width: 100%; padding: 15px 20px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 20px; letter-spacing: 10px; font-weight: bold; }
+        .login-input::placeholder { font-size: 14px; letter-spacing: normal; font-weight: normal; color: #999; }
+        .login-input:focus { outline: none; border-color: #2d5a3d; }
+        .login-input.error { border-color: #e74c3c; animation: shake 0.5s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .login-error { color: #e74c3c; margin-top: 15px; display: none; font-weight: 500; }
+        .app-container { display: none; min-height: 100vh; }
+        .nav-buttons { display: none; position: fixed; top: 15px; left: 15px; z-index: 1000; gap: 10px; }
+        .nav-buttons.visible { display: flex; }
+        .nav-btn { background: white; border: none; padding: 10px 16px; border-radius: 25px; font-size: 16px; font-weight: 600; color: #1a472a; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 6px; }
+        .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+        .page { display: none; min-height: 100vh; padding: 20px; padding-top: 80px; }
+        .page.active { display: block; }
+        .menu-page { padding-top: 20px; }
+        .menu-header { text-align: center; color: white; margin-bottom: 30px; padding: 20px; }
+        .menu-logo { width: 120px; height: 120px; margin: 0 auto 15px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+        .menu-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .menu-subtitle { font-size: 14px; opacity: 0.9; }
+        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
+        .menu-card { background: white; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 20px; }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-card-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+        .menu-card-content { flex: 1; }
+        .menu-card-title { font-size: 18px; font-weight: 700; color: #1a472a; margin-bottom: 5px; }
+        .menu-card-desc { font-size: 13px; color: #666; }
+        .menu-card-arrow { font-size: 24px; color: #ccc; }
+        .logout-card { margin-top: 30px; background: #f8f9fa; border: 2px dashed #ddd; }
+        .logout-card .menu-card-icon { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .page-content { max-width: 800px; margin: 0 auto; }
+        .page-card { background: white; border-radius: 15px; padding: 25px; }
+        .page-title { font-size: 22px; color: #1a472a; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2d5a3d; }
+        .form-group.required label::after { content: " *"; color: #e74c3c; }
+        .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+        .reglement-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .reglement-item { display: flex; align-items: center; gap: 15px; background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; }
+        .reglement-item.checked { border-color: #2d5a3d; background: #e8f5e9; }
+        .reglement-checkbox { width: 24px; height: 24px; cursor: pointer; flex-shrink: 0; }
+        .reglement-icon { font-size: 28px; flex-shrink: 0; }
+        .reglement-name { flex: 1; font-weight: 600; color: #1a472a; }
+        .reglement-read-btn { padding: 8px 15px; background: #ff9800; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .reglement-read-btn.read { background: #2d5a3d; }
+        .reglement-read-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.visible { display: flex; }
+        .modal-content { background: white; border-radius: 15px; max-width: 900px; max-height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; }
+        .modal-close { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
+        .modal-body { padding: 25px; overflow-y: auto; flex: 1; font-size: 15px; line-height: 1.9; }
+        .modal-body h3 { color: #1a472a; margin: 30px 0 15px; padding-bottom: 10px; border-bottom: 3px solid #e8f5e9; font-size: 18px; }
+        .modal-body h3:first-child { margin-top: 0; }
+        .modal-body ul { margin-left: 25px; margin-bottom: 20px; }
+        .modal-body li { margin-bottom: 10px; }
+        .modal-body p { margin-bottom: 15px; }
+        .modal-body .warning { background: #fff3e0; padding: 15px; border-radius: 10px; border-left: 5px solid #ff9800; margin: 20px 0; font-weight: 500; }
+        .modal-body .info { background: #e3f2fd; padding: 15px; border-radius: 10px; border-left: 5px solid #2196f3; margin: 20px 0; }
+        .modal-body .important { background: #ffebee; padding: 15px; border-radius: 10px; border-left: 5px solid #f44336; margin: 20px 0; font-weight: 500; }
+        .modal-footer { padding: 20px; border-top: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px; }
+        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .read-confirm-checkbox input { width: 20px; height: 20px; cursor: pointer; }
+        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; }
+        .modal-validate-btn.enabled { opacity: 1; pointer-events: auto; }
+        .admin-modal-content { max-width: 400px; }
+        .admin-modal-content .modal-body { padding: 30px; text-align: center; }
+        .admin-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; text-align: center; margin-bottom: 15px; }
+        .admin-input:focus { outline: none; border-color: #2d5a3d; }
+        .admin-submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
+        .search-input:focus { outline: none; border-color: #2d5a3d; }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #666; }
+        .search-results { margin-top: 15px; max-height: 500px; overflow-y: auto; }
+        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
+        .search-result-item:hover { background: #e8f5e9; }
+        .search-result-name { font-weight: 700; color: #1a472a; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
+        .search-result-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .search-result-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-send-form { background: #667eea; color: white; }
+        .btn-view-info { background: #17a2b8; color: white; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+        .badge-ok { background: #e8f5e9; color: #2e7d32; }
+        .badge-warning { background: #fff3e0; color: #f57c00; }
+        .badge-banned { background: #ffebee; color: #c62828; }
+        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
+        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
+        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
+        .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
+        .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
+        .detail-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .info-item { background: #f8f9fa; padding: 12px; border-radius: 8px; }
+        .info-item-label { font-size: 12px; color: #666; margin-bottom: 3px; }
+        .info-item-value { font-weight: 600; color: #333; }
+        .infractions-section { margin-top: 25px; background: #fff3e0; border-radius: 12px; padding: 20px; border: 2px solid #ffcc80; }
+        .infractions-section.banned { background: #ffebee; border-color: #ef9a9a; }
+        .infractions-header { font-weight: 700; font-size: 16px; color: #f57c00; margin-bottom: 15px; }
+        .infractions-section.banned .infractions-header { color: #c62828; }
+        .infraction-item { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #ff9800; }
+        .infraction-item.banned { border-left-color: #c62828; }
+        .infraction-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+        .infraction-date { font-size: 12px; color: #666; }
+        .infraction-type { font-weight: 600; margin-bottom: 5px; }
+        .infraction-motif { color: #555; font-size: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ddd; }
+        .no-results { text-align: center; color: #666; padding: 40px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
+        .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
+        .infraction-type-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .infraction-type-btn { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; }
+        .infraction-type-btn.selected { border-color: #ff9800; background: #fff3e0; }
+        .infraction-type-btn.banned.selected { border-color: #c62828; background: #ffebee; }
+        .alert { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; font-weight: 500; z-index: 3000; display: none; max-width: 90%; text-align: center; }
+        .alert.visible { display: block; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .alert-warning { background: #fff3e0; color: #f57c00; border: 1px solid #ffcc80; }
+        .admin-fiche-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
+        .admin-fiche-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .admin-fiche-name { font-weight: 700; color: #1a472a; font-size: 16px; }
+        .admin-fiche-actions { display: flex; gap: 8px; }
+        .admin-fiche-info { font-size: 13px; color: #666; margin-top: 8px; }
+        .admin-count { background: #e8f5e9; color: #2e7d32; padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; display: inline-block; }
+        .etang-cards { display: flex; flex-direction: column; gap: 12px; }
+        .etang-card { display: flex; align-items: center; gap: 15px; background: #fff; border: 2px solid #e9ecef; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s; }
+        .etang-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .etang-icon { font-size: 32px; }
+        .etang-info { flex: 1; }
+        .etang-name { font-weight: 700; font-size: 18px; color: #1a472a; }
+        .etang-count { font-size: 13px; color: #666; margin-top: 4px; }
+        .etang-arrow { font-size: 24px; color: #999; }
+        .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .tab-btn:hover { border-color: #2d5a3d; }
+        .tab-btn.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
+        .tab-btn span { background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 12px; }
+        .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
+        .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
+        .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
+        .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
+        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
+        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
+        .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+        .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
+        .hist-infraction-date { font-size: 12px; color: #666; }
+        .hist-infraction-motif { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 14px; color: #555; }
+        .hist-delete-btn { background: #c62828; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .no-infractions { text-align: center; color: #666; padding: 40px 20px; }
+        .fiche-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .fiche-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .fiche-tab:hover { border-color: #2d5a3d; }
+        .fiche-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
+        .fiche-tab-content { display: none; }
+        .fiche-tab-content.active { display: block; }
+        .envoyer-container { text-align: center; padding: 20px 0; }
+        .envoyer-icon { font-size: 60px; margin-bottom: 15px; }
+        .envoyer-title { font-size: 20px; color: #1a472a; margin-bottom: 10px; }
+        .envoyer-desc { color: #666; line-height: 1.6; margin-bottom: 20px; font-size: 14px; }
+        .envoyer-status { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+        .envoyer-status.success { display: block; background: #e8f5e9; color: #2e7d32; border: 2px solid #4caf50; }
+        .envoyer-status.error { display: block; background: #ffebee; color: #c62828; border: 2px solid #f44336; }
+        .envoyer-status.loading { display: block; background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
+        .controle-buttons { display: flex; flex-direction: column; gap: 20px; }
+        .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 30px; border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s; }
+        .controle-big-btn.hardt { background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%); color: white; }
+        .controle-big-btn.carpodrome { background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white; }
+        .controle-big-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .controle-big-icon { font-size: 50px; margin-bottom: 10px; }
+        .controle-big-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .controle-big-desc { font-size: 14px; opacity: 0.9; }
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .admin-tab { flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .admin-tab:hover { border-color: #2d5a3d; }
+        .admin-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+        .cartes-header { margin-bottom: 20px; }
+        .add-carte-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .carte-input { flex: 1; min-width: 120px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+        .carte-input:focus { outline: none; border-color: #2d5a3d; }
+        .carte-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #4caf50; }
+        .carte-item-name { font-weight: 600; color: #333; }
+        .carte-delete-btn { background: #ffebee; color: #c62828; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .carte-delete-btn:hover { background: #c62828; color: white; }
+        .cartes-count { background: #e8f5e9; color: #2e7d32; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; text-align: center; }
+        .pecheurs-alpha-title { font-size: 16px; color: #1a472a; margin: 20px 0 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } }
     </style>
 </head>
-<body class="login-mode">
-    <div id="loginPage">
-        <h2>🎣 Connexion<br>Réservation Carpodrome 2026</h2>
-        <input type="text" id="loginID" class="login-input" value="CARPODROME" readonly tabindex="-1">
-        <input type="password" id="loginPass" class="login-input" placeholder="Mot de passe" autofocus>
-        <button class="btn-login" onclick="checkLogin()">Se connecter</button>
-        <p id="errorLogin" style="color:red; margin-top:15px; font-weight:bold; display:none;">Mot de passe incorrect !</p>
-        <p id="firebaseStatus" style="margin-top:15px; font-size:0.85em; color:#666;"></p>
-    </div>
-    <div id="mainApp">
-        <div class="header">
-            <span class="sync-status" id="syncStatus">🔄 Connexion...</span>
-            <span class="admin-gear" onclick="openAdmin()">⚙️</span>
-            <h1>🎣 Réservation Carpodrome 2026</h1>
-        </div>
-        <div class="breadcrumb">
-            <div class="nav-left">
-                <a onclick="showMonths()">🏠 Accueil</a>
-                <button class="btn-infractions" onclick="showInfractionsMenu()">⚠️ Infractions</button>
-                <button class="btn-controleur" onclick="accesControleur()">👮 Contrôleur</button>
-            </div>
-            <div class="nav-right"><a onclick="logout()">Déconnexion 🔒</a></div>
-        </div>
-        <div id="monthsPage" class="content"><div class="months-grid" id="monthsGrid"></div></div>
-        <div id="infractionsMenuPage" class="content hidden">
-            <button class="btn-back" onclick="showMonths()">← Retour Accueil</button>
-            <div class="months-grid">
-                <div class="month-card" onclick="showInfractionList('avertissements')" style="border-color: #ffc107;"><div style="font-size: 2.5em;">⚠️</div><div class="month-name">AVERTISSEMENTS</div><p id="countAvertissement" style="font-weight: bold; margin-top:10px;">0 dossier(s)</p></div>
-                <div class="month-card" onclick="showInfractionList('bannis')" style="border-color: #dc3545;"><div style="font-size: 2.5em;">🚫</div><div class="month-name">BANNISSEMENTS</div><p id="countBanni" style="font-weight: bold; margin-top:10px;">0 dossier(s)</p></div>
-            </div>
-        </div>
-        <div id="infractionsDetailPage" class="content hidden">
-            <button class="btn-back" onclick="showInfractionsMenu()">← Retour</button>
-            <h2 id="detailTitle" style="text-align: center; margin-bottom: 20px; color: #667eea;"></h2>
-            <div id="detailList"></div>
-        </div>
-        <div id="daysPage" class="content hidden">
-            <button class="btn-back" onclick="showMonths()">← Retour</button>
-            <h2 id="monthTitle" style="text-align: center; margin-bottom: 20px; color: #667eea;"></h2>
-            <div class="days-grid" id="daysGrid"></div>
-        </div>
-        <div id="postesPage" class="content hidden">
-            <button class="btn-back" onclick="backToDays()">← Retour</button>
-            <h2 id="postePageTitle" style="text-align: center; color: #667eea; margin-bottom: 15px; text-transform: capitalize;"></h2>
-            <div class="stats-bar">
-                <div class="stat-box"><div class="stat-number" id="statLibre">14</div><div class="stat-label">Libres</div></div>
-                <div class="stat-box"><div class="stat-number" id="statReserve">0</div><div class="stat-label">Réservés</div></div>
-                <div class="stat-box"><div class="stat-number" id="statControle">0</div><div class="stat-label">Contrôlés</div></div>
-            </div>
-            <div id="postesGrid" class="postes-grid"></div>
+<body>
+    <div class="alert" id="alert"></div>
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-logo">👮</div>
+            <h1 class="login-title">Contrôleur / Garde de Pêche</h1>
+            <p class="login-subtitle">AAPPMA Gundershoffen</p>
+            <input type="password" class="login-input" id="loginCode" placeholder="Mot de passe" autocomplete="off">
+            <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
+            <p class="login-error" id="loginError">❌ Code incorrect</p>
         </div>
     </div>
-    <div id="posteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header"><h2 id="modalTitle">Poste</h2><p id="modalDate"></p></div>
-            <div class="modal-body">
-                <label>Nom</label><input type="text" id="modalNom" oninput="checkCardBadge()" placeholder="Entrez le nom">
-                <label>Prénom</label><input type="text" id="modalPrenom" oninput="checkCardBadge()" placeholder="Entrez le prénom">
-                <div id="modalBadgeZone" style="display:none; margin: 10px 0;"><span class="badge-peche">🪪 Carte de pêche valide</span></div>
-                <label>Créneau</label>
-                <select id="modalCreneau"><option value="">-- Sélectionner --</option><option value="Le matin">🌅 Le matin</option><option value="L'après midi">☀️ L'après midi</option><option value="La journée">📅 La journée</option></select>
-                <label>Mode de pêche</label>
-                <select id="modalMode" onchange="toggleBinomeField()"><option value="Individuel">👤 Individuel</option><option value="Américaine">👥 Américaine (binôme)</option></select>
-                <div id="binomeZone" style="display: none;"><label>Nom du binôme</label><input type="text" id="modalBinome" placeholder="Nom et prénom du binôme"></div>
-                <div id="checkZone" style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="modalControle" onchange="updateControlText()" style="width:22px; height:22px; cursor: pointer;">
-                        <span id="controlStatusText" style="font-weight: bold;">Cliquer pour valider le contrôle</span>
-                    </div>
-                    <input type="hidden" id="modalHeure">
-                </div>
-                <div id="infractionsButtons" style="display:none; border-top: 1px solid #ddd; padding-top: 15px; margin-top: 15px;">
-                    <p style="font-weight:bold; margin-bottom:10px;">⚠️ Actions Sanctions :</p>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" onclick="askMotif('avertissements')" style="background: #ffc107; color: #333;">⚠️ Avertir</button>
-                        <button class="btn" onclick="askMotif('bannis')" style="background: #dc3545; color: white;">🚫 Bannir</button>
-                    </div>
-                </div>
-                <div style="display:flex; gap:10px; margin-top:20px; flex-wrap: wrap;">
-                    <button class="btn btn-save" onclick="saveModal()">💾 Sauvegarder</button>
-                    <button class="btn btn-delete" onclick="deleteModal()">🗑️ Effacer</button>
-                    <button class="btn" onclick="closeModal()" style="background:#eee; color:#333;">Annuler</button>
-                </div>
-            </div>
+    <div class="app-container" id="appContainer">
+        <div class="nav-buttons" id="navButtons">
+            <button class="nav-btn" id="homeBtn">🏠 Accueil</button>
+            <button class="nav-btn" id="backBtn">← Retour</button>
         </div>
-    </div>
-    <div id="adminModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header"><h2>⚙️ Administration</h2></div>
-            <div class="modal-body">
-                <div style="border-top: 2px solid #eee; padding-top: 15px;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">🪪 Liste Pêcheurs Valides</h3>
-                    <label>NOM</label><input type="text" id="adminAddNom" placeholder="NOM">
-                    <label>Prénom</label><input type="text" id="adminAddPrenom" placeholder="Prénom">
-                    <button class="btn btn-save" style="width:100%; margin: 15px 0;" onclick="addValidUser()">➕ Ajouter à la liste</button>
-                    <div id="adminValidList" style="max-height:200px; overflow-y:auto; border-top:1px solid #eee; padding-top:10px;"></div>
-                </div>
-                <button class="btn" style="width:100%; background:#eee; color:#333; margin-top:15px;" onclick="closeAdmin()">Fermer</button>
-            </div>
-        </div>
-    </div>
-    <div id="motifModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" id="motifHeader"><h2>Motif de la sanction</h2></div>
-            <div class="modal-body">
-                <label>👮 Contrôleur ayant constaté l'infraction :</label>
-                <select id="motifControleur" style="width:100%;padding:12px;font-size:16px;border:2px solid #ddd;border-radius:8px;margin-bottom:15px;">
-                    <option value="">-- Choisir le contrôleur --</option>
-                </select>
-                <label>Motif de la sanction :</label>
-                <input type="text" id="motifInput" placeholder="Ex: Absence de carte de pêche...">
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn btn-save" onclick="confirmSanction()">✅ Confirmer</button>
-                    <button class="btn" onclick="closeMotif()" style="background:#eee; color:#333;">Annuler</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="alertModal" class="alert-modal">
-        <div class="alert-content">
-            <div id="alertHeader" style="background:#667eea; color:white; padding:15px; text-align:center;"><h3>INFO</h3></div>
-            <div id="alertBody" style="padding:20px;"></div>
-            <div style="text-align:center; padding-bottom:20px;"><button class="btn btn-save" onclick="closeAlert()">OK</button></div>
-        </div>
-    </div>
-    <div id="controleurModal" class="modal">
-        <div class="modal-content" style="max-width:350px;">
-            <div class="modal-header" style="background:#1565c0;"><h2>👮 Contrôle</h2></div>
-            <div class="modal-body">
-                <p style="margin-bottom:15px;font-weight:bold;">Sélectionnez le contrôleur :</p>
-                <select id="selectControleur" style="width:100%;padding:12px;font-size:16px;border:2px solid #ddd;border-radius:8px;margin-bottom:20px;"><option value="">-- Choisir --</option></select>
-                <div style="display:flex;gap:10px;">
-                    <button class="btn btn-save" onclick="confirmControleur()">✅ Valider</button>
-                    <button class="btn" onclick="closeControleurModal()" style="background:#eee;color:#333;">Annuler</button>
-                </div>
-                <div style="margin-top:15px;border-top:1px solid #ddd;padding-top:15px;">
-                    <button class="btn" onclick="annulerControle()" style="background:#dc3545;color:white;width:100%;">❌ Annuler le contrôle</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script>
-        (function() { const urlParams = new URLSearchParams(window.location.search); if (urlParams.get('autoconnect') === '911') { document.addEventListener('DOMContentLoaded', function() { document.getElementById('loginPass').value = '911'; setTimeout(checkLogin, 500); if (urlParams.get('from') === 'controleur') { const btn = document.createElement('button'); btn.innerHTML = '← Retour Contrôleur'; btn.style.cssText = 'position:fixed;top:15px;left:15px;z-index:9999;background:linear-gradient(135deg,#1a472a,#2d5a3d);color:#fff;border:none;padding:12px 20px;border-radius:25px;font-size:14px;font-weight:600;cursor:pointer;'; btn.onclick = () => window.close(); document.body.appendChild(btn); } }); } })();
-        const firebaseConfig = { apiKey: "AIzaSyBhkDGebCSuqjcENl8dZI0ZeSAkjHUUsuY", authDomain: "reservation-carpodrome.firebaseapp.com", databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app", projectId: "reservation-carpodrome", storageBucket: "reservation-carpodrome.firebasestorage.app", messagingSenderId: "112186411680", appId: "1:112186411680:web:13bc4892163e47a04317c5" };
-        let app, database, firebaseReady = false;
-        try { app = firebase.initializeApp(firebaseConfig); database = firebase.database(); firebaseReady = true; } catch (e) { console.error("Firebase:", e); }
-        const JOURS_OUVERTURE = { 2: [1, 7, 8, 14, 15, 21, 22, 28, 29], 3: [11, 12, 18, 19, 25, 26], 4: [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 5: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], 6: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 7: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 8: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], 9: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] };
-        const FERME_MATIN = { 2: [28], 3: [25], 5: [13], 8: [19], 9: [17] };
-        const MOIS_NOMS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        let reservations = {}, infractions = { avertissements: [], bannis: [] }, validUsers = [], controleurs = [];
-        let pendingControlePoste = null, curM, curMName, curDKey, curP, curFullDate, pendingSanctionType;
+        <button class="admin-btn" id="adminBtn">⚙️</button>
         
-        function setupFirebaseListeners() { 
-            if (!firebaseReady) return; 
-            database.ref(".info/connected").on("value", (snap) => { const s = document.getElementById('syncStatus'); s.textContent = snap.val() ? "🟢 En ligne" : "🔴 Hors ligne"; s.className = "sync-status " + (snap.val() ? "online" : "offline"); }); 
-            database.ref('reservations').on('value', (snap) => { reservations = snap.val() || {}; if (!document.getElementById('postesPage').classList.contains('hidden')) renderPostes(); }); 
-            database.ref('infractions').on('value', (snap) => { infractions = snap.val() || { avertissements: [], bannis: [] }; if (!infractions.avertissements) infractions.avertissements = []; if (!infractions.bannis) infractions.bannis = []; updateCounts(); }); 
-            database.ref('validUsers').on('value', (snap) => { validUsers = snap.val() ? Object.values(snap.val()) : []; if (!document.getElementById('postesPage').classList.contains('hidden')) renderPostes(); }); 
-            database.ref('controleurs').on('value', (snap) => { controleurs = snap.val() ? (Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val())) : []; updateControleurSelect(); updateMotifControleurSelect(); }); 
+        <div class="page menu-page active" id="pageMenu">
+            <div class="menu-header">
+                <div class="menu-logo">👮</div>
+                <h1 class="menu-title">Contrôleur / Garde de Pêche</h1>
+                <p class="menu-subtitle">AAPPMA Gundershoffen</p>
+            </div>
+            <div class="menu-cards">
+                <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou bannissement</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Voir par étang (Breitmatt, Carpodrome, Hardt)</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
+            </div>
+        </div>
+        
+        <div class="page" id="pageFiche">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">📋 Fiche de Renseignement</h1>
+                <div class="fiche-tabs">
+                    <button class="fiche-tab active" onclick="switchFicheTab('saisir')">✍️ Saisir</button>
+                    <button class="fiche-tab" onclick="switchFicheTab('envoyer')">✉️ Envoyer</button>
+                    <button class="fiche-tab" onclick="switchFicheTab('mails')">📧 Mails envoyés</button>
+                </div>
+                <div id="tabSaisir" class="fiche-tab-content active">
+                <form id="ficheForm">
+                    <div class="form-section-title">👤 Informations du pêcheur</div>
+                    <div class="form-group required"><label for="nom">Nom</label><input type="text" id="nom" required></div>
+                    <div class="form-group required"><label for="prenom">Prénom</label><input type="text" id="prenom" required></div>
+                    <div class="form-group required"><label for="adresse">Adresse</label><input type="text" id="adresse" placeholder="12 rue de la Paix" required></div>
+                    <div class="form-row">
+                        <div class="form-group required"><label for="codePostal">Code postal</label><input type="text" id="codePostal" maxlength="5" placeholder="67110" required></div>
+                        <div class="form-group required"><label for="ville">Ville</label><select id="ville" required disabled><option value="">Entrez le code postal</option></select></div>
+                    </div>
+                    <div class="form-group required"><label for="telephone">Téléphone</label><input type="tel" id="telephone" placeholder="06 XX XX XX XX" required></div>
+                    <div class="form-section-title">🚨 Contact d'urgence</div>
+                    <div class="form-group required"><label for="urgenceNom">Nom</label><input type="text" id="urgenceNom" required></div>
+                    <div class="form-group required"><label for="urgencePrenom">Prénom</label><input type="text" id="urgencePrenom" required></div>
+                    <div class="form-group required"><label for="urgenceTel">Téléphone</label><input type="tel" id="urgenceTel" placeholder="06 XX XX XX XX" required></div>
+                    <div class="form-section-title">📜 Règlements (cochez et lisez)</div>
+                    <div class="reglement-list">
+                        <div class="reglement-item" data-reglement="carpodrome"><input type="checkbox" class="reglement-checkbox" id="check-carpodrome"><span class="reglement-icon">🎣</span><span class="reglement-name">Carpodrome</span><button type="button" class="reglement-read-btn" data-for="carpodrome" disabled>📖 Lire</button></div>
+                        <div class="reglement-item" data-reglement="hardt"><input type="checkbox" class="reglement-checkbox" id="check-hardt"><span class="reglement-icon">🐟</span><span class="reglement-name">Hardt</span><button type="button" class="reglement-read-btn" data-for="hardt" disabled>📖 Lire</button></div>
+                        <div class="reglement-item" data-reglement="breitmatt"><input type="checkbox" class="reglement-checkbox" id="check-breitmatt"><span class="reglement-icon">🌊</span><span class="reglement-name">Breitmatt</span><button type="button" class="reglement-read-btn" data-for="breitmatt" disabled>📖 Lire</button></div>
+                    </div>
+                    <div style="margin-top:25px"><button type="submit" class="btn btn-primary" id="validateBtn" disabled>✅ Enregistrer la fiche</button></div>
+                </form>
+                </div>
+                <div id="tabEnvoyer" class="fiche-tab-content">
+                    <div class="envoyer-container">
+                        <div class="envoyer-icon">✉️</div>
+                        <h3 class="envoyer-title">Envoyer le formulaire par email</h3>
+                        <p class="envoyer-desc">Le pêcheur recevra un lien pour remplir sa fiche de renseignement en ligne.</p>
+                        
+                        <div class="form-group required" style="text-align: left;"><label for="envoyerNom">Nom</label><input type="text" id="envoyerNom" placeholder="NOM" required></div>
+                        <div class="form-group required" style="text-align: left;"><label for="envoyerPrenom">Prénom</label><input type="text" id="envoyerPrenom" placeholder="Prénom" required></div>
+                        <div class="form-group required" style="text-align: left;"><label for="emailPecheur">Email</label><input type="email" id="emailPecheur" placeholder="pecheur@email.com" required></div>
+                        <button type="button" class="btn btn-primary" id="btnEnvoyerFormulaire" onclick="envoyerFormulaire()">✉️ Envoyer le formulaire</button>
+                        <div id="envoyerStatus" class="envoyer-status"></div>
+                    </div>
+                </div>
+                <div id="tabMails" class="fiche-tab-content">
+                    <div style="text-align: center; margin-bottom: 20px;"><div style="font-size: 50px; margin-bottom: 10px;">📧</div><h3 style="color: #1a472a;">Historique des mails envoyés</h3></div>
+                    <div id="mailsSentList"></div>
+                </div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageRecherche">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">🔍 Rechercher un Pêcheur</h1>
+                <div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="Tapez un nom ou prénom..."><span class="search-icon">🔍</span></div>
+                <div class="pecheurs-alpha-title">📋 Liste complète <span class="pecheurs-alpha-count" id="pecheursCount">0</span></div>
+                <div class="search-results" id="searchResults"></div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageDetail">
+            <div class="page-content"><div class="page-card">
+                <div class="detail-header"><div class="detail-name" id="detailName"></div><span class="detail-status" id="detailStatus"></span></div>
+                <div class="detail-info" id="detailInfo"></div>
+                <div class="infractions-section" id="detailInfractions" style="display:none"></div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageInfractions">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">⚠️ Ajouter une Infraction</h1>
+                <form id="infractionForm">
+                    <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
+                    <div class="form-group required"><label for="infPrenom">Prénom</label><input type="text" id="infPrenom" required></div>
+                    <div class="form-group required"><label>Type</label><div class="infraction-type-btns"><button type="button" class="infraction-type-btn selected" data-type="avertissement">⚠️ Avertissement</button><button type="button" class="infraction-type-btn banned" data-type="bannissement">🚫 Bannissement</button></div></div>
+                    <div class="form-group required"><label for="infMotif">Motif</label><textarea id="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea></div>
+                    <div class="form-group required"><label for="infLieu">Lieu</label><select id="infLieu" required><option value="Breitmatt">🌊 Breitmatt</option><option value="Carpodrome">🎣 Carpodrome</option><option value="Hardt">🐟 Hardt</option></select></div>
+                    <div class="form-group required"><label for="infControleur">👮 Contrôleur</label><select id="infControleur" required><option value="">-- Choisir --</option></select></div>
+                    <button type="submit" class="btn btn-warning">⚠️ Enregistrer l'infraction</button>
+                </form>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageAdmin">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">⚙️ Administration</h1>
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches</button>
+                    <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes</button>
+                    <button class="admin-tab" onclick="switchAdminTab('controleurs')">👮 Contrôleurs</button>
+                </div>
+                <div id="adminTabFiches" class="admin-tab-content active"><div id="adminFichesList"></div></div>
+                <div id="adminTabCartes" class="admin-tab-content">
+                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Pêcheurs avec carte valide</p>
+                        <div class="add-carte-form"><input type="text" id="newCarteNom" placeholder="Nom" class="carte-input"><input type="text" id="newCartePrenom" placeholder="Prénom" class="carte-input"><button class="btn btn-primary" onclick="addCarteValide()">➕</button></div>
+                    </div><div id="cartesValidesList"></div>
+                </div>
+                <div id="adminTabControleurs" class="admin-tab-content">
+                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Liste des contrôleurs</p>
+                        <div class="add-carte-form"><input type="text" id="newControleurNom" placeholder="Nom" class="carte-input"><button class="btn btn-primary" onclick="addControleur()">➕</button></div>
+                    </div><div id="controleursList"></div>
+                </div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageEditFiche">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">✏️ Modifier la Fiche</h1>
+                <form id="editFicheForm">
+                    <input type="hidden" id="editFicheId"><input type="hidden" id="editFicheIndex">
+                    <div class="form-section-title">👤 Informations</div>
+                    <div class="form-group required"><label for="editNom">Nom</label><input type="text" id="editNom" required></div>
+                    <div class="form-group required"><label for="editPrenom">Prénom</label><input type="text" id="editPrenom" required></div>
+                    <div class="form-group required"><label for="editAdresse">Adresse</label><input type="text" id="editAdresse" required></div>
+                    <div class="form-row"><div class="form-group required"><label for="editCodePostal">CP</label><input type="text" id="editCodePostal" maxlength="5" required></div><div class="form-group required"><label for="editVille">Ville</label><input type="text" id="editVille" required></div></div>
+                    <div class="form-group required"><label for="editTelephone">Téléphone</label><input type="tel" id="editTelephone" required></div>
+                    <div class="form-section-title">🚨 Urgence</div>
+                    <div class="form-group required"><label for="editUrgenceNom">Nom</label><input type="text" id="editUrgenceNom" required></div>
+                    <div class="form-group required"><label for="editUrgencePrenom">Prénom</label><input type="text" id="editUrgencePrenom" required></div>
+                    <div class="form-group required"><label for="editUrgenceTel">Téléphone</label><input type="tel" id="editUrgenceTel" required></div>
+                    <div style="margin-top:25px"><button type="submit" class="btn btn-primary">💾 Enregistrer</button></div>
+                </form>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageHistorique">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">📜 Historique par Étang</h1>
+                <div class="etang-cards">
+                    <div class="etang-card" onclick="showEtangDetail('Breitmatt')" style="border-left: 5px solid #2e7d32;"><div class="etang-icon">🏞️</div><div class="etang-info"><div class="etang-name">Breitmatt</div><div class="etang-count" id="countBreitmatt">...</div></div><div class="etang-arrow">›</div></div>
+                    <div class="etang-card" onclick="showEtangDetail('Carpodrome')" style="border-left: 5px solid #1565c0;"><div class="etang-icon">🎣</div><div class="etang-info"><div class="etang-name">Carpodrome</div><div class="etang-count" id="countCarpodrome">...</div></div><div class="etang-arrow">›</div></div>
+                    <div class="etang-card" onclick="showEtangDetail('Hardt')" style="border-left: 5px solid #7b1fa2;"><div class="etang-icon">🐟</div><div class="etang-info"><div class="etang-name">Hardt</div><div class="etang-count" id="countHardt">...</div></div><div class="etang-arrow">›</div></div>
+                </div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageEtangDetail">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title" id="etangDetailTitle">📜 Infractions</h1>
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab('avertissements')">⚠️ Avert. <span id="tabCountAvert">0</span></button>
+                    <button class="tab-btn" onclick="switchTab('bannis')">🚫 Bannis <span id="tabCountBan">0</span></button>
+                    <button class="tab-btn" onclick="switchTab('archives')">📦 Archives <span id="tabCountArchives">0</span></button>
+                </div>
+                <div id="etangInfractionsList"></div>
+            </div></div>
+        </div>
+        
+        <div class="page" id="pageControle">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">🎯 Contrôle du Jour</h1>
+                <div class="controle-buttons">
+                    <button class="controle-big-btn hardt" onclick="window.open('https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur#controleur', '_blank')"><span class="controle-big-icon">🐟</span><span class="controle-big-title">Hardt</span><span class="controle-big-desc">Réservations et infractions</span></button>
+                    <button class="controle-big-btn carpodrome" onclick="window.open('https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911&from=controleur#controleur', '_blank')"><span class="controle-big-icon">🎣</span><span class="controle-big-title">Carpodrome</span><span class="controle-big-desc">Réservations et infractions</span></button>
+                </div>
+            </div></div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="reglementModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2 id="modalTitle">📜 Règlement</h2><button class="modal-close" id="modalClose">&times;</button></div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer"><label class="read-confirm-checkbox"><input type="checkbox" id="readConfirmCheckbox"><span>J'ai lu et compris le règlement</span></label><button class="modal-validate-btn" id="modalValidateBtn">✅ Confirmer</button></div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header"><h2>🔐 Administration</h2><button class="modal-close" id="adminModalClose">&times;</button></div>
+            <div class="modal-body"><p style="margin-bottom:20px;color:#666">Mot de passe administrateur</p><input type="password" class="admin-input" id="adminPassword" placeholder="Mot de passe"><button class="admin-submit-btn" id="adminSubmitBtn">Accéder</button><button class="admin-submit-btn" id="closePageBtn" style="background:#dc3545; margin-top:10px;">❌ Fermer</button></div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header" style="background:#c62828"><h2>🗑️ Supprimer</h2><button class="modal-close" id="deleteModalClose">&times;</button></div>
+            <div class="modal-body"><p>Supprimer la fiche de <strong id="deleteNom"></strong> ?</p><p style="color:#c62828;font-weight:500;margin-top:10px">Action irréversible.</p><div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-primary" id="deleteCancelBtn" style="flex:1">Annuler</button><button class="btn btn-danger" id="deleteConfirmBtn" style="flex:1">🗑️ Supprimer</button></div></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        const appBreitmatt = firebase.initializeApp({ databaseURL: "https://appli-controleur-gunder-default-rtdb.europe-west1.firebasedatabase.app" });
+        const dbBreitmatt = firebase.database(appBreitmatt);
+        let dbCarpodrome = null, dbHardt = null;
+        try { dbCarpodrome = firebase.database(firebase.initializeApp({ databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app" }, 'carpodrome')); } catch(e) {}
+        try { dbHardt = firebase.database(firebase.initializeApp({ databaseURL: "https://resahardt-default-rtdb.europe-west1.firebasedatabase.app" }, 'hardt')); } catch(e) {}
+
+        const ADMIN_PASSWORD = "admin";
+        const EMAILJS_PUBLIC_KEY = "JbyCmsMLDLD4d9W7G";
+        const EMAILJS_SERVICE_ID = "service_9i4es0p";
+        const EMAILJS_TEMPLATE_ID = "template_v6461vd";
+        const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+
+        const reglements = {
+            carpodrome: { title: "🎣 RÈGLEMENT CARPODROME 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher du soleil</p><ul><li>Réservation obligatoire 24h avant</li><li>Pêche No Kill obligatoire</li><li>1 ligne par pêcheur, max 13m</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Pêche de nuit</li><li>❌ Graines crues</li><li>❌ Hameçons avec ardillons</li></ul>" },
+            hardt: { title: "🐟 RÈGLEMENT HARDT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>Pêche de nuit: 20h→8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>Interdictions</h3><ul><li>❌ Bateau amorceur</li><li>❌ Sacs de conservation</li><li>❌ Graines crues</li></ul>" },
+            breitmatt: { title: "🌊 RÈGLEMENT BREITMATT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>2 lignes par pêcheur</li><li>Pêche No Kill obligatoire</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Bateau amorceur</li><li>❌ Graines crues</li></ul>" }
+        };
+
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = [], selectedInfractionType = 'avertissement';
+        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [];
+        let currentEtang = '', currentTab = 'avertissements', etangData = { avertissements: [], bannis: [], archives: [] };
+        let allCartesValides = [], allControleurs = [];
+
+        // BLOCAGE BOUTON RETOUR ANDROID
+        function setupBackButtonBlock() {
+            history.pushState({ page: 'app' }, '', '');
+            window.addEventListener('popstate', function(e) {
+                if (sessionStorage.getItem('logged') === 'true') {
+                    history.pushState({ page: 'app' }, '', '');
+                    showAlert('🔒 Utilisez "Déconnexion" pour quitter', 'warning');
+                }
+            });
         }
-        function saveReservations() { if (firebaseReady) database.ref('reservations').set(reservations); }
-        function saveInfractions() { if (firebaseReady) database.ref('infractions').set(infractions); }
-        function saveValidUsers() { if (firebaseReady) { const o = {}; validUsers.forEach((u, i) => o['user_' + i] = u); database.ref('validUsers').set(o); } }
-        function checkLogin() { if (document.getElementById('loginPass').value === "911") { if (!firebaseReady) { showAlert("⚠️ Connexion..."); return; } document.getElementById('loginPage').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; document.body.className = 'app-mode'; sessionStorage.setItem('logged', 'true'); setupFirebaseListeners(); renderMonths(); updateCounts(); } else { document.getElementById('errorLogin').style.display = 'block'; setTimeout(() => document.getElementById('errorLogin').style.display = 'none', 3000); } }
-        document.getElementById("loginPass").addEventListener("keyup", (e) => { if (e.key === "Enter") checkLogin(); });
-        function logout() { sessionStorage.removeItem('logged'); location.reload(); }
-        function accesControleur() { const t = new Date(); if (t.getFullYear() !== 2026) { showAlert("📅 Application pour 2026"); return; } const j = t.getDate(), m = t.getMonth(); if (!(JOURS_OUVERTURE[m] || []).includes(j)) { showAlert("🚫 Étang fermé"); return; } curM = m; curMName = MOIS_NOMS[m]; showPostes(j, `2026-${String(m+1).padStart(2,'0')}-${String(j).padStart(2,'0')}`, t.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })); }
-        function checkAdminPassword() { return prompt("🔐 Mot de passe admin :") === "admin"; }
-        function hideAll() { ['monthsPage', 'daysPage', 'postesPage', 'infractionsMenuPage', 'infractionsDetailPage'].forEach(id => document.getElementById(id).classList.add('hidden')); }
-        function renderMonths() { document.getElementById('monthsGrid').innerHTML = MOIS_NOMS.map((m, i) => (JOURS_OUVERTURE[i] && JOURS_OUVERTURE[i].length > 0) ? `<div class="month-card" onclick="showDays(${i}, '${m}')"><div class="month-name">${m}</div></div>` : '').join(''); }
-        function showMonths() { hideAll(); document.getElementById('monthsPage').classList.remove('hidden'); }
-        function showDays(m, name) { curM = m; curMName = name; hideAll(); document.getElementById('daysPage').classList.remove('hidden'); document.getElementById('monthTitle').textContent = name + ' 2026'; const jours = JOURS_OUVERTURE[m] || []; document.getElementById('daysGrid').innerHTML = jours.map(j => { const d = new Date(2026, m, j); const df = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }); const k = `2026-${String(m+1).padStart(2,'0')}-${String(j).padStart(2,'0')}`; const dr = reservations[k] || {}; let pr = 0; for (let i = 1; i <= 14; i++) if (dr[i] && dr[i].nom) pr++; const pl = 14 - pr; return `<div class="day-card" onclick="showPostes(${j}, '${k}', '${df}')"><div style="color: ${pl === 0 ? '#dc3545' : '#28a745'};">${pl === 0 ? 'COMPLET' : pl + ' libre(s)'}</div><div class="day-number">${df}</div>${(FERME_MATIN[m] || []).includes(j) ? '<div class="closed-morning">⚠️ FERMÉ LE MATIN</div>' : ''}</div>`; }).join(''); }
-        function showPostes(j, key, dateFull) { curDKey = key; curFullDate = dateFull; hideAll(); document.getElementById('postesPage').classList.remove('hidden'); document.getElementById('postePageTitle').textContent = dateFull + " 2026"; renderPostes(); }
-        function backToDays() { showDays(curM, curMName); }
-        function renderPostes() { const g = document.getElementById('postesGrid'); g.innerHTML = ''; if (!reservations[curDKey]) reservations[curDKey] = {}; let l = 0, r = 0, c = 0; for (let i = 1; i <= 14; i++) { const d = reservations[curDKey][i] || {}; if (d.nom) { r++; if (d.controlled) c++; } else l++; g.appendChild(createBox(i, d)); } document.getElementById('statLibre').textContent = l; document.getElementById('statReserve').textContent = r; document.getElementById('statControle').textContent = c; }
-        function createBox(n, data) { const div = document.createElement('div'); const hasName = data.nom && data.nom.trim(); let cn = 'poste-box '; if (data.controlled) cn += 'controle'; else if (hasName) cn += 'reserve'; else cn += 'libre'; div.className = cn; div.onclick = (e) => { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') openModal(n, data); }; let h = '<div class="poste-content">'; h += `<div class="poste-title">Poste ${n}</div>`; if (data.controlled && data.heure) h += `<div class="poste-heure">🕒 ${data.heure}</div>`; if (hasName) { h += `<div class="poste-nom">${data.nom.toUpperCase()} ${data.prenom || ''}</div>`; if (data.binome && data.modeReservation === "Américaine") h += `<div class="poste-nom" style="color:#667eea;">${data.binome}</div>`; h += data.modeReservation === "Américaine" ? '<div style="font-size:0.8em;color:#e53e3e;font-weight:bold;">👥 Américaine</div>' : '<div style="font-size:0.8em;color:#38a169;">👤 Individuel</div>'; if (data.creneau) h += `<div style="font-size:0.8em;color:#666;">📅 ${data.creneau}</div>`; if (isUserValid(data.nom, data.prenom)) h += '<div class="badge-peche">🪪 Carte valide</div>'; h += `<button class="btn-info" onclick="event.stopPropagation(); checkInfo('${escapeHtml(data.nom)}', '${escapeHtml(data.prenom || '')}')">ℹ️ Info</button>`; } h += '</div>'; if (data.controlled) h += `<div class="control-zone" onclick="event.stopPropagation();toggleControle(${n})" style="cursor:pointer;"><span class="control-label checked">✅ Contrôlé par ${data.controleur || 'inconnu'}</span></div>`; else h += `<div class="control-zone"><input type="checkbox" onclick="event.stopPropagation();toggleControle(${n})"><label class="control-label">Contrôler</label></div>`; div.innerHTML = h; return div; }
-        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML.replace(/'/g, "\\'"); }
-        function toggleControle(n) { if (!reservations[curDKey] || !reservations[curDKey][n]) return; pendingControlePoste = n; document.getElementById('selectControleur').value = reservations[curDKey][n].controleur || ''; document.getElementById('controleurModal').style.display = 'block'; }
-        function updateControleurSelect() { const s = document.getElementById('selectControleur'); if (s) s.innerHTML = '<option value="">-- Choisir --</option>' + controleurs.map(c => `<option value="${c}">${c}</option>`).join(''); }
-        function updateMotifControleurSelect() { const s = document.getElementById('motifControleur'); if (s) s.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + controleurs.map(c => `<option value="${c}">${c}</option>`).join(''); }
-        function closeControleurModal() { document.getElementById('controleurModal').style.display = 'none'; pendingControlePoste = null; renderPostes(); }
-        function confirmControleur() { const c = document.getElementById('selectControleur').value; if (!c) { alert('Choisir un contrôleur'); return; } const p = reservations[curDKey][pendingControlePoste]; if (p) { p.controlled = true; p.controleur = c; const n = new Date(); p.heure = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0'); saveReservations(); } closeControleurModal(); }
-        function annulerControle() { const p = reservations[curDKey][pendingControlePoste]; if (p) { p.controlled = false; p.controleur = ''; p.heure = ''; saveReservations(); } closeControleurModal(); }
-        function toggleBinomeField() { document.getElementById('binomeZone').style.display = document.getElementById('modalMode').value === 'Américaine' ? 'block' : 'none'; }
-        function openModal(n, data) { curP = n; document.getElementById('modalTitle').textContent = 'Poste ' + n; document.getElementById('modalDate').textContent = curFullDate + " 2026"; document.getElementById('modalNom').value = data.nom || ''; document.getElementById('modalPrenom').value = data.prenom || ''; document.getElementById('modalControle').checked = data.controlled || false; document.getElementById('modalHeure').value = data.heure || ''; document.getElementById('modalCreneau').value = data.creneau || ''; document.getElementById('modalMode').value = data.modeReservation || 'Individuel'; document.getElementById('modalBinome').value = data.binome || ''; toggleBinomeField(); updateControlText(); checkCardBadge(); document.getElementById('infractionsButtons').style.display = data.nom ? 'block' : 'none'; document.getElementById('posteModal').style.display = 'block'; }
-        function closeModal() { document.getElementById('posteModal').style.display = 'none'; }
-        function saveModal() { let nom = document.getElementById('modalNom').value.trim().toUpperCase(); let prenom = document.getElementById('modalPrenom').value.trim(); if (!nom || !prenom) { closeModal(); return; } prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); const banni = (infractions.bannis || []).find(b => b.nom && b.nom.toUpperCase() === nom && b.prenom && b.prenom.toLowerCase() === prenom.toLowerCase()); if (banni) { showAlert(`🚫 ${nom} ${prenom} est BANNI !`); return; } if (!reservations[curDKey]) reservations[curDKey] = {}; reservations[curDKey][curP] = { nom, prenom, controlled: document.getElementById('modalControle').checked, heure: document.getElementById('modalHeure').value, creneau: document.getElementById('modalCreneau').value, modeReservation: document.getElementById('modalMode').value, binome: document.getElementById('modalMode').value === 'Américaine' ? document.getElementById('modalBinome').value.trim() : '' }; saveReservations(); renderPostes(); closeModal(); showMonths(); }
-        function deleteModal() { if (reservations[curDKey] && reservations[curDKey][curP]) { delete reservations[curDKey][curP]; saveReservations(); renderPostes(); } closeModal(); }
-        function updateControlText() { const cb = document.getElementById('modalControle'); if (cb.checked) { if (!document.getElementById('modalHeure').value) { const n = new Date(); document.getElementById('modalHeure').value = n.getHours().toString().padStart(2,'0') + ":" + n.getMinutes().toString().padStart(2,'0'); } document.getElementById('controlStatusText').textContent = "✅ Contrôlé à " + document.getElementById('modalHeure').value; document.getElementById('controlStatusText').style.color = "#17a2b8"; } else { document.getElementById('controlStatusText').textContent = "Cliquer pour valider le contrôle"; document.getElementById('controlStatusText').style.color = "#666"; } }
-        function isUserValid(nom, prenom) { return validUsers.some(u => u.nom && u.prenom && u.nom.toLowerCase() === (nom || '').toLowerCase() && u.prenom.toLowerCase() === (prenom || '').toLowerCase()); }
-        function checkCardBadge() { document.getElementById('modalBadgeZone').style.display = isUserValid(document.getElementById('modalNom').value, document.getElementById('modalPrenom').value) ? 'block' : 'none'; }
-        function showInfractionsMenu() { hideAll(); document.getElementById('infractionsMenuPage').classList.remove('hidden'); updateCounts(); }
-        function updateCounts() { document.getElementById('countAvertissement').textContent = ((infractions.avertissements || []).length) + ' dossier(s)'; document.getElementById('countBanni').textContent = ((infractions.bannis || []).length) + ' dossier(s)'; }
-        function showInfractionList(type) { hideAll(); document.getElementById('infractionsDetailPage').classList.remove('hidden'); document.getElementById('detailTitle').textContent = type === 'avertissements' ? '⚠️ AVERTISSEMENTS' : '🚫 BANNISSEMENTS'; const list = infractions[type] || []; const c = document.getElementById('detailList'); if (!list.length) { c.innerHTML = '<p style="text-align:center;color:#666;">Aucun dossier</p>'; return; } if (type === 'avertissements') { c.innerHTML = list.map((item, i) => `<div class="infraction-item avertissement"><div class="infraction-header"><div class="infraction-info"><strong>${(item.nom || 'N/A').toUpperCase()} ${item.prenom || ''}</strong>${item.controleurSanction ? '<span class="controleur-badge">👮 ' + item.controleurSanction + '</span>' : ''}<br><small>📅 ${item.date || ''}</small><br><small>📝 ${item.motif || ''}</small></div><div class="infraction-actions"><button class="btn btn-delete" onclick="removeAvertissement(${i})">🗑️</button></div></div></div>`).join(''); } else { c.innerHTML = list.map((item, i) => { let mh = ''; if (item.motifs && item.motifs.length) { mh = `<div class="motifs-list"><h4>📋 Motifs :</h4>${item.motifs.map((m, j) => `<div class="motif-item"><strong>#${j+1}</strong> - ${m.date || ''}: ${m.motif || ''}${m.controleurSanction ? ' <em>(👮 ' + m.controleurSanction + ')</em>' : ''}</div>`).join('')}</div>`; } else if (item.motif) { mh = `<div class="motifs-list"><h4>📋 Motif :</h4><div class="motif-item">${item.motif}</div></div>`; } return `<div class="infraction-item banni"><div class="infraction-header"><div class="infraction-info"><strong>${(item.nom || 'N/A').toUpperCase()} ${item.prenom || ''}</strong>${item.controleurSanction ? '<span class="controleur-badge">👮 ' + item.controleurSanction + '</span>' : ''}<br><small>📅 Banni le : ${item.date || ''}</small>${mh}</div><div class="infraction-actions"><button class="btn btn-unban" onclick="debannir(${i})">🔓 Débannir</button><button class="btn btn-delete" onclick="removeBanni(${i})">🗑️</button></div></div></div>`; }).join(''); } }
-        function removeAvertissement(i) { if (!checkAdminPassword()) return; infractions.avertissements.splice(i, 1); saveInfractions(); showInfractionList('avertissements'); showAlert("✅ Avertissement supprimé."); }
-        function removeBanni(i) { if (!checkAdminPassword()) return; if (!confirm('Supprimer ?')) return; infractions.bannis.splice(i, 1); saveInfractions(); showInfractionList('bannis'); showAlert("✅ Bannissement supprimé."); }
-        function debannir(i) { if (!checkAdminPassword()) return; const b = infractions.bannis[i]; if (b.motifs && b.motifs.length) { b.motifs.forEach(m => infractions.avertissements.push({ id: Date.now() + '' + Math.random(), nom: b.nom, prenom: b.prenom, motif: m.motif, date: m.date, controleurSanction: m.controleurSanction, archived: true })); } infractions.bannis.splice(i, 1); saveInfractions(); showInfractionList('bannis'); showAlert(`✅ ${b.nom} ${b.prenom} débanni.`); }
-        function askMotif(type) { pendingSanctionType = type; document.getElementById('motifHeader').style.background = type === 'bannis' ? '#dc3545' : '#ffc107'; document.getElementById('motifInput').value = ''; document.getElementById('motifControleur').value = ''; updateMotifControleurSelect(); document.getElementById('motifModal').style.display = 'block'; }
-        function closeMotif() { document.getElementById('motifModal').style.display = 'none'; }
-        function confirmSanction() { 
-            const nom = document.getElementById('modalNom').value.trim().toUpperCase(); 
-            const prenom = document.getElementById('modalPrenom').value.trim(); 
-            const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
-            const motif = document.getElementById('motifInput').value || "Non spécifié"; 
-            const controleurSanction = document.getElementById('motifControleur').value || "Non spécifié";
-            const dateNow = new Date().toLocaleString('fr-FR'); 
-            if (!infractions.avertissements) infractions.avertissements = []; 
-            if (!infractions.bannis) infractions.bannis = []; 
-            if (pendingSanctionType === 'avertissements') { 
-                infractions.avertissements.push({ id: Date.now().toString(), nom, prenom: prenomF, motif, controleurSanction, date: dateNow }); 
-                const fn = (nom + ' ' + prenomF).toLowerCase(); 
-                const ua = infractions.avertissements.filter(a => (a.nom + ' ' + a.prenom).toLowerCase() === fn && !a.archived); 
-                if (ua.length >= 3) { 
-                    const motifs = ua.map(a => ({ motif: a.motif, date: a.date, controleurSanction: a.controleurSanction })); 
-                    infractions.bannis.push({ id: Date.now().toString(), nom, prenom: prenomF, motifs, controleurSanction, date: dateNow }); 
-                    infractions.avertissements = infractions.avertissements.filter(a => (a.nom + ' ' + a.prenom).toLowerCase() !== fn || a.archived); 
-                    saveInfractions(); closeMotif(); closeModal(); 
-                    showAlert(`🚫 ${nom} ${prenomF} BANNI (3 avertissements)`); 
-                    return; 
-                } 
-                saveInfractions(); closeMotif(); closeModal(); 
-                showAlert(`✅ Avertissement pour ${nom} ${prenomF} (${ua.length}/3)<br>👮 Par: ${controleurSanction}`); 
-            } else { 
-                infractions.bannis.push({ id: Date.now().toString(), nom, prenom: prenomF, motif, controleurSanction, date: dateNow }); 
-                saveInfractions(); closeMotif(); closeModal(); 
-                showAlert(`🚫 ${nom} ${prenomF} BANNI<br>👮 Par: ${controleurSanction}`); 
-            } 
+
+        function showPage(id) { 
+            if (currentPage !== id) pageHistory.push(currentPage); 
+            currentPage = id; 
+            sessionStorage.setItem('currentPage', id);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+            document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
+            document.getElementById('navButtons').classList.toggle('visible', id !== 'menu');
+            if (id === 'recherche') renderPecheursAlphabetique();
         }
-        function checkInfo(nom, prenom) { 
-            const fn = (nom + ' ' + prenom).toLowerCase(); 
-            const avert = (infractions.avertissements || []).filter(a => (a.nom + ' ' + a.prenom).toLowerCase() === fn && !a.archived); 
-            const banni = (infractions.bannis || []).find(b => (b.nom + ' ' + b.prenom).toLowerCase() === fn); 
-            const isV = isUserValid(nom, prenom); 
-            let h = `<div style="text-align:left;"><h3 style="text-align:center;">${nom.toUpperCase()} ${prenom}</h3>`; 
-            h += `<p>${isV ? '🪪 Carte valide' : '❌ Pas de carte'}</p>`; 
-            if (banni) { 
-                h += '<p style="color:#dc3545;font-weight:bold;">🚫 BANNI</p>'; 
-                if (banni.controleurSanction) h += `<p>👮 Sanctionné par: <strong>${banni.controleurSanction}</strong></p>`;
-                if (banni.motifs && banni.motifs.length) { 
-                    h += '<div class="info-motifs" style="background:#f8d7da;"><h4 style="color:#721c24;">Motifs :</h4>'; 
-                    banni.motifs.forEach((m, i) => h += `<div class="info-motif-item"><strong>#${i+1}</strong> - ${m.date || ''}: ${m.motif || ''}${m.controleurSanction ? '<br>👮 ' + m.controleurSanction : ''}</div>`); 
-                    h += '</div>'; 
-                } 
-            } else h += '<p style="color:#28a745;">✅ Non banni</p>'; 
-            h += `<p style="font-weight:bold;">⚠️ Avertissements actifs : ${avert.length}/3</p>`; 
-            if (avert.length) { 
-                h += '<div class="info-motifs"><h4>Détails :</h4>'; 
-                avert.forEach((a, i) => h += `<div class="info-motif-item"><strong>#${i+1}</strong> - ${a.date || ''}: ${a.motif || ''}${a.controleurSanction ? '<br>👮 ' + a.controleurSanction : ''}</div>`); 
-                h += '</div>'; 
-            } 
-            h += '</div>'; 
-            showAlert(h); 
-        }
-        function openAdmin() { if (prompt("Code Admin :") === "admin") { renderAdminList(); document.getElementById('adminModal').style.display = 'block'; } }
-        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
-        function addValidUser() { let nom = document.getElementById('adminAddNom').value.trim().toUpperCase(); let prenom = document.getElementById('adminAddPrenom').value.trim(); if (nom && prenom) { prenom = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); validUsers.push({ nom, prenom }); saveValidUsers(); renderAdminList(); document.getElementById('adminAddNom').value = ""; document.getElementById('adminAddPrenom').value = ""; } }
-        function renderAdminList() { const c = document.getElementById('adminValidList'); c.innerHTML = !validUsers.length ? '<p style="color:#666;text-align:center;">Aucun pêcheur</p>' : validUsers.map((u, i) => `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;background:#f8f9fa;padding:8px 12px;border-radius:5px;"><span>${u.nom} ${u.prenom}</span><button onclick="removeValidUser(${i})" style="color:red;border:none;background:none;cursor:pointer;">✖</button></div>`).join(''); }
-        function removeValidUser(i) { if (confirm('Supprimer ?')) { validUsers.splice(i, 1); saveValidUsers(); renderAdminList(); } }
-        function showAlert(msg) { document.getElementById('alertBody').innerHTML = msg; document.getElementById('alertModal').style.display = 'block'; }
-        function closeAlert() { document.getElementById('alertModal').style.display = 'none'; }
-        document.addEventListener('DOMContentLoaded', () => { if (firebaseReady) { document.getElementById('firebaseStatus').innerHTML = '✅ Firebase'; document.getElementById('firebaseStatus').style.color = 'green'; } if (sessionStorage.getItem('logged') === 'true') { const check = setInterval(() => { if (firebaseReady) { clearInterval(check); document.getElementById('loginPage').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; document.body.className = 'app-mode'; setupFirebaseListeners(); renderMonths(); updateCounts(); } }, 100); } });
+        
+        document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
+        document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
+        document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
+
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); loadAllData(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        checkSession();
+
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        function login() { if (document.getElementById('loginCode').value === '911') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; sessionStorage.setItem('logged', 'true'); setupBackButtonBlock(); loadAllData(); } else { document.getElementById('loginCode').classList.add('error'); document.getElementById('loginError').style.display = 'block'; setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); } }
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => { document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+
+        document.getElementById('adminBtn').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
+        document.getElementById('adminModalClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('visible'));
+        document.getElementById('closePageBtn').addEventListener('click', () => window.close());
+        document.getElementById('adminModal').addEventListener('click', e => { if (e.target.id === 'adminModal') e.target.classList.remove('visible'); });
+        document.getElementById('adminSubmitBtn').addEventListener('click', checkAdminPassword);
+        document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
+        
+        function checkAdminPassword() { if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { document.getElementById('adminModal').classList.remove('visible'); loadAdminFiches(); showPage('admin'); } else { showAlert('❌ Mot de passe incorrect', 'error'); } }
+
+        function loadAdminFiches() { const container = document.getElementById('adminFichesList'); const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + item.fiche.nom + ' ' + item.fiche.prenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>').join(''); }
+
+        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } }
+
+        async function loadCartesValides() { const container = document.getElementById('cartesValidesList'); container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; allCartesValides = []; const seen = new Set(); const bases = [{ db: dbBreitmatt, name: 'Breitmatt' }, { db: dbCarpodrome, name: 'Carpodrome' }, { db: dbHardt, name: 'Hardt' }]; for (const base of bases) { if (!base.db) continue; try { const snap = await base.db.ref('validUsers').once('value'); const data = snap.val(); if (data) { const users = Array.isArray(data) ? data : Object.values(data); users.forEach(u => { if (u && u.nom) { const key = (u.nom + '_' + (u.prenom || '')).toUpperCase(); if (!seen.has(key)) { seen.add(key); allCartesValides.push({ nom: u.nom, prenom: u.prenom || '' }); } } }); } } catch(e) {} } allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); renderCartesValides(); }
+        function renderCartesValides() { const container = document.getElementById('cartesValidesList'); if (allCartesValides.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur</div>'; return; } container.innerHTML = '<div class="cartes-count">🎫 ' + allCartesValides.length + ' pêcheur(s)</div>' + allCartesValides.map((u, i) => '<div class="carte-item"><div class="carte-item-name">' + u.nom + ' ' + u.prenom + '</div><button class="carte-delete-btn" onclick="removeCarteValide(' + i + ')">🗑️</button></div>').join(''); }
+        async function addCarteValide() { const nom = document.getElementById('newCarteNom').value.trim(); const prenom = document.getElementById('newCartePrenom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allCartesValides.some(u => u.nom.toUpperCase() === nom.toUpperCase() && (u.prenom || '').toUpperCase() === prenom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allCartesValides.push({ nom: nom.toUpperCase(), prenom }); allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); await saveCartesValidesToAllBases(); document.getElementById('newCarteNom').value = ''; document.getElementById('newCartePrenom').value = ''; renderCartesValides(); showAlert('✅ Ajouté', 'success'); }
+        async function removeCarteValide(i) { if (!confirm('Retirer ' + allCartesValides[i].nom + ' ?')) return; allCartesValides.splice(i, 1); await saveCartesValidesToAllBases(); renderCartesValides(); showAlert('✅ Retiré', 'success'); }
+        async function saveCartesValidesToAllBases() { const bases = [{ db: dbBreitmatt }, { db: dbCarpodrome }, { db: dbHardt }]; const usersObj = {}; allCartesValides.forEach((u, i) => { usersObj['user_' + i] = u; }); for (const base of bases) { if (!base.db) continue; try { await base.db.ref('validUsers').set(usersObj); } catch(e) {} } }
+
+        async function loadControleurs() { const container = document.getElementById('controleursList'); container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; allControleurs = []; try { const snap = await dbBreitmatt.ref('controleurs').once('value'); if (snap.val()) allControleurs = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val()); } catch(e) {} if (allControleurs.length === 0) { allControleurs = ['René', 'Patrice', 'Christophe', 'Jean-François', 'Eric', 'Garde pêche Raymond']; await saveControleursToAllBases(); } renderControleurs(); updateInfControleurSelect(); }
+        function updateInfControleurSelect() { const select = document.getElementById('infControleur'); if (!select) return; select.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + allControleurs.map(c => '<option value="' + c + '">' + c + '</option>').join(''); }
+        function renderControleurs() { const container = document.getElementById('controleursList'); if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + allControleurs.map((nom, i) => '<div class="carte-item" style="border-left-color:#1565c0;"><div class="carte-item-name">👮 ' + nom + '</div><button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button></div>').join(''); }
+        async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleursToAllBases(); document.getElementById('newControleurNom').value = ''; renderControleurs(); showAlert('✅ Ajouté', 'success'); }
+        async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleursToAllBases(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
+        async function saveControleursToAllBases() { const bases = [{ db: dbBreitmatt }, { db: dbCarpodrome }, { db: dbHardt }]; for (const base of bases) { if (!base.db) continue; try { await base.db.ref('controleurs').set(allControleurs); } catch(e) {} } }
+
+        function editFiche(index) { const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const f = item.fiche; document.getElementById('editFicheId').value = f.id || ''; document.getElementById('editFicheIndex').value = index; document.getElementById('editNom').value = f.nom || ''; document.getElementById('editPrenom').value = f.prenom || ''; document.getElementById('editAdresse').value = f.adresse || ''; document.getElementById('editCodePostal').value = f.codePostal || ''; document.getElementById('editVille').value = f.ville || ''; document.getElementById('editTelephone').value = f.telephone || ''; document.getElementById('editUrgenceNom').value = f.urgence?.nom || ''; document.getElementById('editUrgencePrenom').value = f.urgence?.prenom || ''; document.getElementById('editUrgenceTel').value = f.urgence?.telephone || ''; showPage('editFiche'); }
+        document.getElementById('editFicheForm').addEventListener('submit', async e => { e.preventDefault(); const index = document.getElementById('editFicheIndex').value; const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const updatedData = { ...item.fiche, nom: document.getElementById('editNom').value.toUpperCase().trim(), prenom: document.getElementById('editPrenom').value.trim(), adresse: document.getElementById('editAdresse').value.trim(), codePostal: document.getElementById('editCodePostal').value.trim(), ville: document.getElementById('editVille').value.trim(), telephone: document.getElementById('editTelephone').value.trim(), urgence: { nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('editUrgencePrenom').value.trim(), telephone: document.getElementById('editUrgenceTel').value.trim() } }; try { await dbBreitmatt.ref('fiches/' + index).set(updatedData); showAlert('✅ Modifié !', 'success'); await loadAllData(); loadAdminFiches(); pageHistory.pop(); showPage('admin'); } catch(e) { showAlert('❌ Erreur', 'error'); } });
+
+        function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
+        document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
+        document.getElementById('deleteCancelBtn').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbBreitmatt.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); await loadAllData(); loadAdminFiches(); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
+
+        document.getElementById('codePostal').addEventListener('input', async function() { const cp = this.value.trim(), sel = document.getElementById('ville'); if (cp.length === 5) { sel.innerHTML = '<option>🔄 Recherche...</option>'; sel.disabled = true; try { const r = await fetch('https://geo.api.gouv.fr/communes?codePostal='+cp+'&fields=nom&format=json'); const v = await r.json(); if (v.length === 0) sel.innerHTML = '<option value="">❌ Aucune</option>'; else { sel.innerHTML = '<option value="">-- Sélectionnez --</option>' + v.map(x => '<option value="'+x.nom+'">'+x.nom+'</option>').join(''); sel.disabled = false; if (v.length === 1) sel.value = v[0].nom; } updateValidateBtn(); } catch(e) { sel.innerHTML = '<option value="">❌ Erreur</option>'; } } else { sel.innerHTML = '<option value="">Entrez le code postal</option>'; sel.disabled = true; } });
+        document.getElementById('ville').addEventListener('change', updateValidateBtn);
+
+        document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.addEventListener('change', function() { const item = this.closest('.reglement-item'); const reglement = item.dataset.reglement; const readBtn = item.querySelector('.reglement-read-btn'); item.classList.toggle('checked', this.checked); readBtn.disabled = !this.checked; if (!this.checked) { reglementsRead[reglement] = false; readBtn.textContent = '📖 Lire'; readBtn.classList.remove('read'); } updateValidateBtn(); }); });
+        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; document.getElementById('modalTitle').textContent = reglements[reglement].title; document.getElementById('modalBody').innerHTML = reglements[reglement].content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
+        document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
+        document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
+        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
+        document.getElementById('modalValidateBtn').addEventListener('click', () => { if (document.getElementById('readConfirmCheckbox').checked && currentReglementReading) { reglementsRead[currentReglementReading] = true; const btn = document.querySelector('.reglement-read-btn[data-for="' + currentReglementReading + '"]'); btn.textContent = '✅ Lu'; btn.classList.add('read'); document.getElementById('reglementModal').classList.remove('visible'); updateValidateBtn(); } });
+
+        function updateValidateBtn() { const formValid = document.getElementById('ficheForm').checkValidity() && document.getElementById('ville').value; const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const allCheckedRead = checkedReglements.length > 0 && checkedReglements.every(r => reglementsRead[r]); document.getElementById('validateBtn').disabled = !(formValid && allCheckedRead); }
+        document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
+
+        function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
+        document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbBreitmatt.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbBreitmatt.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
+
+        async function loadAllData() { await loadFiches(); await loadAllInfractions(); await loadMailsSent(); await loadControleurs(); updateHistoriqueCounts(); }
+        async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbBreitmatt.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
+        async function loadAllInfractions() { allInfractions = []; await loadInfFromDB(dbBreitmatt, 'Breitmatt'); if (dbCarpodrome) await loadInfFromDB(dbCarpodrome, 'Carpodrome'); if (dbHardt) await loadInfFromDB(dbHardt, 'Hardt'); }
+        async function loadInfFromDB(db, src) { try { const a = await db.ref('infractions/avertissements').once('value'); if (a.val()) Object.values(a.val()).forEach(v => { if (v && v.nom && !v.archived) allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'avertissement', motif: v.motif || '', date: v.date || '', source: src }); }); const b = await db.ref('infractions/bannis').once('value'); if (b.val()) Object.values(b.val()).forEach(v => { if (v && v.nom) { let motifStr = ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else { motifStr = v.motifs; } } else if (v.motif) { motifStr = v.motif; } allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'bannissement', motif: motifStr, date: v.date || '', source: src }); } }); } catch(e) {} }
+
+        function renderPecheursAlphabetique(filter = '') { const container = document.getElementById('searchResults'); const countEl = document.getElementById('pecheursCount'); let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } countEl.textContent = sorted.length; if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } container.innerHTML = sorted.map((f, i) => { const inf = getInf(f.nom, f.prenom); const banned = inf.some(x => x.type === 'bannissement'); const warn = inf.some(x => x.type === 'avertissement'); let badge = '<span class="badge badge-ok">✅ OK</span>'; if (banned) badge = '<span class="badge badge-banned">🚫 BANNI</span>'; else if (warn) badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; }).join(''); }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/'/g, "\\'").replace(/"/g, '\\"'); }
+        function showDetailFromList(index, filter) { let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter && filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } if (sorted[index]) showDetail(sorted[index]); }
+
+        document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
+        function getInf(nom, prenom) { return allInfractions.filter(i => (i.nom||'').toUpperCase() === (nom||'').toUpperCase() && (i.prenom||'').toLowerCase() === (prenom||'').toLowerCase()); }
+        async function showDetail(f) { document.getElementById('detailName').textContent = f.nom + ' ' + f.prenom; const st = document.getElementById('detailStatus'); st.textContent = '⏳ Chargement...'; st.className = 'detail-status'; const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement || '').toUpperCase(); const emailInfo = f.email ? '<div class="info-item"><div class="info-item-label">📧 Email</div><div class="info-item-value">' + f.email + '</div></div>' : ''; document.getElementById('detailInfo').innerHTML = '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">' + f.adresse + '<br>' + f.codePostal + ' ' + f.ville + '</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">' + f.telephone + '</div></div>' + emailInfo + '<div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">' + (f.urgence?.nom || '') + ' ' + (f.urgence?.prenom || '') + '<br>' + (f.urgence?.telephone || '') + '</div></div><div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">' + reglementsList + '</div></div><div class="info-item"><div class="info-item-label">📅 Inscription</div><div class="info-item-value">' + (f.date || '') + '</div></div>'; showPage('detail'); const infractions = getInf(f.nom, f.prenom); const banned = infractions.some(x => x.type === 'bannissement'); const warn = infractions.some(x => x.type === 'avertissement'); if (banned) { st.textContent = '🚫 BANNI'; st.className = 'detail-status badge-banned'; } else if (warn) { st.textContent = '⚠️ Avertissement'; st.className = 'detail-status badge-warning'; } else { st.textContent = '✅ RAS'; st.className = 'detail-status badge-ok'; } const is = document.getElementById('detailInfractions'); if (infractions.length > 0) { is.style.display = 'block'; is.className = 'infractions-section' + (banned ? ' banned' : ''); is.innerHTML = '<div class="infractions-header">' + (banned ? '🚫' : '⚠️') + ' Infractions (' + infractions.length + ')</div>' + infractions.map(x => { let sc = 'source-breitmatt'; if (x.source === 'Carpodrome') sc = 'source-carpodrome'; else if (x.source === 'Hardt') sc = 'source-hardt'; return '<div class="infraction-item ' + (x.type === 'bannissement' ? 'banned' : '') + '"><div class="infraction-meta"><span class="badge-source ' + sc + '">' + x.source + '</span><span class="infraction-date">📅 ' + (x.date || '?') + '</span>' + (x.controleurSanction ? '<span style="color:#1565c0;font-weight:bold;margin-left:5px;">👮 ' + x.controleurSanction + '</span>' : '') + '</div><div class="infraction-type">' + (x.type === 'bannissement' ? '🚫 BANNI' : '⚠️ Avert.') + '</div>' + (x.motif ? '<div class="infraction-motif"><strong>Motif:</strong> ' + x.motif + '</div>' : '') + '</div>'; }).join(''); } else { is.style.display = 'none'; } }
+
+        document.querySelectorAll('.infraction-type-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); selectedInfractionType = b.dataset.type; }));
+        document.getElementById('infractionForm').addEventListener('submit', async e => { e.preventDefault(); const lieu = document.getElementById('infLieu').value; const controleurSanction = document.getElementById('infControleur').value; if (!controleurSanction) { showAlert('❌ Sélectionnez un contrôleur', 'error'); return; } const data = { nom: document.getElementById('infNom').value.toUpperCase().trim(), prenom: document.getElementById('infPrenom').value.trim(), motif: document.getElementById('infMotif').value.trim(), controleurSanction: controleurSanction, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; let targetDB = dbBreitmatt; if (lieu === 'Carpodrome' && dbCarpodrome) targetDB = dbCarpodrome; else if (lieu === 'Hardt' && dbHardt) targetDB = dbHardt; try { if (selectedInfractionType === 'avertissement') { const avertSnap = await targetDB.ref('infractions/avertissements').once('value'); const avertissements = avertSnap.val() ? Object.values(avertSnap.val()) : []; const userAvertissements = avertissements.filter(a => a && a.nom && a.nom.toUpperCase() === data.nom.toUpperCase() && a.prenom && a.prenom.toLowerCase() === data.prenom.toLowerCase() && !a.archived); const idx = avertissements.length; await targetDB.ref('infractions/avertissements/' + idx).set(data); if (userAvertissements.length >= 2) { const motifs = userAvertissements.map(a => ({ motif: a.motif || 'Non spécifié', date: a.date || '', controleurSanction: a.controleurSanction || '' })); motifs.push({ motif: data.motif || 'Non spécifié', date: data.date, controleurSanction: controleurSanction }); const banSnap = await targetDB.ref('infractions/bannis').once('value'); const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; await targetDB.ref('infractions/bannis/' + banIdx).set({ nom: data.nom, prenom: data.prenom, motifs: motifs, controleurSanction: controleurSanction, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }); const allAvert = avertSnap.val(); for (const key in allAvert) { if (allAvert[key] && allAvert[key].nom && allAvert[key].nom.toUpperCase() === data.nom.toUpperCase() && allAvert[key].prenom && allAvert[key].prenom.toLowerCase() === data.prenom.toLowerCase()) { await targetDB.ref('infractions/avertissements/' + key + '/archived').set(true); } } await targetDB.ref('infractions/avertissements/' + idx + '/archived').set(true); showAlert('🚫 3 avertissements → BANNI de ' + lieu + ' !', 'error'); } else { showAlert('✅ Avertissement (' + (userAvertissements.length + 1) + '/3) par ' + controleurSanction, 'success'); } } else { const path = 'infractions/bannis'; const snap = await targetDB.ref(path).once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await targetDB.ref(path + '/' + idx).set(data); showAlert('✅ Bannissement par ' + controleurSanction, 'success'); } document.getElementById('infractionForm').reset(); document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); document.querySelector('.infraction-type-btn').classList.add('selected'); selectedInfractionType = 'avertissement'; loadAllData(); showPage('menu'); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
+
+        function updateHistoriqueCounts() { const breitmattAvert = allInfractions.filter(i => i.source === 'Breitmatt' && i.type === 'avertissement').length; const breitmattBan = allInfractions.filter(i => i.source === 'Breitmatt' && i.type === 'bannissement').length; const carpoAvert = allInfractions.filter(i => i.source === 'Carpodrome' && i.type === 'avertissement').length; const carpoBan = allInfractions.filter(i => i.source === 'Carpodrome' && i.type === 'bannissement').length; const hardtAvert = allInfractions.filter(i => i.source === 'Hardt' && i.type === 'avertissement').length; const hardtBan = allInfractions.filter(i => i.source === 'Hardt' && i.type === 'bannissement').length; document.getElementById('countBreitmatt').textContent = '⚠️ ' + breitmattAvert + ' | 🚫 ' + breitmattBan; document.getElementById('countCarpodrome').textContent = '⚠️ ' + carpoAvert + ' | 🚫 ' + carpoBan; document.getElementById('countHardt').textContent = '⚠️ ' + hardtAvert + ' | 🚫 ' + hardtBan; }
+
+        async function showEtangDetail(etang) { currentEtang = etang; currentTab = 'avertissements'; let icon = '🏞️'; if (etang === 'Carpodrome') icon = '🎣'; else if (etang === 'Hardt') icon = '🐟'; document.getElementById('etangDetailTitle').textContent = icon + ' ' + etang; await loadEtangData(etang); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelector('.tab-btn').classList.add('active'); renderEtangInfractions(); showPage('etangDetail'); }
+        async function loadEtangData(etang) { let db = dbBreitmatt; if (etang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (etang === 'Hardt' && dbHardt) db = dbHardt; etangData = { avertissements: [], bannis: [], archives: [] }; try { const avertSnap = await db.ref('infractions/avertissements').once('value'); if (avertSnap.val()) { Object.entries(avertSnap.val()).forEach(([key, v]) => { if (v && v.nom) { etangData.avertissements.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: v.motif || '', date: v.date || '', controleurSanction: v.controleurSanction || '', archived: v.archived || false }); } }); } const banSnap = await db.ref('infractions/bannis').once('value'); if (banSnap.val()) { Object.entries(banSnap.val()).forEach(([key, v]) => { if (v && v.nom) { let motifStr = ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || '')) + (m.controleurSanction ? ' (👮' + m.controleurSanction + ')' : '')).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || '')) + (m.controleurSanction ? ' (👮' + m.controleurSanction + ')' : '')).join(' | '); } else { motifStr = v.motifs; } } else if (v.motif) { motifStr = v.motif; } etangData.bannis.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: motifStr, date: v.date || '', controleurSanction: v.controleurSanction || '' }); } }); } const archivesSnap = await db.ref('infractions/archives').once('value'); if (archivesSnap.val()) { Object.entries(archivesSnap.val()).forEach(([key, v]) => { if (v && v.nom) { let motifStr = v.motif || ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else { motifStr = v.motifs; } } etangData.archives.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: motifStr, date: v.date || '', type: v.type || 'avertissement', controleurSanction: v.controleurSanction || '', dateArchive: v.dateArchive || '' }); } }); } } catch(e) {} document.getElementById('tabCountAvert').textContent = etangData.avertissements.filter(a => !a.archived).length; document.getElementById('tabCountBan').textContent = etangData.bannis.length; document.getElementById('tabCountArchives').textContent = etangData.archives.length; }
+        function switchTab(tab) { currentTab = tab; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); if (tab === 'avertissements') { document.querySelectorAll('.tab-btn')[0].classList.add('active'); } else if (tab === 'bannis') { document.querySelectorAll('.tab-btn')[1].classList.add('active'); } else { document.querySelectorAll('.tab-btn')[2].classList.add('active'); } renderEtangInfractions(); }
+        function renderEtangInfractions() { const container = document.getElementById('etangInfractionsList'); let list; if (currentTab === 'avertissements') { list = etangData.avertissements.filter(a => !a.archived); } else if (currentTab === 'bannis') { list = etangData.bannis; } else { list = etangData.archives; } if (list.length === 0) { container.innerHTML = '<div class="no-infractions">Aucune infraction</div>'; return; } if (currentTab === 'archives') { container.innerHTML = list.map(item => '<div class="hist-infraction-item archive-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '?') + '</div><div class="archive-type">' + (item.type === 'bannissement' ? '🚫 Ban' : '⚠️ Avert.') + '</div>' + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;">👮 ' + item.controleurSanction + '</div>' : '') + (item.dateArchive ? '<div class="archive-date">📦 ' + item.dateArchive + '</div>' : '') + '</div><button class="hist-delete-btn" style="background:#616161" onclick="deleteArchive(\'' + item.key + '\')">🗑️</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); } else { container.innerHTML = list.map(item => '<div class="hist-infraction-item ' + (currentTab === 'bannis' ? 'banned' : '') + '"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '?') + '</div>' + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="deleteInfraction(\'' + item.key + '\', \'' + currentTab + '\')">📦 Archiver</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); } }
+        async function deleteInfraction(key, type) { const pwd = prompt('🔐 Mot de passe admin:'); if (pwd !== ADMIN_PASSWORD) { showAlert('❌ Mot de passe incorrect', 'error'); return; } if (!confirm('Archiver cette infraction ?')) return; let db = dbBreitmatt; if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (currentEtang === 'Hardt' && dbHardt) db = dbHardt; const path = type === 'avertissements' ? 'infractions/avertissements/' : 'infractions/bannis/'; try { const snap = await db.ref(path + key).once('value'); const data = snap.val(); if (data) { const archiveData = { ...data, type: type === 'avertissements' ? 'avertissement' : 'bannissement', dateArchive: new Date().toLocaleDateString('fr-FR') }; await db.ref('infractions/archives').push(archiveData); await db.ref(path + key).remove(); showAlert('✅ Archivé', 'success'); } await loadEtangData(currentEtang); renderEtangInfractions(); loadAllData(); } catch(e) { showAlert('❌ Erreur', 'error'); } }
+        async function deleteArchive(key) { const pwd = prompt('🔐 Mot de passe admin:'); if (pwd !== ADMIN_PASSWORD) { showAlert('❌ Mot de passe incorrect', 'error'); return; } if (!confirm('Supprimer définitivement ?')) return; if (!confirm('DERNIÈRE CONFIRMATION - irréversible !')) return; let db = dbBreitmatt; if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (currentEtang === 'Hardt' && dbHardt) db = dbHardt; try { await db.ref('infractions/archives/' + key).remove(); showAlert('✅ Supprimé', 'success'); await loadEtangData(currentEtang); renderEtangInfractions(); loadAllData(); } catch(e) { showAlert('❌ Erreur', 'error'); } }
+
+        function switchFicheTab(tab) { document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderMailsSent(); } }
+
+        async function loadMailsSent() { try { const snap = await dbBreitmatt.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
+        function renderMailsSent() { const container = document.getElementById('mailsSentList'); if (mailsSent.length === 0) { container.innerHTML = '<div class="no-results">Aucun mail envoyé</div>'; return; } const sorted = [...mailsSent].sort((a, b) => new Date(b.dateEnvoi || 0) - new Date(a.dateEnvoi || 0)); container.innerHTML = '<div class="cartes-count">📧 ' + sorted.length + ' mail(s)</div>' + sorted.map((m, i) => '<div class="hist-infraction-item mail-sent"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + (m.nom || '') + ' ' + (m.prenom || '') + '</div><div class="hist-infraction-date">📧 ' + m.email + '</div><div style="font-size:11px;color:#999;margin-top:3px;">📅 ' + m.dateEnvoi + '</div></div><button class="hist-delete-btn" onclick="deleteMailSent(' + i + ')">🗑️</button></div></div>').join(''); }
+        async function deleteMailSent(index) { if (!confirm('Supprimer cet envoi ?')) return; const sorted = [...mailsSent].sort((a, b) => new Date(b.dateEnvoi || 0) - new Date(a.dateEnvoi || 0)); const itemToDelete = sorted[index]; const originalIndex = mailsSent.findIndex(m => m.email === itemToDelete.email && m.dateEnvoi === itemToDelete.dateEnvoi); if (originalIndex !== -1) { mailsSent.splice(originalIndex, 1); await saveMailsSent(); renderMailsSent(); showAlert('✅ Supprimé', 'success'); } }
+        async function envoyerFormulaire() { const nom = document.getElementById('envoyerNom').value.trim().toUpperCase(); const prenom = document.getElementById('envoyerPrenom').value.trim(); const email = document.getElementById('emailPecheur').value.trim(); const status = document.getElementById('envoyerStatus'); if (!nom || !prenom) { status.textContent = '❌ Nom et prénom requis'; status.className = 'envoyer-status error'; return; } if (!email) { status.textContent = '❌ Email requis'; status.className = 'envoyer-status error'; return; } const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) { status.textContent = '❌ Email invalide'; status.className = 'envoyer-status error'; return; } status.textContent = '⏳ Envoi en cours...'; status.className = 'envoyer-status loading'; document.getElementById('btnEnvoyerFormulaire').disabled = true; try { const formulaireUrlAvecEmail = FORMULAIRE_URL + '?email=' + encodeURIComponent(email); const templateParams = { to_email: email, formulaire_url: formulaireUrlAvecEmail, date_envoi: new Date().toLocaleString('fr-FR') }; await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); const mailEntry = { nom: nom, prenom: prenom, email: email, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; mailsSent.push(mailEntry); await saveMailsSent(); status.innerHTML = '✅ Email envoyé à ' + prenom + ' ' + nom + ' !'; status.className = 'envoyer-status success'; document.getElementById('envoyerNom').value = ''; document.getElementById('envoyerPrenom').value = ''; document.getElementById('emailPecheur').value = ''; } catch (error) { status.textContent = '❌ Erreur EmailJS'; status.className = 'envoyer-status error'; } document.getElementById('btnEnvoyerFormulaire').disabled = false; }
+
+
+        function showAlert(msg, type) { const a = document.getElementById('alert'); a.textContent = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 4000); }
     </script>
 </body>
 </html>
