@@ -478,9 +478,18 @@
         emailjs.init(EMAILJS_PUBLIC_KEY);
 
         const reglements = {
-            carpodrome: { title: "🎣 RÈGLEMENT CARPODROME 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher du soleil</p><ul><li>Réservation obligatoire 24h avant</li><li>Pêche No Kill obligatoire</li><li>1 ligne par pêcheur, max 13m</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Pêche de nuit</li><li>❌ Graines crues</li><li>❌ Hameçons avec ardillons</li></ul>" },
-            hardt: { title: "🐟 RÈGLEMENT HARDT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>Pêche de nuit: 20h→8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Bateau amorceur</li><li>❌ Sacs de conservation</li><li>❌ Graines crues</li></ul>" },
-            breitmatt: { title: "🌊 RÈGLEMENT BREITMATT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>2 lignes par pêcheur</li><li>Pêche No Kill obligatoire</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Bateau amorceur</li><li>❌ Graines crues</li></ul>" }
+            carpodrome: { 
+                title: "🎣 RÈGLEMENT CARPODROME 2026", 
+                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>Du 1er mars au 4 mai : samedis, dimanches et jours fériés</li><li>Du 5 mai au 30 octobre : tous les jours</li><li>Pêche de 8h à 19h (mars-avril et sept-oct)</li><li>Pêche de 8h à 20h (mai à août)</li><li>Réservation obligatoire 24h avant</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li><li>Jours d'événements : 10€ pour tous</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Canne au coup uniquement, longueur max 13m</li><li>1 ligne par pêcheur, max 2 pêcheurs par poste</li><li>Pêche sous la canne, zone du poste réservé</li><li>Amorçage : coupelle ou fronde uniquement</li><li>Matériel obligatoire : bassine ou tapis réception (rebord 5cm mini)</li><li>Hameçon sans ardillon, taille max n°10</li><li>Bourriche autorisée poisson blanc uniquement</li><li>Carpes et tanches : relâchées immédiatement</li><li>Esches : végétales, vers, asticots, pellets, baby corn</li><li>Graines cuites obligatoirement</li></ul><h3>👶 Mineurs</h3><ul><li>À partir de 12 ans, journée uniquement</li><li>Moins de 12 ans : accompagnement obligatoire</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Feux au sol et barbecues</li><li>Pêche de nuit</li><li>Camping (seuls parapluies autorisés)</li><li>Baignade, canotage</li><li>Mutilation ou marquage des poissons</li><li>Franglaise, Feeder</li><li>Graines crues, pêche au pain</li><li>Hameçons avec ardillons</li><li>Pêche en surface</li></ul><h3>🗑️ Déchets</h3><ul><li>Ramener ses déchets - Amende possible : 150€</li></ul>" 
+            },
+            hardt: { 
+                title: "🐟 RÈGLEMENT HARDT 2026", 
+                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>Pêche de nuit : 20h → 8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Matériel obligatoire : tapis réception + épuisette adaptée</li><li>Hameçon sans ardillon</li><li>Graines cuites obligatoirement</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Bateau amorceur</li><li>Sacs de conservation</li><li>Graines crues</li><li>Feux et barbecues</li></ul>" 
+            },
+            breitmatt: { 
+                title: "🌊 RÈGLEMENT BREITMATT 2026", 
+                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>2 lignes par pêcheur</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Matériel obligatoire : tapis réception + épuisette adaptée</li><li>Hameçon sans ardillon</li><li>Graines cuites obligatoirement</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Feux et barbecues</li><li>Bateau amorceur</li><li>Graines crues</li></ul>" 
+            }
         };
 
         let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
@@ -831,8 +840,16 @@
                 const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; 
                 await dbCentral.ref('infractions/bannis/' + banIdx).set(exclusionData); 
                 
-                // Archiver l'avertissement existant
-                await dbCentral.ref('infractions/avertissements/' + pendingExclusion.existingAvert.key + '/archived').set(true); 
+                // Archiver proprement l'avertissement existant
+                const archiveData = {
+                    ...pendingExclusion.existingAvert,
+                    type: 'avertissement',
+                    dateArchive: new Date().toLocaleDateString('fr-FR'),
+                    raisonArchive: 'Converti en exclusion'
+                };
+                delete archiveData.key;
+                await dbCentral.ref('infractions/archives').push(archiveData);
+                await dbCentral.ref('infractions/avertissements/' + pendingExclusion.existingAvert.key).remove(); 
                 
                 const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
                 const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
