@@ -104,6 +104,8 @@
         .badge-ok { background: #e8f5e9; color: #2e7d32; }
         .badge-warning { background: #fff3e0; color: #f57c00; }
         .badge-banned { background: #ffebee; color: #c62828; }
+        .badge-temp { background: #fff3e0; color: #ff9800; }
+        .badge-expired { background: #e8f5e9; color: #2e7d32; }
         .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
         .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
         .source-carpodrome { background: #e3f2fd; color: #1565c0; }
@@ -162,6 +164,8 @@
         .tab-btn span { background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 12px; }
         .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
         .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
+        .hist-infraction-item.temp-exclusion { border-left-color: #ff9800; background: #fff3e0; }
+        .hist-infraction-item.expired-exclusion { border-left-color: #4caf50; background: #e8f5e9; }
         .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
         .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
         .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
@@ -211,7 +215,16 @@
         .cartes-count { background: #e8f5e9; color: #2e7d32; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; text-align: center; }
         .pecheurs-alpha-title { font-size: 16px; color: #1a472a; margin: 20px 0 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
         .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } }
+        .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
+        .reglement-info strong { color: #1565c0; }
+        .exclusion-type-choice { display: flex; gap: 15px; margin: 20px 0; }
+        .exclusion-type-option { flex: 1; padding: 20px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .exclusion-type-option:hover { border-color: #dc3545; }
+        .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
+        .exclusion-type-option .icon { font-size: 32px; margin-bottom: 10px; }
+        .exclusion-type-option .title { font-weight: 700; color: #333; }
+        .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -243,8 +256,8 @@
                 <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou bannissement</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Voir par étang (Breitmatt, Carpodrome, Hardt)</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
@@ -286,7 +299,6 @@
                         <div class="envoyer-icon">✉️</div>
                         <h3 class="envoyer-title">Envoyer le formulaire par email</h3>
                         <p class="envoyer-desc">Le pêcheur recevra un lien pour remplir sa fiche de renseignement en ligne.</p>
-                        
                         <div class="form-group required" style="text-align: left;"><label for="envoyerNom">Nom</label><input type="text" id="envoyerNom" placeholder="NOM" required></div>
                         <div class="form-group required" style="text-align: left;"><label for="envoyerPrenom">Prénom</label><input type="text" id="envoyerPrenom" placeholder="Prénom" required></div>
                         <div class="form-group required" style="text-align: left;"><label for="emailPecheur">Email</label><input type="email" id="emailPecheur" placeholder="pecheur@email.com" required></div>
@@ -321,12 +333,16 @@
         <div class="page" id="pageInfractions">
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">⚠️ Ajouter une Infraction</h1>
+                <div class="reglement-info">
+                    <strong>📜 Selon le règlement 2026 :</strong><br>
+                    • 1ère infraction → Avertissement<br>
+                    • 2ème infraction → Exclusion (temporaire 1 mois ou définitive)
+                </div>
                 <form id="infractionForm">
                     <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
                     <div class="form-group required"><label for="infPrenom">Prénom</label><input type="text" id="infPrenom" required></div>
-                    <div class="form-group required"><label>Type</label><div class="infraction-type-btns"><button type="button" class="infraction-type-btn selected" data-type="avertissement">⚠️ Avertissement</button><button type="button" class="infraction-type-btn banned" data-type="bannissement">🚫 Bannissement</button></div></div>
-                    <div class="form-group required"><label for="infMotif">Motif</label><textarea id="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea></div>
-                    <div class="form-group required"><label for="infLieu">Lieu</label><select id="infLieu" required><option value="Breitmatt">🌊 Breitmatt</option><option value="Carpodrome">🎣 Carpodrome</option><option value="Hardt">🐟 Hardt</option></select></div>
+                    <div class="form-group required"><label for="infMotif">Motif de l'infraction</label><textarea id="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea></div>
+                    <div class="form-group required"><label for="infLieu">Lieu de l'infraction</label><select id="infLieu" required><option value="Breitmatt">🌊 Breitmatt</option><option value="Carpodrome">🎣 Carpodrome</option><option value="Hardt">🐟 Hardt</option></select></div>
                     <div class="form-group required"><label for="infControleur">👮 Contrôleur</label><select id="infControleur" required><option value="">-- Choisir --</option></select></div>
                     <button type="submit" class="btn btn-warning">⚠️ Enregistrer l'infraction</button>
                 </form>
@@ -377,24 +393,13 @@
         
         <div class="page" id="pageHistorique">
             <div class="page-content"><div class="page-card">
-                <h1 class="page-title">📜 Historique par Étang</h1>
-                <div class="etang-cards">
-                    <div class="etang-card" onclick="showEtangDetail('Breitmatt')" style="border-left: 5px solid #2e7d32;"><div class="etang-icon">🏞️</div><div class="etang-info"><div class="etang-name">Breitmatt</div><div class="etang-count" id="countBreitmatt">...</div></div><div class="etang-arrow">›</div></div>
-                    <div class="etang-card" onclick="showEtangDetail('Carpodrome')" style="border-left: 5px solid #1565c0;"><div class="etang-icon">🎣</div><div class="etang-info"><div class="etang-name">Carpodrome</div><div class="etang-count" id="countCarpodrome">...</div></div><div class="etang-arrow">›</div></div>
-                    <div class="etang-card" onclick="showEtangDetail('Hardt')" style="border-left: 5px solid #7b1fa2;"><div class="etang-icon">🐟</div><div class="etang-info"><div class="etang-name">Hardt</div><div class="etang-count" id="countHardt">...</div></div><div class="etang-arrow">›</div></div>
-                </div>
-            </div></div>
-        </div>
-        
-        <div class="page" id="pageEtangDetail">
-            <div class="page-content"><div class="page-card">
-                <h1 class="page-title" id="etangDetailTitle">📜 Infractions</h1>
+                <h1 class="page-title">📜 Historique des Infractions</h1>
                 <div class="tabs-container">
-                    <button class="tab-btn active" onclick="switchTab('avertissements')">⚠️ Avert. <span id="tabCountAvert">0</span></button>
-                    <button class="tab-btn" onclick="switchTab('bannis')">🚫 Bannis <span id="tabCountBan">0</span></button>
-                    <button class="tab-btn" onclick="switchTab('archives')">📦 Archives <span id="tabCountArchives">0</span></button>
+                    <button class="tab-btn active" onclick="switchHistTab('avertissements')">⚠️ Avert. <span id="tabCountAvert">0</span></button>
+                    <button class="tab-btn" onclick="switchHistTab('bannis')">🚫 Exclusions <span id="tabCountBan">0</span></button>
+                    <button class="tab-btn" onclick="switchHistTab('archives')">📦 Archives <span id="tabCountArchives">0</span></button>
                 </div>
-                <div id="etangInfractionsList"></div>
+                <div id="historiqueList"></div>
             </div></div>
         </div>
         
@@ -430,16 +435,40 @@
             <div class="modal-body"><p>Supprimer la fiche de <strong id="deleteNom"></strong> ?</p><p style="color:#c62828;font-weight:500;margin-top:10px">Action irréversible.</p><div style="display:flex;gap:10px;margin-top:20px"><button class="btn btn-primary" id="deleteCancelBtn" style="flex:1">Annuler</button><button class="btn btn-danger" id="deleteConfirmBtn" style="flex:1">🗑️ Supprimer</button></div></div>
         </div>
     </div>
+    
+    <!-- Modal Exclusion -->
+    <div class="modal-overlay" id="exclusionModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" style="background: #dc3545;"><h2>🚫 Exclusion obligatoire</h2><button class="modal-close" onclick="document.getElementById('exclusionModal').classList.remove('visible')">&times;</button></div>
+            <div class="modal-body">
+                <div id="exclusionInfo" style="background:#fff3cd; padding:15px; border-radius:10px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
+                <p style="font-weight:600; margin-bottom:15px;">Choisissez le type d'exclusion :</p>
+                <div class="exclusion-type-choice">
+                    <div class="exclusion-type-option" onclick="selectExclusionType('temporaire')">
+                        <div class="icon">⏱️</div>
+                        <div class="title">Temporaire</div>
+                        <div class="desc">1 mois</div>
+                    </div>
+                    <div class="exclusion-type-option" onclick="selectExclusionType('definitive')">
+                        <div class="icon">🚫</div>
+                        <div class="title">Définitive</div>
+                        <div class="desc">Sans limite</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                    <button class="btn btn-danger" id="btnConfirmExclusion" onclick="confirmerExclusion()" disabled>🚫 Confirmer l'exclusion</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        const appBreitmatt = firebase.initializeApp({ databaseURL: "https://appli-controleur-gunder-default-rtdb.europe-west1.firebasedatabase.app" });
-        const dbBreitmatt = firebase.database(appBreitmatt);
-        let dbCarpodrome = null, dbHardt = null;
-        try { dbCarpodrome = firebase.database(firebase.initializeApp({ databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app" }, 'carpodrome')); } catch(e) {}
-        try { dbHardt = firebase.database(firebase.initializeApp({ databaseURL: "https://resahardt-default-rtdb.europe-west1.firebasedatabase.app" }, 'hardt')); } catch(e) {}
+        // BASE CENTRALE UNIQUE pour toutes les infractions
+        const appCentral = firebase.initializeApp({ databaseURL: "https://appli-controleur-gunder-default-rtdb.europe-west1.firebasedatabase.app" });
+        const dbCentral = firebase.database(appCentral);
 
         const ADMIN_PASSWORD = "admin";
         const EMAILJS_PUBLIC_KEY = "JbyCmsMLDLD4d9W7G";
@@ -449,16 +478,17 @@
         emailjs.init(EMAILJS_PUBLIC_KEY);
 
         const reglements = {
-            carpodrome: { title: "🎣 RÈGLEMENT CARPODROME 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher du soleil</p><ul><li>Réservation obligatoire 24h avant</li><li>Pêche No Kill obligatoire</li><li>1 ligne par pêcheur, max 13m</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Pêche de nuit</li><li>❌ Graines crues</li><li>❌ Hameçons avec ardillons</li></ul>" },
-            hardt: { title: "🐟 RÈGLEMENT HARDT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>Pêche de nuit: 20h→8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>Interdictions</h3><ul><li>❌ Bateau amorceur</li><li>❌ Sacs de conservation</li><li>❌ Graines crues</li></ul>" },
-            breitmatt: { title: "🌊 RÈGLEMENT BREITMATT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>2 lignes par pêcheur</li><li>Pêche No Kill obligatoire</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Bateau amorceur</li><li>❌ Graines crues</li></ul>" }
+            carpodrome: { title: "🎣 RÈGLEMENT CARPODROME 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher du soleil</p><ul><li>Réservation obligatoire 24h avant</li><li>Pêche No Kill obligatoire</li><li>1 ligne par pêcheur, max 13m</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Pêche de nuit</li><li>❌ Graines crues</li><li>❌ Hameçons avec ardillons</li></ul>" },
+            hardt: { title: "🐟 RÈGLEMENT HARDT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>Pêche de nuit: 20h→8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Bateau amorceur</li><li>❌ Sacs de conservation</li><li>❌ Graines crues</li></ul>" },
+            breitmatt: { title: "🌊 RÈGLEMENT BREITMATT 2026", content: "<h3>Périodes</h3><p>30 min avant lever → 30 min après coucher</p><ul><li>2 lignes par pêcheur</li><li>Pêche No Kill obligatoire</li></ul><h3>Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>Interdictions</h3><ul><li>❌ Feux et barbecues</li><li>❌ Bateau amorceur</li><li>❌ Graines crues</li></ul>" }
         };
 
-        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = [], selectedInfractionType = 'avertissement';
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
         let currentReglementReading = null, deleteTarget = null, mailsSent = [];
-        let currentEtang = '', currentTab = 'avertissements', etangData = { avertissements: [], bannis: [], archives: [] };
+        let currentHistTab = 'avertissements';
         let allCartesValides = [], allControleurs = [];
+        let pendingExclusion = null, selectedExclusionType = null;
 
         // BLOCAGE BOUTON RETOUR ANDROID
         function setupBackButtonBlock() {
@@ -479,6 +509,7 @@
             document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
             document.getElementById('navButtons').classList.toggle('visible', id !== 'menu');
             if (id === 'recherche') renderPecheursAlphabetique();
+            if (id === 'historique') renderHistorique();
         }
         
         document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
@@ -507,26 +538,71 @@
 
         function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } }
 
-        async function loadCartesValides() { const container = document.getElementById('cartesValidesList'); container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; allCartesValides = []; const seen = new Set(); const bases = [{ db: dbBreitmatt, name: 'Breitmatt' }, { db: dbCarpodrome, name: 'Carpodrome' }, { db: dbHardt, name: 'Hardt' }]; for (const base of bases) { if (!base.db) continue; try { const snap = await base.db.ref('validUsers').once('value'); const data = snap.val(); if (data) { const users = Array.isArray(data) ? data : Object.values(data); users.forEach(u => { if (u && u.nom) { const key = (u.nom + '_' + (u.prenom || '')).toUpperCase(); if (!seen.has(key)) { seen.add(key); allCartesValides.push({ nom: u.nom, prenom: u.prenom || '' }); } } }); } } catch(e) {} } allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); renderCartesValides(); }
+        async function loadCartesValides() { 
+            const container = document.getElementById('cartesValidesList'); 
+            container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
+            allCartesValides = []; 
+            try { 
+                const snap = await dbCentral.ref('validUsers').once('value'); 
+                const data = snap.val(); 
+                if (data) { 
+                    const users = Array.isArray(data) ? data : Object.values(data); 
+                    users.forEach(u => { 
+                        if (u && u.nom) { 
+                            allCartesValides.push({ nom: u.nom, prenom: u.prenom || '' }); 
+                        } 
+                    }); 
+                } 
+            } catch(e) {} 
+            allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); 
+            renderCartesValides(); 
+        }
+        
         function renderCartesValides() { const container = document.getElementById('cartesValidesList'); if (allCartesValides.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur</div>'; return; } container.innerHTML = '<div class="cartes-count">🎫 ' + allCartesValides.length + ' pêcheur(s)</div>' + allCartesValides.map((u, i) => '<div class="carte-item"><div class="carte-item-name">' + u.nom + ' ' + u.prenom + '</div><button class="carte-delete-btn" onclick="removeCarteValide(' + i + ')">🗑️</button></div>').join(''); }
-        async function addCarteValide() { const nom = document.getElementById('newCarteNom').value.trim(); const prenom = document.getElementById('newCartePrenom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allCartesValides.some(u => u.nom.toUpperCase() === nom.toUpperCase() && (u.prenom || '').toUpperCase() === prenom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allCartesValides.push({ nom: nom.toUpperCase(), prenom }); allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); await saveCartesValidesToAllBases(); document.getElementById('newCarteNom').value = ''; document.getElementById('newCartePrenom').value = ''; renderCartesValides(); showAlert('✅ Ajouté', 'success'); }
-        async function removeCarteValide(i) { if (!confirm('Retirer ' + allCartesValides[i].nom + ' ?')) return; allCartesValides.splice(i, 1); await saveCartesValidesToAllBases(); renderCartesValides(); showAlert('✅ Retiré', 'success'); }
-        async function saveCartesValidesToAllBases() { const bases = [{ db: dbBreitmatt }, { db: dbCarpodrome }, { db: dbHardt }]; const usersObj = {}; allCartesValides.forEach((u, i) => { usersObj['user_' + i] = u; }); for (const base of bases) { if (!base.db) continue; try { await base.db.ref('validUsers').set(usersObj); } catch(e) {} } }
+        
+        async function addCarteValide() { const nom = document.getElementById('newCarteNom').value.trim(); const prenom = document.getElementById('newCartePrenom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allCartesValides.some(u => u.nom.toUpperCase() === nom.toUpperCase() && (u.prenom || '').toUpperCase() === prenom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allCartesValides.push({ nom: nom.toUpperCase(), prenom }); allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); await saveCartesValides(); document.getElementById('newCarteNom').value = ''; document.getElementById('newCartePrenom').value = ''; renderCartesValides(); showAlert('✅ Ajouté', 'success'); }
+        
+        async function removeCarteValide(i) { if (!confirm('Retirer ' + allCartesValides[i].nom + ' ?')) return; allCartesValides.splice(i, 1); await saveCartesValides(); renderCartesValides(); showAlert('✅ Retiré', 'success'); }
+        
+        async function saveCartesValides() { 
+            const usersObj = {}; 
+            allCartesValides.forEach((u, i) => { usersObj['user_' + i] = u; }); 
+            await dbCentral.ref('validUsers').set(usersObj); 
+        }
 
-        async function loadControleurs() { const container = document.getElementById('controleursList'); container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; allControleurs = []; try { const snap = await dbBreitmatt.ref('controleurs').once('value'); if (snap.val()) allControleurs = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val()); } catch(e) {} if (allControleurs.length === 0) { allControleurs = ['René', 'Patrice', 'Christophe', 'Jean-François', 'Eric', 'Garde pêche Raymond']; await saveControleursToAllBases(); } renderControleurs(); updateInfControleurSelect(); }
+        async function loadControleurs() { 
+            const container = document.getElementById('controleursList'); 
+            container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
+            allControleurs = []; 
+            try { 
+                const snap = await dbCentral.ref('controleurs').once('value'); 
+                if (snap.val()) allControleurs = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val()); 
+            } catch(e) {} 
+            if (allControleurs.length === 0) { 
+                allControleurs = ['René', 'Patrice', 'Christophe', 'Jean-François', 'Eric', 'Garde pêche Raymond']; 
+                await saveControleurs(); 
+            } 
+            renderControleurs(); 
+            updateInfControleurSelect(); 
+        }
+        
         function updateInfControleurSelect() { const select = document.getElementById('infControleur'); if (!select) return; select.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + allControleurs.map(c => '<option value="' + c + '">' + c + '</option>').join(''); }
+        
         function renderControleurs() { const container = document.getElementById('controleursList'); if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + allControleurs.map((nom, i) => '<div class="carte-item" style="border-left-color:#1565c0;"><div class="carte-item-name">👮 ' + nom + '</div><button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button></div>').join(''); }
-        async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleursToAllBases(); document.getElementById('newControleurNom').value = ''; renderControleurs(); showAlert('✅ Ajouté', 'success'); }
-        async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleursToAllBases(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
-        async function saveControleursToAllBases() { const bases = [{ db: dbBreitmatt }, { db: dbCarpodrome }, { db: dbHardt }]; for (const base of bases) { if (!base.db) continue; try { await base.db.ref('controleurs').set(allControleurs); } catch(e) {} } }
+        
+        async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
+        
+        async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleurs(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
+        
+        async function saveControleurs() { await dbCentral.ref('controleurs').set(allControleurs); }
 
         function editFiche(index) { const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const f = item.fiche; document.getElementById('editFicheId').value = f.id || ''; document.getElementById('editFicheIndex').value = index; document.getElementById('editNom').value = f.nom || ''; document.getElementById('editPrenom').value = f.prenom || ''; document.getElementById('editAdresse').value = f.adresse || ''; document.getElementById('editCodePostal').value = f.codePostal || ''; document.getElementById('editVille').value = f.ville || ''; document.getElementById('editTelephone').value = f.telephone || ''; document.getElementById('editUrgenceNom').value = f.urgence?.nom || ''; document.getElementById('editUrgencePrenom').value = f.urgence?.prenom || ''; document.getElementById('editUrgenceTel').value = f.urgence?.telephone || ''; showPage('editFiche'); }
-        document.getElementById('editFicheForm').addEventListener('submit', async e => { e.preventDefault(); const index = document.getElementById('editFicheIndex').value; const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const updatedData = { ...item.fiche, nom: document.getElementById('editNom').value.toUpperCase().trim(), prenom: document.getElementById('editPrenom').value.trim(), adresse: document.getElementById('editAdresse').value.trim(), codePostal: document.getElementById('editCodePostal').value.trim(), ville: document.getElementById('editVille').value.trim(), telephone: document.getElementById('editTelephone').value.trim(), urgence: { nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('editUrgencePrenom').value.trim(), telephone: document.getElementById('editUrgenceTel').value.trim() } }; try { await dbBreitmatt.ref('fiches/' + index).set(updatedData); showAlert('✅ Modifié !', 'success'); await loadAllData(); loadAdminFiches(); pageHistory.pop(); showPage('admin'); } catch(e) { showAlert('❌ Erreur', 'error'); } });
+        document.getElementById('editFicheForm').addEventListener('submit', async e => { e.preventDefault(); const index = document.getElementById('editFicheIndex').value; const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const updatedData = { ...item.fiche, nom: document.getElementById('editNom').value.toUpperCase().trim(), prenom: document.getElementById('editPrenom').value.trim(), adresse: document.getElementById('editAdresse').value.trim(), codePostal: document.getElementById('editCodePostal').value.trim(), ville: document.getElementById('editVille').value.trim(), telephone: document.getElementById('editTelephone').value.trim(), urgence: { nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('editUrgencePrenom').value.trim(), telephone: document.getElementById('editUrgenceTel').value.trim() } }; try { await dbCentral.ref('fiches/' + index).set(updatedData); showAlert('✅ Modifié !', 'success'); await loadAllData(); loadAdminFiches(); pageHistory.pop(); showPage('admin'); } catch(e) { showAlert('❌ Erreur', 'error'); } });
 
         function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
         document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
         document.getElementById('deleteCancelBtn').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
-        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbBreitmatt.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); await loadAllData(); loadAdminFiches(); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbCentral.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); await loadAllData(); loadAdminFiches(); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
 
         document.getElementById('codePostal').addEventListener('input', async function() { const cp = this.value.trim(), sel = document.getElementById('ville'); if (cp.length === 5) { sel.innerHTML = '<option>🔄 Recherche...</option>'; sel.disabled = true; try { const r = await fetch('https://geo.api.gouv.fr/communes?codePostal='+cp+'&fields=nom&format=json'); const v = await r.json(); if (v.length === 0) sel.innerHTML = '<option value="">❌ Aucune</option>'; else { sel.innerHTML = '<option value="">-- Sélectionnez --</option>' + v.map(x => '<option value="'+x.nom+'">'+x.nom+'</option>').join(''); sel.disabled = false; if (v.length === 1) sel.value = v[0].nom; } updateValidateBtn(); } catch(e) { sel.innerHTML = '<option value="">❌ Erreur</option>'; } } else { sel.innerHTML = '<option value="">Entrez le code postal</option>'; sel.disabled = true; } });
         document.getElementById('ville').addEventListener('change', updateValidateBtn);
@@ -542,43 +618,345 @@
         document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
 
         function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
-        document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbBreitmatt.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbBreitmatt.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
+        document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbCentral.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbCentral.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
 
-        async function loadAllData() { await loadFiches(); await loadAllInfractions(); await loadMailsSent(); await loadControleurs(); updateHistoriqueCounts(); }
-        async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbBreitmatt.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
-        async function loadAllInfractions() { allInfractions = []; await loadInfFromDB(dbBreitmatt, 'Breitmatt'); if (dbCarpodrome) await loadInfFromDB(dbCarpodrome, 'Carpodrome'); if (dbHardt) await loadInfFromDB(dbHardt, 'Hardt'); }
-        async function loadInfFromDB(db, src) { try { const a = await db.ref('infractions/avertissements').once('value'); if (a.val()) Object.values(a.val()).forEach(v => { if (v && v.nom && !v.archived) allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'avertissement', motif: v.motif || '', date: v.date || '', source: src }); }); const b = await db.ref('infractions/bannis').once('value'); if (b.val()) Object.values(b.val()).forEach(v => { if (v && v.nom) { let motifStr = ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else { motifStr = v.motifs; } } else if (v.motif) { motifStr = v.motif; } allInfractions.push({ nom: v.nom, prenom: v.prenom || '', type: 'bannissement', motif: motifStr, date: v.date || '', source: src }); } }); } catch(e) {} }
+        async function loadAllData() { 
+            await loadFiches(); 
+            await loadInfractions(); 
+            await loadMailsSent(); 
+            await loadControleurs(); 
+            updateHistoriqueCounts(); 
+        }
+        
+        async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
+        
+        async function loadInfractions() { 
+            allInfractions = { avertissements: [], bannis: [], archives: [] }; 
+            try { 
+                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value'); 
+                if (avertSnap.val()) { 
+                    Object.entries(avertSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom && !v.archived) { 
+                            allInfractions.avertissements.push({ key, ...v }); 
+                        } 
+                    }); 
+                } 
+                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
+                if (banSnap.val()) { 
+                    Object.entries(banSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allInfractions.bannis.push({ key, ...v }); 
+                        } 
+                    }); 
+                } 
+                const archSnap = await dbCentral.ref('infractions/archives').once('value'); 
+                if (archSnap.val()) { 
+                    Object.entries(archSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allInfractions.archives.push({ key, ...v }); 
+                        } 
+                    }); 
+                } 
+            } catch(e) { console.error(e); } 
+        }
 
-        function renderPecheursAlphabetique(filter = '') { const container = document.getElementById('searchResults'); const countEl = document.getElementById('pecheursCount'); let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } countEl.textContent = sorted.length; if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } container.innerHTML = sorted.map((f, i) => { const inf = getInf(f.nom, f.prenom); const banned = inf.some(x => x.type === 'bannissement'); const warn = inf.some(x => x.type === 'avertissement'); let badge = '<span class="badge badge-ok">✅ OK</span>'; if (banned) badge = '<span class="badge badge-banned">🚫 BANNI</span>'; else if (warn) badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; }).join(''); }
-        function escapeHtml(text) { if (!text) return ''; return text.replace(/'/g, "\\'").replace(/"/g, '\\"'); }
+        function updateHistoriqueCounts() { 
+            document.getElementById('tabCountAvert').textContent = allInfractions.avertissements.length; 
+            document.getElementById('tabCountBan').textContent = allInfractions.bannis.length; 
+            document.getElementById('tabCountArchives').textContent = allInfractions.archives.length; 
+        }
+
+        function renderPecheursAlphabetique(filter = '') { const container = document.getElementById('searchResults'); const countEl = document.getElementById('pecheursCount'); let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } countEl.textContent = sorted.length; if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } container.innerHTML = sorted.map((f, i) => { const inf = getInfractionsForUser(f.nom, f.prenom); const exclusion = inf.exclusion; const avert = inf.avertissement; let badge = '<span class="badge badge-ok">✅ OK</span>'; if (exclusion) { if (exclusion.typeExclusion === 'temporaire' && exclusion.dateFin) { const now = new Date(); const fin = new Date(exclusion.dateFin); if (now > fin) { badge = '<span class="badge badge-expired">✅ Exclusion expirée</span>'; } else { badge = '<span class="badge badge-temp">⏱️ EXCLU TEMP.</span>'; } } else { badge = '<span class="badge badge-banned">🚫 EXCLU</span>'; } } else if (avert) { badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; } const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; }).join(''); }
+        
+        function getInfractionsForUser(nom, prenom) { 
+            const nomUpper = (nom || '').toUpperCase(); 
+            const prenomLower = (prenom || '').toLowerCase(); 
+            const avertissement = allInfractions.avertissements.find(a => (a.nom || '').toUpperCase() === nomUpper && (a.prenom || '').toLowerCase() === prenomLower); 
+            const exclusion = allInfractions.bannis.find(b => (b.nom || '').toUpperCase() === nomUpper && (b.prenom || '').toLowerCase() === prenomLower); 
+            return { avertissement, exclusion }; 
+        }
+        
         function showDetailFromList(index, filter) { let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter && filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } if (sorted[index]) showDetail(sorted[index]); }
 
         document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
-        function getInf(nom, prenom) { return allInfractions.filter(i => (i.nom||'').toUpperCase() === (nom||'').toUpperCase() && (i.prenom||'').toLowerCase() === (prenom||'').toLowerCase()); }
-        async function showDetail(f) { document.getElementById('detailName').textContent = f.nom + ' ' + f.prenom; const st = document.getElementById('detailStatus'); st.textContent = '⏳ Chargement...'; st.className = 'detail-status'; const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement || '').toUpperCase(); const emailInfo = f.email ? '<div class="info-item"><div class="info-item-label">📧 Email</div><div class="info-item-value">' + f.email + '</div></div>' : ''; document.getElementById('detailInfo').innerHTML = '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">' + f.adresse + '<br>' + f.codePostal + ' ' + f.ville + '</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">' + f.telephone + '</div></div>' + emailInfo + '<div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">' + (f.urgence?.nom || '') + ' ' + (f.urgence?.prenom || '') + '<br>' + (f.urgence?.telephone || '') + '</div></div><div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">' + reglementsList + '</div></div><div class="info-item"><div class="info-item-label">📅 Inscription</div><div class="info-item-value">' + (f.date || '') + '</div></div>'; showPage('detail'); const infractions = getInf(f.nom, f.prenom); const banned = infractions.some(x => x.type === 'bannissement'); const warn = infractions.some(x => x.type === 'avertissement'); if (banned) { st.textContent = '🚫 BANNI'; st.className = 'detail-status badge-banned'; } else if (warn) { st.textContent = '⚠️ Avertissement'; st.className = 'detail-status badge-warning'; } else { st.textContent = '✅ RAS'; st.className = 'detail-status badge-ok'; } const is = document.getElementById('detailInfractions'); if (infractions.length > 0) { is.style.display = 'block'; is.className = 'infractions-section' + (banned ? ' banned' : ''); is.innerHTML = '<div class="infractions-header">' + (banned ? '🚫' : '⚠️') + ' Infractions (' + infractions.length + ')</div>' + infractions.map(x => { let sc = 'source-breitmatt'; if (x.source === 'Carpodrome') sc = 'source-carpodrome'; else if (x.source === 'Hardt') sc = 'source-hardt'; return '<div class="infraction-item ' + (x.type === 'bannissement' ? 'banned' : '') + '"><div class="infraction-meta"><span class="badge-source ' + sc + '">' + x.source + '</span><span class="infraction-date">📅 ' + (x.date || '?') + '</span>' + (x.controleurSanction ? '<span style="color:#1565c0;font-weight:bold;margin-left:5px;">👮 ' + x.controleurSanction + '</span>' : '') + '</div><div class="infraction-type">' + (x.type === 'bannissement' ? '🚫 BANNI' : '⚠️ Avert.') + '</div>' + (x.motif ? '<div class="infraction-motif"><strong>Motif:</strong> ' + x.motif + '</div>' : '') + '</div>'; }).join(''); } else { is.style.display = 'none'; } }
+        
+        async function showDetail(f) { 
+            document.getElementById('detailName').textContent = f.nom + ' ' + f.prenom; 
+            const st = document.getElementById('detailStatus'); 
+            const inf = getInfractionsForUser(f.nom, f.prenom); 
+            const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement || '').toUpperCase(); 
+            const emailInfo = f.email ? '<div class="info-item"><div class="info-item-label">📧 Email</div><div class="info-item-value">' + f.email + '</div></div>' : ''; 
+            document.getElementById('detailInfo').innerHTML = '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">' + f.adresse + '<br>' + f.codePostal + ' ' + f.ville + '</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">' + f.telephone + '</div></div>' + emailInfo + '<div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">' + (f.urgence?.nom || '') + ' ' + (f.urgence?.prenom || '') + '<br>' + (f.urgence?.telephone || '') + '</div></div><div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">' + reglementsList + '</div></div><div class="info-item"><div class="info-item-label">📅 Inscription</div><div class="info-item-value">' + (f.date || '') + '</div></div>'; 
+            showPage('detail'); 
+            
+            const is = document.getElementById('detailInfractions'); 
+            if (inf.exclusion) { 
+                let isExpired = false; 
+                if (inf.exclusion.typeExclusion === 'temporaire' && inf.exclusion.dateFin) { 
+                    isExpired = new Date() > new Date(inf.exclusion.dateFin); 
+                } 
+                if (isExpired) { 
+                    st.textContent = '✅ Exclusion expirée'; 
+                    st.className = 'detail-status badge-expired'; 
+                } else { 
+                    st.textContent = inf.exclusion.typeExclusion === 'temporaire' ? '⏱️ EXCLU TEMP.' : '🚫 EXCLU DÉFINITIF'; 
+                    st.className = 'detail-status badge-banned'; 
+                } 
+                is.style.display = 'block'; 
+                is.className = 'infractions-section banned'; 
+                let motifsHtml = ''; 
+                if (inf.exclusion.motifs && inf.exclusion.motifs.length) { 
+                    motifsHtml = '<h4 style="margin-top:15px;">Historique des infractions :</h4>' + inf.exclusion.motifs.map((m, i) => '<div class="infraction-item banned"><strong>#' + (i+1) + '</strong> - ' + (m.date || '') + ': ' + (m.motif || '') + (m.controleurSanction ? '<br>👮 ' + m.controleurSanction : '') + '</div>').join(''); 
+                } 
+                let finInfo = ''; 
+                if (inf.exclusion.typeExclusion === 'temporaire' && inf.exclusion.dateFin) { 
+                    finInfo = '<p style="color:#ff9800;font-weight:bold;">📅 Fin de l\'exclusion : ' + new Date(inf.exclusion.dateFin).toLocaleDateString('fr-FR') + '</p>'; 
+                } 
+                is.innerHTML = '<div class="infractions-header">🚫 EXCLU' + (inf.exclusion.typeExclusion === 'temporaire' ? ' TEMPORAIREMENT' : ' DÉFINITIVEMENT') + '</div>' + finInfo + (inf.exclusion.controleurSanction ? '<p>👮 Sanctionné par : <strong>' + inf.exclusion.controleurSanction + '</strong></p>' : '') + motifsHtml; 
+            } else if (inf.avertissement) { 
+                st.textContent = '⚠️ Avertissement'; 
+                st.className = 'detail-status badge-warning'; 
+                is.style.display = 'block'; 
+                is.className = 'infractions-section'; 
+                is.innerHTML = '<div class="infractions-header">⚠️ AVERTISSEMENT EN COURS</div><p style="color:#dc3545;font-weight:bold;">📜 Prochain écart = EXCLUSION</p><div class="infraction-item"><strong>Date :</strong> ' + (inf.avertissement.date || '') + '<br><strong>Motif :</strong> ' + (inf.avertissement.motif || '') + (inf.avertissement.controleurSanction ? '<br>👮 ' + inf.avertissement.controleurSanction : '') + (inf.avertissement.lieu ? '<br>📍 ' + inf.avertissement.lieu : '') + '</div>'; 
+            } else { 
+                st.textContent = '✅ RAS'; 
+                st.className = 'detail-status badge-ok'; 
+                is.style.display = 'none'; 
+            } 
+        }
 
-        document.querySelectorAll('.infraction-type-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); selectedInfractionType = b.dataset.type; }));
-        document.getElementById('infractionForm').addEventListener('submit', async e => { e.preventDefault(); const lieu = document.getElementById('infLieu').value; const controleurSanction = document.getElementById('infControleur').value; if (!controleurSanction) { showAlert('❌ Sélectionnez un contrôleur', 'error'); return; } const data = { nom: document.getElementById('infNom').value.toUpperCase().trim(), prenom: document.getElementById('infPrenom').value.trim(), motif: document.getElementById('infMotif').value.trim(), controleurSanction: controleurSanction, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; let targetDB = dbBreitmatt; if (lieu === 'Carpodrome' && dbCarpodrome) targetDB = dbCarpodrome; else if (lieu === 'Hardt' && dbHardt) targetDB = dbHardt; try { if (selectedInfractionType === 'avertissement') { const avertSnap = await targetDB.ref('infractions/avertissements').once('value'); const avertissements = avertSnap.val() ? Object.values(avertSnap.val()) : []; const userAvertissements = avertissements.filter(a => a && a.nom && a.nom.toUpperCase() === data.nom.toUpperCase() && a.prenom && a.prenom.toLowerCase() === data.prenom.toLowerCase() && !a.archived); const idx = avertissements.length; await targetDB.ref('infractions/avertissements/' + idx).set(data); if (userAvertissements.length >= 2) { const motifs = userAvertissements.map(a => ({ motif: a.motif || 'Non spécifié', date: a.date || '', controleurSanction: a.controleurSanction || '' })); motifs.push({ motif: data.motif || 'Non spécifié', date: data.date, controleurSanction: controleurSanction }); const banSnap = await targetDB.ref('infractions/bannis').once('value'); const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; await targetDB.ref('infractions/bannis/' + banIdx).set({ nom: data.nom, prenom: data.prenom, motifs: motifs, controleurSanction: controleurSanction, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }); const allAvert = avertSnap.val(); for (const key in allAvert) { if (allAvert[key] && allAvert[key].nom && allAvert[key].nom.toUpperCase() === data.nom.toUpperCase() && allAvert[key].prenom && allAvert[key].prenom.toLowerCase() === data.prenom.toLowerCase()) { await targetDB.ref('infractions/avertissements/' + key + '/archived').set(true); } } await targetDB.ref('infractions/avertissements/' + idx + '/archived').set(true); showAlert('🚫 3 avertissements → BANNI de ' + lieu + ' !', 'error'); } else { showAlert('✅ Avertissement (' + (userAvertissements.length + 1) + '/3) par ' + controleurSanction, 'success'); } } else { const path = 'infractions/bannis'; const snap = await targetDB.ref(path).once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await targetDB.ref(path + '/' + idx).set(data); showAlert('✅ Bannissement par ' + controleurSanction, 'success'); } document.getElementById('infractionForm').reset(); document.querySelectorAll('.infraction-type-btn').forEach(x => x.classList.remove('selected')); document.querySelector('.infraction-type-btn').classList.add('selected'); selectedInfractionType = 'avertissement'; loadAllData(); showPage('menu'); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
+        // FORMULAIRE INFRACTION - NOUVEAU SYSTÈME
+        document.getElementById('infractionForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const nom = document.getElementById('infNom').value.toUpperCase().trim(); 
+            const prenom = document.getElementById('infPrenom').value.trim(); 
+            const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
+            const motif = document.getElementById('infMotif').value.trim(); 
+            const lieu = document.getElementById('infLieu').value; 
+            const controleurSanction = document.getElementById('infControleur').value; 
+            
+            if (!controleurSanction) { 
+                showAlert('❌ Sélectionnez un contrôleur', 'error'); 
+                return; 
+            } 
+            
+            // Vérifier si la personne a déjà un avertissement
+            const existingAvert = allInfractions.avertissements.find(a => 
+                a.nom.toUpperCase() === nom && 
+                a.prenom.toLowerCase() === prenomF.toLowerCase()
+            ); 
+            
+            if (existingAvert) { 
+                // 2ème infraction → Ouvrir le modal d'exclusion
+                pendingExclusion = { 
+                    nom, 
+                    prenom: prenomF, 
+                    motif, 
+                    lieu, 
+                    controleurSanction, 
+                    existingAvert 
+                }; 
+                selectedExclusionType = null; 
+                document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
+                document.getElementById('btnConfirmExclusion').disabled = true; 
+                document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
+                document.getElementById('exclusionModal').classList.add('visible'); 
+            } else { 
+                // 1ère infraction → Avertissement
+                const data = { 
+                    nom, 
+                    prenom: prenomF, 
+                    motif, 
+                    lieu, 
+                    controleurSanction, 
+                    date: new Date().toLocaleString('fr-FR'), 
+                    id: Date.now().toString() 
+                }; 
+                
+                try { 
+                    const snap = await dbCentral.ref('infractions/avertissements').once('value'); 
+                    const idx = snap.val() ? Object.keys(snap.val()).length : 0; 
+                    await dbCentral.ref('infractions/avertissements/' + idx).set(data); 
+                    
+                    showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
+                    document.getElementById('infractionForm').reset(); 
+                    await loadAllData(); 
+                    showPage('menu'); 
+                } catch(e) { 
+                    showAlert('❌ Erreur: ' + e.message, 'error'); 
+                } 
+            } 
+        });
+        
+        function selectExclusionType(type) { 
+            selectedExclusionType = type; 
+            document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
+            document.querySelector('.exclusion-type-option:' + (type === 'temporaire' ? 'first-child' : 'last-child')).classList.add('selected'); 
+            document.getElementById('btnConfirmExclusion').disabled = false; 
+        }
+        
+        async function confirmerExclusion() { 
+            if (!pendingExclusion || !selectedExclusionType) return; 
+            
+            const dateNow = new Date().toLocaleString('fr-FR'); 
+            const motifs = [ 
+                { motif: pendingExclusion.existingAvert.motif, date: pendingExclusion.existingAvert.date, controleurSanction: pendingExclusion.existingAvert.controleurSanction }, 
+                { motif: pendingExclusion.motif, date: dateNow, controleurSanction: pendingExclusion.controleurSanction } 
+            ]; 
+            
+            let dateFin = null; 
+            if (selectedExclusionType === 'temporaire') { 
+                dateFin = new Date(); 
+                dateFin.setMonth(dateFin.getMonth() + 1); 
+                dateFin = dateFin.toISOString(); 
+            } 
+            
+            const exclusionData = { 
+                nom: pendingExclusion.nom, 
+                prenom: pendingExclusion.prenom, 
+                motifs, 
+                motif: pendingExclusion.motif, 
+                lieu: pendingExclusion.lieu, 
+                controleurSanction: pendingExclusion.controleurSanction, 
+                date: dateNow, 
+                typeExclusion: selectedExclusionType, 
+                dateFin, 
+                id: Date.now().toString() 
+            }; 
+            
+            try { 
+                // Ajouter l'exclusion
+                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
+                const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; 
+                await dbCentral.ref('infractions/bannis/' + banIdx).set(exclusionData); 
+                
+                // Archiver l'avertissement existant
+                await dbCentral.ref('infractions/avertissements/' + pendingExclusion.existingAvert.key + '/archived').set(true); 
+                
+                const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
+                const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
+                
+                document.getElementById('exclusionModal').classList.remove('visible'); 
+                showAlert('🚫 EXCLUSION ' + typeText + '<br>' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + finText + '<br>👮 Par: ' + pendingExclusion.controleurSanction, 'error'); 
+                document.getElementById('infractionForm').reset(); 
+                pendingExclusion = null; 
+                selectedExclusionType = null; 
+                await loadAllData(); 
+                showPage('menu'); 
+            } catch(e) { 
+                showAlert('❌ Erreur: ' + e.message, 'error'); 
+            } 
+        }
 
-        function updateHistoriqueCounts() { const breitmattAvert = allInfractions.filter(i => i.source === 'Breitmatt' && i.type === 'avertissement').length; const breitmattBan = allInfractions.filter(i => i.source === 'Breitmatt' && i.type === 'bannissement').length; const carpoAvert = allInfractions.filter(i => i.source === 'Carpodrome' && i.type === 'avertissement').length; const carpoBan = allInfractions.filter(i => i.source === 'Carpodrome' && i.type === 'bannissement').length; const hardtAvert = allInfractions.filter(i => i.source === 'Hardt' && i.type === 'avertissement').length; const hardtBan = allInfractions.filter(i => i.source === 'Hardt' && i.type === 'bannissement').length; document.getElementById('countBreitmatt').textContent = '⚠️ ' + breitmattAvert + ' | 🚫 ' + breitmattBan; document.getElementById('countCarpodrome').textContent = '⚠️ ' + carpoAvert + ' | 🚫 ' + carpoBan; document.getElementById('countHardt').textContent = '⚠️ ' + hardtAvert + ' | 🚫 ' + hardtBan; }
-
-        async function showEtangDetail(etang) { currentEtang = etang; currentTab = 'avertissements'; let icon = '🏞️'; if (etang === 'Carpodrome') icon = '🎣'; else if (etang === 'Hardt') icon = '🐟'; document.getElementById('etangDetailTitle').textContent = icon + ' ' + etang; await loadEtangData(etang); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelector('.tab-btn').classList.add('active'); renderEtangInfractions(); showPage('etangDetail'); }
-        async function loadEtangData(etang) { let db = dbBreitmatt; if (etang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (etang === 'Hardt' && dbHardt) db = dbHardt; etangData = { avertissements: [], bannis: [], archives: [] }; try { const avertSnap = await db.ref('infractions/avertissements').once('value'); if (avertSnap.val()) { Object.entries(avertSnap.val()).forEach(([key, v]) => { if (v && v.nom) { etangData.avertissements.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: v.motif || '', date: v.date || '', controleurSanction: v.controleurSanction || '', archived: v.archived || false }); } }); } const banSnap = await db.ref('infractions/bannis').once('value'); if (banSnap.val()) { Object.entries(banSnap.val()).forEach(([key, v]) => { if (v && v.nom) { let motifStr = ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || '')) + (m.controleurSanction ? ' (👮' + m.controleurSanction + ')' : '')).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || '')) + (m.controleurSanction ? ' (👮' + m.controleurSanction + ')' : '')).join(' | '); } else { motifStr = v.motifs; } } else if (v.motif) { motifStr = v.motif; } etangData.bannis.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: motifStr, date: v.date || '', controleurSanction: v.controleurSanction || '' }); } }); } const archivesSnap = await db.ref('infractions/archives').once('value'); if (archivesSnap.val()) { Object.entries(archivesSnap.val()).forEach(([key, v]) => { if (v && v.nom) { let motifStr = v.motif || ''; if (v.motifs) { if (Array.isArray(v.motifs)) { motifStr = v.motifs.map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else if (typeof v.motifs === 'object') { motifStr = Object.values(v.motifs).map((m, i) => '#' + (i+1) + ': ' + (typeof m === 'string' ? m : (m.motif || ''))).join(' | '); } else { motifStr = v.motifs; } } etangData.archives.push({ key: key, nom: v.nom, prenom: v.prenom || '', motif: motifStr, date: v.date || '', type: v.type || 'avertissement', controleurSanction: v.controleurSanction || '', dateArchive: v.dateArchive || '' }); } }); } } catch(e) {} document.getElementById('tabCountAvert').textContent = etangData.avertissements.filter(a => !a.archived).length; document.getElementById('tabCountBan').textContent = etangData.bannis.length; document.getElementById('tabCountArchives').textContent = etangData.archives.length; }
-        function switchTab(tab) { currentTab = tab; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); if (tab === 'avertissements') { document.querySelectorAll('.tab-btn')[0].classList.add('active'); } else if (tab === 'bannis') { document.querySelectorAll('.tab-btn')[1].classList.add('active'); } else { document.querySelectorAll('.tab-btn')[2].classList.add('active'); } renderEtangInfractions(); }
-        function renderEtangInfractions() { const container = document.getElementById('etangInfractionsList'); let list; if (currentTab === 'avertissements') { list = etangData.avertissements.filter(a => !a.archived); } else if (currentTab === 'bannis') { list = etangData.bannis; } else { list = etangData.archives; } if (list.length === 0) { container.innerHTML = '<div class="no-infractions">Aucune infraction</div>'; return; } if (currentTab === 'archives') { container.innerHTML = list.map(item => '<div class="hist-infraction-item archive-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '?') + '</div><div class="archive-type">' + (item.type === 'bannissement' ? '🚫 Ban' : '⚠️ Avert.') + '</div>' + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;">👮 ' + item.controleurSanction + '</div>' : '') + (item.dateArchive ? '<div class="archive-date">📦 ' + item.dateArchive + '</div>' : '') + '</div><button class="hist-delete-btn" style="background:#616161" onclick="deleteArchive(\'' + item.key + '\')">🗑️</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); } else { container.innerHTML = list.map(item => '<div class="hist-infraction-item ' + (currentTab === 'bannis' ? 'banned' : '') + '"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '?') + '</div>' + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="deleteInfraction(\'' + item.key + '\', \'' + currentTab + '\')">📦 Archiver</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); } }
-        async function deleteInfraction(key, type) { const pwd = prompt('🔐 Mot de passe admin:'); if (pwd !== ADMIN_PASSWORD) { showAlert('❌ Mot de passe incorrect', 'error'); return; } if (!confirm('Archiver cette infraction ?')) return; let db = dbBreitmatt; if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (currentEtang === 'Hardt' && dbHardt) db = dbHardt; const path = type === 'avertissements' ? 'infractions/avertissements/' : 'infractions/bannis/'; try { const snap = await db.ref(path + key).once('value'); const data = snap.val(); if (data) { const archiveData = { ...data, type: type === 'avertissements' ? 'avertissement' : 'bannissement', dateArchive: new Date().toLocaleDateString('fr-FR') }; await db.ref('infractions/archives').push(archiveData); await db.ref(path + key).remove(); showAlert('✅ Archivé', 'success'); } await loadEtangData(currentEtang); renderEtangInfractions(); loadAllData(); } catch(e) { showAlert('❌ Erreur', 'error'); } }
-        async function deleteArchive(key) { const pwd = prompt('🔐 Mot de passe admin:'); if (pwd !== ADMIN_PASSWORD) { showAlert('❌ Mot de passe incorrect', 'error'); return; } if (!confirm('Supprimer définitivement ?')) return; if (!confirm('DERNIÈRE CONFIRMATION - irréversible !')) return; let db = dbBreitmatt; if (currentEtang === 'Carpodrome' && dbCarpodrome) db = dbCarpodrome; else if (currentEtang === 'Hardt' && dbHardt) db = dbHardt; try { await db.ref('infractions/archives/' + key).remove(); showAlert('✅ Supprimé', 'success'); await loadEtangData(currentEtang); renderEtangInfractions(); loadAllData(); } catch(e) { showAlert('❌ Erreur', 'error'); } }
+        // HISTORIQUE
+        function switchHistTab(tab) { 
+            currentHistTab = tab; 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            if (tab === 'avertissements') document.querySelectorAll('.tab-btn')[0].classList.add('active'); 
+            else if (tab === 'bannis') document.querySelectorAll('.tab-btn')[1].classList.add('active'); 
+            else document.querySelectorAll('.tab-btn')[2].classList.add('active'); 
+            renderHistorique(); 
+        }
+        
+        function renderHistorique() { 
+            const container = document.getElementById('historiqueList'); 
+            let list = allInfractions[currentHistTab] || []; 
+            
+            if (list.length === 0) { 
+                container.innerHTML = '<div class="no-infractions">Aucune infraction</div>'; 
+                return; 
+            } 
+            
+            if (currentHistTab === 'avertissements') { 
+                container.innerHTML = list.map(item => '<div class="hist-infraction-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '') + '</div>' + (item.lieu ? '<div style="font-size:11px;color:#666;">📍 ' + item.lieu + '</div>' : '') + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="archiverInfraction(\'' + item.key + '\', \'avertissements\')">📦 Archiver</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); 
+            } else if (currentHistTab === 'bannis') { 
+                container.innerHTML = list.map(item => { 
+                    let typeLabel = item.typeExclusion === 'temporaire' ? '<span class="badge badge-temp">⏱️ Temporaire</span>' : '<span class="badge badge-banned">🚫 Définitive</span>'; 
+                    let finInfo = ''; 
+                    let itemClass = 'hist-infraction-item banned'; 
+                    if (item.typeExclusion === 'temporaire' && item.dateFin) { 
+                        const now = new Date(); 
+                        const fin = new Date(item.dateFin); 
+                        if (now > fin) { 
+                            typeLabel = '<span class="badge badge-expired">✅ Expirée</span>'; 
+                            finInfo = '<div style="color:#4caf50;font-size:11px;">Terminée le ' + fin.toLocaleDateString('fr-FR') + '</div>'; 
+                            itemClass = 'hist-infraction-item expired-exclusion'; 
+                        } else { 
+                            finInfo = '<div style="color:#ff9800;font-size:11px;">Fin: ' + fin.toLocaleDateString('fr-FR') + '</div>'; 
+                            itemClass = 'hist-infraction-item temp-exclusion'; 
+                        } 
+                    } 
+                    let motifsHtml = ''; 
+                    if (item.motifs && item.motifs.length) { 
+                        motifsHtml = '<div class="hist-infraction-motif"><strong>Historique :</strong><br>' + item.motifs.map((m, i) => '#' + (i+1) + ' - ' + (m.date || '') + ': ' + (m.motif || '') + (m.controleurSanction ? ' (👮' + m.controleurSanction + ')' : '')).join('<br>') + '</div>'; 
+                    } else if (item.motif) { 
+                        motifsHtml = '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>'; 
+                    } 
+                    return '<div class="' + itemClass + '"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + ' ' + typeLabel + '</div><div class="hist-infraction-date">📅 Exclu le: ' + (item.date || '') + '</div>' + finInfo + (item.lieu ? '<div style="font-size:11px;color:#666;">📍 ' + item.lieu + '</div>' : '') + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="archiverInfraction(\'' + item.key + '\', \'bannis\')">📦 Archiver</button></div>' + motifsHtml + '</div>'; 
+                }).join(''); 
+            } else { 
+                container.innerHTML = list.map(item => '<div class="hist-infraction-item archive-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '') + '</div><div class="archive-type">' + (item.type === 'bannissement' || item.typeExclusion ? '🚫 Exclusion' : '⚠️ Avert.') + '</div>' + (item.dateArchive ? '<div class="archive-date">📦 Archivé le ' + item.dateArchive + '</div>' : '') + '</div><button class="hist-delete-btn" style="background:#616161" onclick="supprimerArchive(\'' + item.key + '\')">🗑️</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); 
+            } 
+        }
+        
+        async function archiverInfraction(key, type) { 
+            const pwd = prompt('🔐 Mot de passe admin:'); 
+            if (pwd !== ADMIN_PASSWORD) { 
+                showAlert('❌ Mot de passe incorrect', 'error'); 
+                return; 
+            } 
+            if (!confirm('Archiver cette infraction ?')) return; 
+            
+            const path = type === 'avertissements' ? 'infractions/avertissements/' : 'infractions/bannis/'; 
+            try { 
+                const snap = await dbCentral.ref(path + key).once('value'); 
+                const data = snap.val(); 
+                if (data) { 
+                    const archiveData = { 
+                        ...data, 
+                        type: type === 'avertissements' ? 'avertissement' : 'bannissement', 
+                        dateArchive: new Date().toLocaleDateString('fr-FR') 
+                    }; 
+                    await dbCentral.ref('infractions/archives').push(archiveData); 
+                    await dbCentral.ref(path + key).remove(); 
+                    showAlert('✅ Archivé', 'success'); 
+                } 
+                await loadAllData(); 
+                renderHistorique(); 
+            } catch(e) { 
+                showAlert('❌ Erreur', 'error'); 
+            } 
+        }
+        
+        async function supprimerArchive(key) { 
+            const pwd = prompt('🔐 Mot de passe admin:'); 
+            if (pwd !== ADMIN_PASSWORD) { 
+                showAlert('❌ Mot de passe incorrect', 'error'); 
+                return; 
+            } 
+            if (!confirm('Supprimer définitivement ?')) return; 
+            if (!confirm('DERNIÈRE CONFIRMATION - irréversible !')) return; 
+            
+            try { 
+                await dbCentral.ref('infractions/archives/' + key).remove(); 
+                showAlert('✅ Supprimé', 'success'); 
+                await loadAllData(); 
+                renderHistorique(); 
+            } catch(e) { 
+                showAlert('❌ Erreur', 'error'); 
+            } 
+        }
 
         function switchFicheTab(tab) { document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderMailsSent(); } }
 
-        async function loadMailsSent() { try { const snap = await dbBreitmatt.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
-        async function saveMailsSent() { try { await dbBreitmatt.ref('mailsSent').set(mailsSent); } catch(e) { console.error('Erreur sauvegarde mails:', e); } }
+        async function loadMailsSent() { try { const snap = await dbCentral.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
+        async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) { console.error('Erreur sauvegarde mails:', e); } }
         function renderMailsSent() { const container = document.getElementById('mailsSentList'); if (mailsSent.length === 0) { container.innerHTML = '<div class="no-results">Aucun mail envoyé</div>'; return; } const sorted = [...mailsSent].sort((a, b) => new Date(b.dateEnvoi || 0) - new Date(a.dateEnvoi || 0)); container.innerHTML = '<div class="cartes-count">📧 ' + sorted.length + ' mail(s)</div>' + sorted.map((m, i) => '<div class="hist-infraction-item mail-sent"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + (m.nom || '') + ' ' + (m.prenom || '') + '</div><div class="hist-infraction-date">📧 ' + m.email + '</div><div style="font-size:11px;color:#999;margin-top:3px;">📅 ' + m.dateEnvoi + '</div></div><button class="hist-delete-btn" onclick="deleteMailSent(' + i + ')">🗑️</button></div></div>').join(''); }
         async function deleteMailSent(index) { if (!confirm('Supprimer cet envoi ?')) return; const sorted = [...mailsSent].sort((a, b) => new Date(b.dateEnvoi || 0) - new Date(a.dateEnvoi || 0)); const itemToDelete = sorted[index]; const originalIndex = mailsSent.findIndex(m => m.email === itemToDelete.email && m.dateEnvoi === itemToDelete.dateEnvoi); if (originalIndex !== -1) { mailsSent.splice(originalIndex, 1); await saveMailsSent(); renderMailsSent(); showAlert('✅ Supprimé', 'success'); } }
-        async function envoyerFormulaire() { const nom = document.getElementById('envoyerNom').value.trim().toUpperCase(); const prenom = document.getElementById('envoyerPrenom').value.trim(); const email = document.getElementById('emailPecheur').value.trim(); const status = document.getElementById('envoyerStatus'); if (!nom || !prenom) { status.textContent = '❌ Nom et prénom requis'; status.className = 'envoyer-status error'; return; } if (!email) { status.textContent = '❌ Email requis'; status.className = 'envoyer-status error'; return; } const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) { status.textContent = '❌ Email invalide'; status.className = 'envoyer-status error'; return; } status.textContent = '⏳ Envoi en cours...'; status.className = 'envoyer-status loading'; document.getElementById('btnEnvoyerFormulaire').disabled = true; try { const formulaireUrlAvecEmail = FORMULAIRE_URL + '?email=' + encodeURIComponent(email); const templateParams = { to_email: email, formulaire_url: formulaireUrlAvecEmail, date_envoi: new Date().toLocaleString('fr-FR') }; await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); const ficheItem = allFichesWithIndex.find(f => f.fiche.nom.toUpperCase() === nom && f.fiche.prenom.toLowerCase() === prenom.toLowerCase()); if (ficheItem) { await dbBreitmatt.ref('fiches/' + ficheItem.index + '/email').set(email); } const mailEntry = { nom: nom, prenom: prenom, email: email, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; mailsSent.push(mailEntry); await saveMailsSent(); status.innerHTML = '✅ Email envoyé à ' + prenom + ' ' + nom + ' !'; status.className = 'envoyer-status success'; document.getElementById('envoyerNom').value = ''; document.getElementById('envoyerPrenom').value = ''; document.getElementById('emailPecheur').value = ''; await loadFiches(); } catch (error) { console.error('EmailJS Error:', error); status.textContent = '❌ Erreur EmailJS'; status.className = 'envoyer-status error'; } document.getElementById('btnEnvoyerFormulaire').disabled = false; }
+        async function envoyerFormulaire() { const nom = document.getElementById('envoyerNom').value.trim().toUpperCase(); const prenom = document.getElementById('envoyerPrenom').value.trim(); const email = document.getElementById('emailPecheur').value.trim(); const status = document.getElementById('envoyerStatus'); if (!nom || !prenom) { status.textContent = '❌ Nom et prénom requis'; status.className = 'envoyer-status error'; return; } if (!email) { status.textContent = '❌ Email requis'; status.className = 'envoyer-status error'; return; } const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) { status.textContent = '❌ Email invalide'; status.className = 'envoyer-status error'; return; } status.textContent = '⏳ Envoi en cours...'; status.className = 'envoyer-status loading'; document.getElementById('btnEnvoyerFormulaire').disabled = true; try { const formulaireUrlAvecEmail = FORMULAIRE_URL + '?email=' + encodeURIComponent(email); const templateParams = { to_email: email, formulaire_url: formulaireUrlAvecEmail, date_envoi: new Date().toLocaleString('fr-FR') }; await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); const ficheItem = allFichesWithIndex.find(f => f.fiche.nom.toUpperCase() === nom && f.fiche.prenom.toLowerCase() === prenom.toLowerCase()); if (ficheItem) { await dbCentral.ref('fiches/' + ficheItem.index + '/email').set(email); } const mailEntry = { nom: nom, prenom: prenom, email: email, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; mailsSent.push(mailEntry); await saveMailsSent(); status.innerHTML = '✅ Email envoyé à ' + prenom + ' ' + nom + ' !'; status.className = 'envoyer-status success'; document.getElementById('envoyerNom').value = ''; document.getElementById('envoyerPrenom').value = ''; document.getElementById('emailPecheur').value = ''; await loadFiches(); } catch (error) { console.error('EmailJS Error:', error); status.textContent = '❌ Erreur EmailJS'; status.className = 'envoyer-status error'; } document.getElementById('btnEnvoyerFormulaire').disabled = false; }
 
-
-        function showAlert(msg, type) { const a = document.getElementById('alert'); a.textContent = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 4000); }
+        function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 5000); }
     </script>
 </body>
 </html>
