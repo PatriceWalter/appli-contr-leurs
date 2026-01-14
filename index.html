@@ -477,20 +477,98 @@
         const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
         emailjs.init(EMAILJS_PUBLIC_KEY);
 
-        const reglements = {
-            carpodrome: { 
-                title: "🎣 RÈGLEMENT CARPODROME 2026", 
-                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>Du 1er mars au 4 mai : samedis, dimanches et jours fériés</li><li>Du 5 mai au 30 octobre : tous les jours</li><li>Pêche de 8h à 19h (mars-avril et sept-oct)</li><li>Pêche de 8h à 20h (mai à août)</li><li>Réservation obligatoire 24h avant</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€ (5€ avec carte annuelle)</li><li>Demi-journée: 6€ (3€ avec carte)</li><li>Jours d'événements : 10€ pour tous</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Canne au coup uniquement, longueur max 13m</li><li>1 ligne par pêcheur, max 2 pêcheurs par poste</li><li>Pêche sous la canne, zone du poste réservé</li><li>Amorçage : coupelle ou fronde uniquement</li><li>Matériel obligatoire : bassine ou tapis réception (rebord 5cm mini)</li><li>Hameçon sans ardillon, taille max n°10</li><li>Bourriche autorisée poisson blanc uniquement</li><li>Carpes et tanches : relâchées immédiatement</li><li>Esches : végétales, vers, asticots, pellets, baby corn</li><li>Graines cuites obligatoirement</li></ul><h3>👶 Mineurs</h3><ul><li>À partir de 12 ans, journée uniquement</li><li>Moins de 12 ans : accompagnement obligatoire</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Feux au sol et barbecues</li><li>Pêche de nuit</li><li>Camping (seuls parapluies autorisés)</li><li>Baignade, canotage</li><li>Mutilation ou marquage des poissons</li><li>Franglaise, Feeder</li><li>Graines crues, pêche au pain</li><li>Hameçons avec ardillons</li><li>Pêche en surface</li></ul><h3>🗑️ Déchets</h3><ul><li>Ramener ses déchets - Amende possible : 150€</li></ul>" 
+        // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
+        const DEFAULT_REGLEMENTS = {
+            carpodrome: {
+                horaires: "Sur réservation uniquement et 24h à l'avance\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés\n- Du 5 mai au 30 octobre : tous les jours\n- Pêche de 8h à 19h (début mars à fin avril et début septembre à fin octobre)\n- Pêche de 8h à 20h (début mai à fin août)\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté (manque d'eau, cyanobactéries, etc...)",
+                tarifs: "- Carte journalière : 10 € / Titulaires carte annuelle AAPPMA : 5 €\n- Carte demi-journée : 6 € / Titulaires carte annuelle AAPPMA : 3 €\n- Jours d'événements : pêche payante pour tous (10 €)\n- Réservation obligatoire 24h avant le jour de pêche via formulaire en ligne\n- Contact en cas de problème : Patrice – 06.37.70.37.31 ou gundershoffenaappma@gmail.com\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact. L'association ne peut assurer la disponibilité de monnaie.",
+                modalites: "- Pêche No Kill obligatoire\n- Canne au coup uniquement, longueur max : 13 m\n- 1 ligne par pêcheur (pêcheur désigné lors de la réservation)\n- Max 2 pêcheurs par poste (à préciser lors de la réservation)\n- Pêche sous la canne, dans la zone du poste réservé\n- Amorçage : uniquement à la coupelle ou fronde\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini)\n- Hameçon taille max nº10 obligatoirement sans ardillon (pincé/limé interdit)\n- Bourriche autorisée pour poisson blanc uniquement\n- Carpes et tanches : relâchées immédiatement\n- Esches autorisées : végétales, vers de terre, asticots\n- Pellets et baby corn autorisés\n- Graines cuites uniquement\n- Kit de soins conseillé",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans",
+                sanctions: "- Carte de pêche à présenter\n- Contrôles réguliers et imprévus\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol et barbecues\n❌ Pêche de nuit\n❌ Camping (seuls parapluies autorisés)\n❌ Baignade, canotage\n❌ Mutilation ou marquage des poissons\n❌ Faire pêcher une autre personne qui n'a pas réservé le poste\n❌ Franglaise, Feeder\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Pêche en surface",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Problème sur réservations : Patrice Walter – 06.37.70.37.31\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
             },
-            hardt: { 
-                title: "🐟 RÈGLEMENT HARDT 2026", 
-                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>Pêche de nuit : 20h → 8h (réservation obligatoire)</li><li>2 lignes par pêcheur</li><li>12 postes carpistes + 3 postes au coup</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li><li>Nuit: 10€</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Matériel obligatoire : tapis réception + épuisette adaptée</li><li>Hameçon sans ardillon</li><li>Graines cuites obligatoirement</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Bateau amorceur</li><li>Sacs de conservation</li><li>Graines crues</li><li>Feux et barbecues</li></ul>" 
+            hardt: {
+                horaires: "30 minutes avant le lever du soleil → 30 minutes après le coucher\n- Du 1er mars au 26 avril : samedis, dimanches et jours fériés uniquement\n- Du 5 mai au 30 octobre : tous les jours\n- Du 1er novembre au 31 décembre : samedis, dimanches et jours fériés uniquement\n- Pêche de nuit : 20h → 8h (réservation obligatoire)\nPêche aux carnassiers autorisée :\n- Du 1er novembre au 31 décembre, samedi, dimanche et jours fériés uniquement\n- Carte annuelle AAPPMA Gundershoffen obligatoire\n- Carte journalière refusée\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté",
+                tarifs: "- Carte journalière : 10 €\n- Carte demi-journée : 6 €\n- Carte pêche de nuit : 10 € (réservation 24h à l'avance par SMS au 06.76.57.85.03)\n- Carte annuelle : obligatoire pour la pêche aux carnassiers\n- Jours d'événements : pêche payante pour tous (10 €)\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact",
+                modalites: "- Pêche No Kill obligatoire\n- Amorçage et pêche depuis le poste\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée\n- Kit de soins conseillé\n- Graines cuites uniquement\n- Esches autorisées : végétales, vers, asticots, teignes, vers de lune…\n- Canne toujours sous surveillance\n- Respect des zones de pêche (voir plan) et des autres pêcheurs\n- 2 lignes maximum par pêcheur\n- 12 postes carpistes (n°1 à 12)\n- 3 postes pêche au coup (lettres)\n- Poste 4 réservé aux contrôleurs\n- 1 véhicule par pêcheur autorisé autour de l'étang\n- Véhicules visiteurs à stationner en dehors de l'enceinte\n- Circulation interdite après 22h (sauf urgence après avoir prévenu un contrôleur)",
+                nuit: "Horaire : 20h jusqu'à 8h le lendemain\n- Sur réservation obligatoire 24h à l'avance par SMS au 06.76.57.85.03\n- Une pêche de présentation est obligatoire avant l'obtention d'une autorisation annuelle accordée par un des contrôleurs désignés",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans en journée uniquement\n- Pêche de nuit autorisée uniquement en présence continue d'une personne majeure et sous responsabilité parentale",
+                sanctions: "- Il pourra vous être demandé de présenter votre titre de pêche lors des contrôles\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol (barbecue lors des périodes de sécheresse ou arrêtés préfectoraux)\n❌ Consommation d'alcool excessive\n❌ Camping (hors pêcheurs)\n❌ Baignade, canotage, accès aux îles\n❌ Mutilation ou marquage des poissons\n❌ Canne laissée sans surveillance\n❌ Pêche en dehors des postes\n❌ Sacs de conservation\n❌ Bateau amorceur\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Bas de ligne en tresse (sauf corps de ligne)\n❌ Pêche en surface\n❌ Stationnement sur le chemin et ailleurs que derrière son poste\n❌ Véhicules visiteurs autour de l'étang",
+                carnassiers: "Interdictions spécifiques :\n❌ Carte journalière (non autorisée)\n❌ Filets, nasses, pêche à la main ou sous glace\n❌ Troubler l'eau, fouiller\n❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)\n❌ Appâts à base d'œufs de poissons\n- Quota : 3 carnassiers/jour max, dont 2 brochets (min. 50 cm)",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Réservation pêche de nuit : Jean François Klein – 06.76.57.85.03\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
             },
-            breitmatt: { 
-                title: "🌊 RÈGLEMENT BREITMATT 2026", 
-                content: "<h3>📅 Périodes & Horaires</h3><ul><li>30 min avant lever du soleil → 30 min après coucher</li><li>2 lignes par pêcheur</li></ul><h3>💰 Tarifs</h3><ul><li>Journée: 10€</li><li>Demi-journée: 6€</li></ul><h3>🎣 Modalités de pêche</h3><ul><li>Pêche No Kill obligatoire</li><li>Matériel obligatoire : tapis réception + épuisette adaptée</li><li>Hameçon sans ardillon</li><li>Graines cuites obligatoirement</li></ul><h3>⚠️ Sanctions</h3><ul><li>1ère infraction → Avertissement</li><li>2ème infraction → Exclusion temporaire (1 mois) ou définitive</li><li>Aucun remboursement en cas d'exclusion</li></ul><h3>❌ Interdictions</h3><ul><li>Feux et barbecues</li><li>Bateau amorceur</li><li>Graines crues</li></ul>" 
+            breitmatt: {
+                horaires: "Pêche possible uniquement dans le grand étang, sauf dérogation spécifique\n30 minutes avant le lever du soleil → 30 minutes après le coucher\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés uniquement\n- Du 5 mai au 30 octobre : tous les jours\n- Du 1er novembre au 31 décembre : samedis, dimanches et jours fériés uniquement\nPêche aux carnassiers autorisée :\n- Du 1er novembre au 31 décembre, samedi, dimanche et jours fériés uniquement\n- Carte annuelle AAPPMA Gundershoffen obligatoire\n- Carte journalière refusée\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté",
+                tarifs: "- Carte journalière : 10 €\n- Carte demi-journée : 6 €\n- Carte annuelle : obligatoire pour la pêche aux carnassiers\n- Jours d'événements : pêche payante pour tous (10 €)\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact",
+                modalites: "- Pêche No Kill obligatoire (sauf truites et perches soleil)\n- Amorçage et pêche depuis le poste obligatoire\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée\n- Kit de soins conseillé\n- Graines cuites uniquement\n- Esches autorisées : végétales, vers, asticots, teignes, vers de lune…\n- Canne toujours sous surveillance\n- Respect des zones de pêche et des autres pêcheurs\n- 2 lignes maximum par pêcheur",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans, en journée uniquement",
+                sanctions: "- Il pourra vous être demandé de présenter votre titre de pêche lors des contrôles\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol et barbecues\n❌ Camping (seuls parapluies ou demi-tentes autorisés)\n❌ Baignade, canotage\n❌ Mutilation ou marquage des poissons\n❌ Canne laissée sans surveillance\n❌ Pêche en dehors des postes et dans la frayère\n❌ Sacs de conservation\n❌ Bateau amorceur\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Bas de ligne en tresse (sauf corps de ligne)\n❌ Pêche en surface\n❌ Stationnement sur le chemin et la berge côté étang",
+                carnassiers: "Interdictions spécifiques :\n❌ Carte journalière (non autorisée)\n❌ Filets, nasses, pêche à la main ou sous glace\n❌ Troubler l'eau, fouiller\n❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)\n❌ Appâts à base d'œufs de poissons\n- Quota : 3 carnassiers/jour max, dont 2 brochets (min. 50 cm)",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
             }
         };
+        
+        // Règlements chargés depuis Firebase (synchronisés avec formulaire de renseignement)
+        let reglementsData = null;
+        
+        // Charger les règlements depuis Firebase
+        function loadReglementsFromFirebase() {
+            dbCentral.ref('reglements_formulaire').on('value', (snapshot) => {
+                reglementsData = snapshot.exists() ? snapshot.val() : null;
+                console.log('📜 Règlements synchronisés depuis Firebase');
+            });
+        }
+        
+        // Obtenir un règlement (Firebase ou défaut)
+        function getReglement(name) {
+            return (reglementsData && reglementsData[name]) ? reglementsData[name] : DEFAULT_REGLEMENTS[name];
+        }
+        
+        // Formatter une section de règlement
+        function formatReglementSection(text, isInterdit = false) {
+            if (!text) return '';
+            let html = '', inList = false;
+            text.split('\n').filter(l => l.trim()).forEach(line => {
+                const t = line.trim();
+                if (t.startsWith('-') || t.startsWith('❌')) {
+                    if (!inList) { html += '<ul' + (isInterdit ? ' style="color:#c62828;"' : '') + '>'; inList = true; }
+                    html += '<li>' + t.replace(/^-\s*/, '').replace(/^❌\s*/, '❌ ') + '</li>';
+                } else if (t.startsWith('⚠️')) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p class="warning">' + t + '</p>';
+                } else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p>' + t + '</p>';
+                }
+            });
+            return inList ? html + '</ul>' : html;
+        }
+        
+        // Générer le HTML complet d'un règlement
+        function generateReglementHTML(name) {
+            const reg = getReglement(name);
+            let html = '';
+            const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
+            
+            html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
+            html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
+            html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
+            if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
+            html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
+            html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
+            html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
+            if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
+            html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
+            html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            
+            return { title: titles[name], content: html };
+        }
 
         let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
@@ -617,7 +695,7 @@
         document.getElementById('ville').addEventListener('change', updateValidateBtn);
 
         document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.addEventListener('change', function() { const item = this.closest('.reglement-item'); const reglement = item.dataset.reglement; const readBtn = item.querySelector('.reglement-read-btn'); item.classList.toggle('checked', this.checked); readBtn.disabled = !this.checked; if (!this.checked) { reglementsRead[reglement] = false; readBtn.textContent = '📖 Lire'; readBtn.classList.remove('read'); } updateValidateBtn(); }); });
-        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; document.getElementById('modalTitle').textContent = reglements[reglement].title; document.getElementById('modalBody').innerHTML = reglements[reglement].content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
+        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
         document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
         document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
         document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
@@ -633,7 +711,8 @@
             await loadFiches(); 
             await loadInfractions(); 
             await loadMailsSent(); 
-            await loadControleurs(); 
+            await loadControleurs();
+            loadReglementsFromFirebase();
             updateHistoriqueCounts(); 
         }
         
