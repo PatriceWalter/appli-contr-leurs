@@ -556,18 +556,64 @@
             let html = '';
             const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
             
-            html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
-            html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
-            html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
-            if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
-            html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
-            html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
-            html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
-            if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
-            html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
-            html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            // Nouveau format : un seul champ contenu
+            if (reg && reg.contenu) {
+                html = formatReglementContenu(reg.contenu);
+            } else if (reg) {
+                // Ancien format avec sections séparées
+                html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
+                html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
+                html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
+                if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
+                html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
+                html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
+                html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
+                if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
+                html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
+                html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            }
             
             return { title: titles[name], content: html };
+        }
+        
+        // Formatter le contenu unique (nouveau format)
+        function formatReglementContenu(text) {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let html = '';
+            let inList = false;
+            
+            lines.forEach(line => {
+                const t = line.trim();
+                if (!t) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    return;
+                }
+                
+                // Titre avec emoji (détecte les lignes qui commencent par un emoji et sont courtes)
+                if (/^[🗓️🎫🎣⛔👮👶🗑️🚨📋📞🌙💰⚠️❌]/.test(t) && !t.startsWith('-') && !t.startsWith('⚠️') && !t.startsWith('❌') && t.length < 100) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<h3>' + t + '</h3>';
+                }
+                // Ligne commence par - ou ❌
+                else if (t.startsWith('-') || t.startsWith('❌')) {
+                    if (!inList) { html += '<ul>'; inList = true; }
+                    html += '<li>' + t.replace(/^-\s*/, '').replace(/^❌\s*/, '❌ ') + '</li>';
+                }
+                // Ligne commence par ⚠️
+                else if (t.startsWith('⚠️')) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p class="warning">' + t + '</p>';
+                }
+                // Ligne normale
+                else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p>' + t + '</p>';
+                }
+            });
+            
+            if (inList) html += '</ul>';
+            return html;
         }
 
         let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
