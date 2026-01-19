@@ -78,10 +78,16 @@
         .modal-body .info { background: #e3f2fd; padding: 15px; border-radius: 10px; border-left: 5px solid #2196f3; margin: 20px 0; }
         .modal-body .important { background: #ffebee; padding: 15px; border-radius: 10px; border-left: 5px solid #f44336; margin: 20px 0; font-weight: 500; }
         .modal-footer { padding: 20px; border-top: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px; }
-        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .modal-progress-container { background: #f5f5f5; padding: 10px 20px; border-bottom: 1px solid #e0e0e0; }
+        .modal-progress-bar-bg { background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+        .modal-progress-bar { background: linear-gradient(90deg, #4caf50, #2e7d32); height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 10px; }
+        .modal-progress-status { font-size: 12px; color: #666; text-align: center; }
+        .modal-progress-status.complete { color: #2e7d32; font-weight: 600; }
+        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; }
+        .read-confirm-checkbox.disabled { opacity: 0.5; cursor: not-allowed; }
         .read-confirm-checkbox input { width: 20px; height: 20px; cursor: pointer; }
-        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; }
-        .modal-validate-btn.enabled { opacity: 1; pointer-events: auto; }
+        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .modal-validate-btn:disabled { background: #ccc; cursor: not-allowed; }
         .admin-modal-content { max-width: 400px; }
         .admin-modal-content .modal-body { padding: 30px; text-align: center; }
         .admin-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; text-align: center; margin-bottom: 15px; }
@@ -417,8 +423,9 @@
     <div class="modal-overlay" id="reglementModal">
         <div class="modal-content">
             <div class="modal-header"><h2 id="modalTitle">📜 Règlement</h2><button class="modal-close" id="modalClose">&times;</button></div>
+            <div class="modal-progress-container"><div class="modal-progress-bar-bg"><div class="modal-progress-bar" id="modalProgressBar"></div></div><div class="modal-progress-status" id="modalProgressStatus">⬇️ Faites défiler pour lire le règlement complet</div></div>
             <div class="modal-body" id="modalBody"></div>
-            <div class="modal-footer"><label class="read-confirm-checkbox"><input type="checkbox" id="readConfirmCheckbox"><span>J'ai lu et compris le règlement</span></label><button class="modal-validate-btn" id="modalValidateBtn">✅ Confirmer</button></div>
+            <div class="modal-footer"><label class="read-confirm-checkbox disabled" id="readConfirmLabel"><input type="checkbox" id="readConfirmCheckbox" disabled><span>J'ai lu et compris le règlement</span></label><button class="modal-validate-btn" id="modalValidateBtn" disabled>✅ Confirmer</button></div>
         </div>
     </div>
     
@@ -618,7 +625,7 @@
 
         let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [];
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [], modalScrollComplete = false;
         let currentHistTab = 'avertissements';
         let allCartesValides = [], allControleurs = [];
         let pendingExclusion = null, selectedExclusionType = null;
@@ -741,11 +748,14 @@
         document.getElementById('ville').addEventListener('change', updateValidateBtn);
 
         document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.addEventListener('change', function() { const item = this.closest('.reglement-item'); const reglement = item.dataset.reglement; const readBtn = item.querySelector('.reglement-read-btn'); item.classList.toggle('checked', this.checked); readBtn.disabled = !this.checked; if (!this.checked) { reglementsRead[reglement] = false; readBtn.textContent = '📖 Lire'; readBtn.classList.remove('read'); } updateValidateBtn(); }); });
-        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
+        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; modalScrollComplete = false; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('modalBody').scrollTop = 0; document.getElementById('modalProgressBar').style.width = '0%'; document.getElementById('modalProgressStatus').textContent = '⬇️ Faites défiler pour lire le règlement complet'; document.getElementById('modalProgressStatus').classList.remove('complete'); document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('readConfirmCheckbox').disabled = true; document.getElementById('readConfirmLabel').classList.add('disabled'); document.getElementById('modalValidateBtn').disabled = true; document.getElementById('reglementModal').classList.add('visible'); setTimeout(() => checkModalScrollProgress(), 100); }); });
         document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
         document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
-        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
+        document.getElementById('modalBody').addEventListener('scroll', checkModalScrollProgress);
+        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').disabled = !this.checked; });
         document.getElementById('modalValidateBtn').addEventListener('click', () => { if (document.getElementById('readConfirmCheckbox').checked && currentReglementReading) { reglementsRead[currentReglementReading] = true; const btn = document.querySelector('.reglement-read-btn[data-for="' + currentReglementReading + '"]'); btn.textContent = '✅ Lu'; btn.classList.add('read'); document.getElementById('reglementModal').classList.remove('visible'); updateValidateBtn(); } });
+        
+        function checkModalScrollProgress() { const modalBody = document.getElementById('modalBody'); const maxScroll = modalBody.scrollHeight - modalBody.clientHeight; let scrollPercent = maxScroll <= 0 ? 100 : Math.min(100, Math.round((modalBody.scrollTop / maxScroll) * 100)); document.getElementById('modalProgressBar').style.width = scrollPercent + '%'; if (scrollPercent >= 95 && !modalScrollComplete) { modalScrollComplete = true; document.getElementById('modalProgressStatus').textContent = '✅ Règlement lu en entier'; document.getElementById('modalProgressStatus').classList.add('complete'); document.getElementById('readConfirmCheckbox').disabled = false; document.getElementById('readConfirmLabel').classList.remove('disabled'); } }
 
         function updateValidateBtn() { const formValid = document.getElementById('ficheForm').checkValidity() && document.getElementById('ville').value; const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const allCheckedRead = checkedReglements.length > 0 && checkedReglements.every(r => reglementsRead[r]); document.getElementById('validateBtn').disabled = !(formValid && allCheckedRead); }
         document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
