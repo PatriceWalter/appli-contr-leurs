@@ -488,6 +488,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         // BASE CENTRALE UNIQUE pour toutes les infractions
@@ -500,6 +501,65 @@
         const EMAILJS_TEMPLATE_ID = "template_v6461vd";
         const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
         emailjs.init(EMAILJS_PUBLIC_KEY);
+        
+        // ===== FCM NOTIFICATIONS =====
+        const VAPID_KEY = "BDmyIuYOB9cEqHLA9QyFycYy-gJnP2BVU6c6CI5TjIElo4qFC7t8MS28hSj0lwk_8ve13BQZw8uEVIJx0GE25IE";
+        const FCM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec";
+        let messaging = null;
+        
+        async function initNotifications() {
+            try {
+                if (!('Notification' in window)) {
+                    console.log('❌ Notifications non supportées');
+                    return;
+                }
+                
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('✅ Service Worker enregistré');
+                
+                messaging = firebase.messaging();
+                
+                if (Notification.permission === 'default') {
+                    await demanderPermissionNotification();
+                } else if (Notification.permission === 'granted') {
+                    await enregistrerToken();
+                }
+            } catch (error) {
+                console.error('❌ Erreur init notifications:', error);
+            }
+        }
+        
+        async function demanderPermissionNotification() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('✅ Permission notifications accordée');
+                    await enregistrerToken();
+                } else {
+                    console.log('❌ Permission notifications refusée');
+                }
+            } catch (error) {
+                console.error('❌ Erreur permission:', error);
+            }
+        }
+        
+        async function enregistrerToken() {
+            try {
+                const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+                if (token) {
+                    const userName = getCurrentUser();
+                    await dbCentral.ref('fcmTokens/' + userName.replace(/[^a-zA-Z0-9]/g, '_')).set({
+                        token: token,
+                        user: userName,
+                        app: 'Controleur',
+                        lastUpdate: new Date().toISOString()
+                    });
+                    console.log('✅ Token FCM enregistré pour', userName);
+                }
+            } catch (error) {
+                console.error('❌ Erreur enregistrement token:', error);
+            }
+        }
 
         // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
         const DEFAULT_REGLEMENTS = {
@@ -627,7 +687,7 @@
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
         document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
 
-        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); initNotifications(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
@@ -649,6 +709,7 @@
                 document.getElementById('currentUserDisplay').textContent = '👤 ' + selectedUser;
                 setUserPresence(selectedUser);
                 listenOnlineUsers();
+                initNotifications();
                 loadAllData(); 
             } else { 
                 document.getElementById('loginCode').classList.add('error'); 
