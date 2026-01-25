@@ -78,16 +78,10 @@
         .modal-body .info { background: #e3f2fd; padding: 15px; border-radius: 10px; border-left: 5px solid #2196f3; margin: 20px 0; }
         .modal-body .important { background: #ffebee; padding: 15px; border-radius: 10px; border-left: 5px solid #f44336; margin: 20px 0; font-weight: 500; }
         .modal-footer { padding: 20px; border-top: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px; }
-        .modal-progress-container { background: #f5f5f5; padding: 10px 20px; border-bottom: 1px solid #e0e0e0; }
-        .modal-progress-bar-bg { background: #e0e0e0; border-radius: 10px; height: 8px; overflow: hidden; margin-bottom: 8px; }
-        .modal-progress-bar { background: linear-gradient(90deg, #4caf50, #2e7d32); height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 10px; }
-        .modal-progress-status { font-size: 12px; color: #666; text-align: center; }
-        .modal-progress-status.complete { color: #2e7d32; font-weight: 600; }
-        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; }
-        .read-confirm-checkbox.disabled { opacity: 0.5; cursor: not-allowed; }
+        .read-confirm-checkbox { display: flex; align-items: center; gap: 10px; font-weight: 500; }
         .read-confirm-checkbox input { width: 20px; height: 20px; cursor: pointer; }
-        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .modal-validate-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .modal-validate-btn { width: 100%; padding: 15px; background: #2d5a3d; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; }
+        .modal-validate-btn.enabled { opacity: 1; pointer-events: auto; }
         .admin-modal-content { max-width: 400px; }
         .admin-modal-content .modal-body { padding: 30px; text-align: center; }
         .admin-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; text-align: center; margin-bottom: 15px; }
@@ -240,11 +234,33 @@
             <div class="login-logo">👮</div>
             <h1 class="login-title">Contrôleur / Garde de Pêche</h1>
             <p class="login-subtitle">AAPPMA Gundershoffen</p>
+            <label style="display:block; text-align:left; margin-bottom:5px; font-weight:600; color:#333;">👤 Identifiant :</label>
+            <select id="loginUser" class="login-input" style="cursor:pointer; letter-spacing:normal; font-size:16px; text-align:left;">
+                <option value="">-- Choisir votre nom --</option>
+            </select>
             <input type="password" class="login-input" id="loginCode" placeholder="Mot de passe" autocomplete="off">
             <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
-            <p class="login-error" id="loginError">❌ Code incorrect</p>
+            <p class="login-error" id="loginError"></p>
         </div>
     </div>
+    
+    <!-- Modal changement utilisateur -->
+    <div class="modal-overlay" id="changeUserModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header" style="background:#ff9800;"><h2>👤 Changement d'utilisateur</h2><button class="modal-close" onclick="cancelChangeUser()">&times;</button></div>
+            <div class="modal-body" style="text-align:center;">
+                <p style="margin-bottom:20px;">Voulez-vous vraiment changer d'utilisateur ?</p>
+                <p style="background:#fff3cd; padding:15px; border-radius:8px; margin-bottom:20px;">
+                    <strong id="changeUserFrom"></strong> → <strong id="changeUserTo"></strong>
+                </p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" onclick="confirmChangeUser()" style="flex:1;">✅ Confirmer</button>
+                    <button class="btn" onclick="cancelChangeUser()" style="flex:1; background:#eee; color:#333;">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="app-container" id="appContainer">
         <div class="nav-buttons" id="navButtons">
             <button class="nav-btn" id="homeBtn">🏠 Accueil</button>
@@ -257,6 +273,8 @@
                 <div class="menu-logo">👮</div>
                 <h1 class="menu-title">Contrôleur / Garde de Pêche</h1>
                 <p class="menu-subtitle">AAPPMA Gundershoffen</p>
+                <p id="currentUserDisplay" style="margin-top:10px; font-size:13px; opacity:0.9; cursor:pointer;" onclick="promptChangeUser()"></p>
+                <div id="onlineUsers" style="margin-top:8px; font-size:12px; opacity:0.85; background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:8px; display:none;"></div>
             </div>
             <div class="menu-cards">
                 <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
@@ -423,9 +441,8 @@
     <div class="modal-overlay" id="reglementModal">
         <div class="modal-content">
             <div class="modal-header"><h2 id="modalTitle">📜 Règlement</h2><button class="modal-close" id="modalClose">&times;</button></div>
-            <div class="modal-progress-container"><div class="modal-progress-bar-bg"><div class="modal-progress-bar" id="modalProgressBar"></div></div><div class="modal-progress-status" id="modalProgressStatus">⬇️ Faites défiler pour lire le règlement complet</div></div>
             <div class="modal-body" id="modalBody"></div>
-            <div class="modal-footer"><label class="read-confirm-checkbox disabled" id="readConfirmLabel"><input type="checkbox" id="readConfirmCheckbox" disabled><span>J'ai lu et compris le règlement</span></label><button class="modal-validate-btn" id="modalValidateBtn" disabled>✅ Confirmer</button></div>
+            <div class="modal-footer"><label class="read-confirm-checkbox"><input type="checkbox" id="readConfirmCheckbox"><span>J'ai lu et compris le règlement</span></label><button class="modal-validate-btn" id="modalValidateBtn">✅ Confirmer</button></div>
         </div>
     </div>
     
@@ -563,69 +580,23 @@
             let html = '';
             const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
             
-            // Nouveau format : un seul champ contenu
-            if (reg && reg.contenu) {
-                html = formatReglementContenu(reg.contenu);
-            } else if (reg) {
-                // Ancien format avec sections séparées
-                html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
-                html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
-                html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
-                if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
-                html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
-                html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
-                html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
-                if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
-                html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
-                html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
-            }
+            html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
+            html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
+            html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
+            if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
+            html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
+            html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
+            html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
+            if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
+            html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
+            html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
             
             return { title: titles[name], content: html };
-        }
-        
-        // Formatter le contenu unique (nouveau format)
-        function formatReglementContenu(text) {
-            if (!text) return '';
-            const lines = text.split('\n');
-            let html = '';
-            let inList = false;
-            
-            lines.forEach(line => {
-                const t = line.trim();
-                if (!t) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    return;
-                }
-                
-                // Titre avec emoji (détecte les lignes qui commencent par un emoji et sont courtes)
-                if (/^[🗓️🎫🎣⛔👮👶🗑️🚨📋📞🌙💰⚠️❌]/.test(t) && !t.startsWith('-') && !t.startsWith('⚠️') && !t.startsWith('❌') && t.length < 100) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<h3>' + t + '</h3>';
-                }
-                // Ligne commence par - ou ❌
-                else if (t.startsWith('-') || t.startsWith('❌')) {
-                    if (!inList) { html += '<ul>'; inList = true; }
-                    html += '<li>' + t.replace(/^-\s*/, '').replace(/^❌\s*/, '❌ ') + '</li>';
-                }
-                // Ligne commence par ⚠️
-                else if (t.startsWith('⚠️')) {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<p class="warning">' + t + '</p>';
-                }
-                // Ligne normale
-                else {
-                    if (inList) { html += '</ul>'; inList = false; }
-                    html += '<p>' + t + '</p>';
-                }
-            });
-            
-            if (inList) html += '</ul>';
-            return html;
         }
 
         let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [], modalScrollComplete = false;
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [];
         let currentHistTab = 'avertissements';
         let allCartesValides = [], allControleurs = [];
         let pendingExclusion = null, selectedExclusionType = null;
@@ -656,14 +627,132 @@
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
         document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
 
-        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); loadAllData(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
-        function login() { if (document.getElementById('loginCode').value === '911') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; sessionStorage.setItem('logged', 'true'); setupBackButtonBlock(); loadAllData(); } else { document.getElementById('loginCode').classList.add('error'); document.getElementById('loginError').style.display = 'block'; setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); } }
+        function login() { 
+            const selectedUser = document.getElementById('loginUser').value;
+            if (!selectedUser) { 
+                document.getElementById('loginError').textContent = '⚠️ Veuillez choisir votre nom'; 
+                document.getElementById('loginError').style.display = 'block'; 
+                setTimeout(() => { document.getElementById('loginError').style.display = 'none'; }, 3000); 
+                return; 
+            }
+            if (document.getElementById('loginCode').value === '911') { 
+                localStorage.setItem('controleurUser', selectedUser);
+                document.getElementById('loginPage').style.display = 'none'; 
+                document.getElementById('appContainer').style.display = 'block'; 
+                sessionStorage.setItem('logged', 'true'); 
+                setupBackButtonBlock(); 
+                document.getElementById('currentUserDisplay').textContent = '👤 ' + selectedUser;
+                setUserPresence(selectedUser);
+                listenOnlineUsers();
+                loadAllData(); 
+            } else { 
+                document.getElementById('loginCode').classList.add('error'); 
+                document.getElementById('loginError').textContent = '❌ Code incorrect';
+                document.getElementById('loginError').style.display = 'block'; 
+                setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
+            } 
+        }
         
-        document.getElementById('logoutBtn').addEventListener('click', () => { document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+        
+        // ===== SYSTÈME DE PRÉSENCE =====
+        let pendingUserChange = null;
+        
+        function initLoginUserSelect() {
+            const select = document.getElementById('loginUser');
+            const savedUser = localStorage.getItem('controleurUser');
+            dbCentral.ref('controleurs').once('value').then(snapshot => {
+                const data = snapshot.val();
+                const liste = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+                select.innerHTML = '<option value="">-- Choisir votre nom --</option>';
+                liste.forEach(c => { if (c) select.innerHTML += '<option value="' + c + '"' + (savedUser === c ? ' selected' : '') + '>' + c + '</option>'; });
+            });
+            select.addEventListener('change', function() {
+                const savedUser = localStorage.getItem('controleurUser');
+                if (savedUser && this.value && this.value !== savedUser) {
+                    pendingUserChange = this.value;
+                    document.getElementById('changeUserFrom').textContent = savedUser;
+                    document.getElementById('changeUserTo').textContent = this.value;
+                    document.getElementById('changeUserModal').classList.add('visible');
+                    this.value = savedUser;
+                }
+            });
+        }
+        
+        function confirmChangeUser() {
+            if (pendingUserChange) {
+                removeUserPresence();
+                localStorage.setItem('controleurUser', pendingUserChange);
+                document.getElementById('loginUser').value = pendingUserChange;
+                if (sessionStorage.getItem('logged') === 'true') {
+                    setUserPresence(pendingUserChange);
+                    document.getElementById('currentUserDisplay').textContent = '👤 ' + pendingUserChange;
+                }
+                pendingUserChange = null;
+            }
+            document.getElementById('changeUserModal').classList.remove('visible');
+        }
+        
+        function cancelChangeUser() { pendingUserChange = null; document.getElementById('changeUserModal').classList.remove('visible'); }
+        
+        function promptChangeUser() {
+            const current = localStorage.getItem('controleurUser');
+            if (!current || !allControleurs.length) return;
+            const newUser = prompt('Changer d\'utilisateur ?\nActuel: ' + current + '\n\nEntrez le nouveau nom:');
+            if (newUser && newUser !== current && allControleurs.includes(newUser)) {
+                if (confirm('Changer de ' + current + ' à ' + newUser + ' ?')) {
+                    removeUserPresence();
+                    localStorage.setItem('controleurUser', newUser);
+                    setUserPresence(newUser);
+                    document.getElementById('currentUserDisplay').textContent = '👤 ' + newUser;
+                    showAlert('✅ Utilisateur changé: ' + newUser, 'success');
+                }
+            } else if (newUser && !allControleurs.includes(newUser)) {
+                showAlert('❌ Utilisateur non trouvé', 'error');
+            }
+        }
+        
+        function setUserPresence(userName) {
+            if (!userName) return;
+            const presenceRef = dbCentral.ref('presence/controleur/' + userName);
+            const connectedRef = dbCentral.ref('.info/connected');
+            connectedRef.on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    presenceRef.set({ online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP, user: userName });
+                    presenceRef.onDisconnect().remove();
+                }
+            });
+        }
+        
+        function removeUserPresence() {
+            const userName = localStorage.getItem('controleurUser');
+            if (userName) dbCentral.ref('presence/controleur/' + userName).remove();
+        }
+        
+        function listenOnlineUsers() {
+            dbCentral.ref('presence/controleur').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('onlineUsers');
+                const currentUser = localStorage.getItem('controleurUser');
+                if (!data) { container.style.display = 'none'; return; }
+                const users = Object.keys(data).filter(u => data[u] && data[u].online);
+                const otherUsers = users.filter(u => u !== currentUser);
+                if (otherUsers.length > 0) {
+                    container.innerHTML = '👥 Également connecté(s): ' + otherUsers.map(u => '<strong>' + u + '</strong>').join(', ');
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() { initLoginUserSelect(); });
+        window.addEventListener('beforeunload', function() { removeUserPresence(); });
 
         document.getElementById('adminBtn').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
         document.getElementById('adminModalClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('visible'));
@@ -748,14 +837,11 @@
         document.getElementById('ville').addEventListener('change', updateValidateBtn);
 
         document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.addEventListener('change', function() { const item = this.closest('.reglement-item'); const reglement = item.dataset.reglement; const readBtn = item.querySelector('.reglement-read-btn'); item.classList.toggle('checked', this.checked); readBtn.disabled = !this.checked; if (!this.checked) { reglementsRead[reglement] = false; readBtn.textContent = '📖 Lire'; readBtn.classList.remove('read'); } updateValidateBtn(); }); });
-        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; modalScrollComplete = false; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('modalProgressBar').style.width = '0%'; document.getElementById('modalProgressStatus').textContent = '⬇️ Faites défiler pour lire le règlement complet'; document.getElementById('modalProgressStatus').classList.remove('complete'); document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('readConfirmCheckbox').disabled = true; document.getElementById('readConfirmLabel').classList.add('disabled'); document.getElementById('modalValidateBtn').disabled = true; document.getElementById('reglementModal').classList.add('visible'); setTimeout(() => { document.getElementById('modalBody').scrollTop = 0; checkModalScrollProgress(); }, 50); }); });
+        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
         document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
         document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
-        document.getElementById('modalBody').addEventListener('scroll', checkModalScrollProgress);
-        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').disabled = !this.checked; });
+        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
         document.getElementById('modalValidateBtn').addEventListener('click', () => { if (document.getElementById('readConfirmCheckbox').checked && currentReglementReading) { reglementsRead[currentReglementReading] = true; const btn = document.querySelector('.reglement-read-btn[data-for="' + currentReglementReading + '"]'); btn.textContent = '✅ Lu'; btn.classList.add('read'); document.getElementById('reglementModal').classList.remove('visible'); updateValidateBtn(); } });
-        
-        function checkModalScrollProgress() { const modalBody = document.getElementById('modalBody'); const maxScroll = modalBody.scrollHeight - modalBody.clientHeight; let scrollPercent = maxScroll <= 0 ? 100 : Math.min(100, Math.round((modalBody.scrollTop / maxScroll) * 100)); document.getElementById('modalProgressBar').style.width = scrollPercent + '%'; if (scrollPercent >= 95 && !modalScrollComplete) { modalScrollComplete = true; document.getElementById('modalProgressStatus').textContent = '✅ Règlement lu en entier'; document.getElementById('modalProgressStatus').classList.add('complete'); document.getElementById('readConfirmCheckbox').disabled = false; document.getElementById('readConfirmLabel').classList.remove('disabled'); } }
 
         function updateValidateBtn() { const formValid = document.getElementById('ficheForm').checkValidity() && document.getElementById('ville').value; const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const allCheckedRead = checkedReglements.length > 0 && checkedReglements.every(r => reglementsRead[r]); document.getElementById('validateBtn').disabled = !(formValid && allCheckedRead); }
         document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
