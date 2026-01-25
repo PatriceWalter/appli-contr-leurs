@@ -978,7 +978,6 @@
             const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
             const motif = document.getElementById('infMotif').value.trim(); 
             const lieu = document.getElementById('infLieu').value; 
-            // Utiliser getCurrentUser() directement car le select peut être disabled
             const controleurSanction = getCurrentUser() || document.getElementById('infControleur').value; 
             
             if (!controleurSanction) { 
@@ -986,51 +985,59 @@
                 return; 
             } 
             
-            // Vérifier si la personne a déjà un avertissement
-            const existingAvert = allInfractions.avertissements.find(a => 
-                a.nom.toUpperCase() === nom && 
-                a.prenom.toLowerCase() === prenomF.toLowerCase()
-            ); 
-            
-            if (existingAvert) { 
-                // 2ème infraction → Ouvrir le modal d'exclusion
-                pendingExclusion = { 
-                    nom, 
-                    prenom: prenomF, 
-                    motif, 
-                    lieu, 
-                    controleurSanction, 
-                    existingAvert 
-                }; 
-                selectedExclusionType = null; 
-                document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
-                document.getElementById('btnConfirmExclusion').disabled = true; 
-                document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
-                document.getElementById('exclusionModal').classList.add('visible'); 
-            } else { 
-                // 1ère infraction → Avertissement
-                const data = { 
-                    nom, 
-                    prenom: prenomF, 
-                    motif, 
-                    lieu, 
-                    controleurSanction, 
-                    date: new Date().toLocaleString('fr-FR'), 
-                    id: Date.now().toString() 
-                }; 
+            try {
+                // Récupérer les données ACTUELLES depuis Firebase
+                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value');
+                let currentAvert = [];
+                if (avertSnap.val()) {
+                    Object.entries(avertSnap.val()).forEach(([key, v]) => {
+                        if (v && v.nom) currentAvert.push({ key, ...v });
+                    });
+                }
                 
-                try { 
-                    const snap = await dbCentral.ref('infractions/avertissements').once('value'); 
-                    const idx = snap.val() ? Object.keys(snap.val()).length : 0; 
+                // Vérifier si la personne a déjà un avertissement
+                const existingAvert = currentAvert.find(a => 
+                    (a.nom || '').toUpperCase() === nom && 
+                    (a.prenom || '').toLowerCase() === prenomF.toLowerCase()
+                ); 
+                
+                if (existingAvert) { 
+                    // 2ème infraction → Ouvrir le modal d'exclusion
+                    pendingExclusion = { 
+                        nom, 
+                        prenom: prenomF, 
+                        motif, 
+                        lieu, 
+                        controleurSanction, 
+                        existingAvert 
+                    }; 
+                    selectedExclusionType = null; 
+                    document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
+                    document.getElementById('btnConfirmExclusion').disabled = true; 
+                    document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
+                    document.getElementById('exclusionModal').classList.add('visible'); 
+                } else { 
+                    // 1ère infraction → Avertissement
+                    const data = { 
+                        nom, 
+                        prenom: prenomF, 
+                        motif, 
+                        lieu, 
+                        controleurSanction, 
+                        date: new Date().toLocaleString('fr-FR'), 
+                        id: Date.now().toString() 
+                    }; 
+                    
+                    const idx = currentAvert.length; 
                     await dbCentral.ref('infractions/avertissements/' + idx).set(data); 
                     
                     showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
                     document.getElementById('infractionForm').reset(); 
                     await loadAllData(); 
                     showPage('menu'); 
-                } catch(e) { 
-                    showAlert('❌ Erreur: ' + e.message, 'error'); 
                 } 
+            } catch(e) { 
+                showAlert('❌ Erreur: ' + e.message, 'error'); 
             } 
         });
         
