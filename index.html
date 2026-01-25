@@ -431,8 +431,8 @@
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">🎯 Contrôle du Jour</h1>
                 <div class="controle-buttons">
-                    <button class="controle-big-btn hardt" onclick="window.open('https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur#controleur', '_blank')"><span class="controle-big-icon">🐟</span><span class="controle-big-title">Hardt</span><span class="controle-big-desc">Réservations et infractions</span></button>
-                    <button class="controle-big-btn carpodrome" onclick="window.open('https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911&from=controleur#controleur', '_blank')"><span class="controle-big-icon">🎣</span><span class="controle-big-title">Carpodrome</span><span class="controle-big-desc">Réservations et infractions</span></button>
+                    <button class="controle-big-btn hardt" onclick="openHardt()"><span class="controle-big-icon">🐟</span><span class="controle-big-title">Hardt</span><span class="controle-big-desc">Réservations et infractions</span></button>
+                    <button class="controle-big-btn carpodrome" onclick="openCarpodrome()"><span class="controle-big-icon">🎣</span><span class="controle-big-title">Carpodrome</span><span class="controle-big-desc">Réservations et infractions</span></button>
                 </div>
             </div></div>
         </div>
@@ -752,6 +752,18 @@
         }
         
         function getCurrentUser() { return localStorage.getItem('controleurUser') || ''; }
+        
+        function openHardt() {
+            const user = getCurrentUser();
+            const url = 'https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
+            window.open(url, '_blank');
+        }
+        
+        function openCarpodrome() {
+            const user = getCurrentUser();
+            const url = 'https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
+            window.open(url, '_blank');
+        }
         
         document.addEventListener('DOMContentLoaded', function() { initLoginUserSelect(); });
         window.addEventListener('beforeunload', function() { removeUserPresence(); });
