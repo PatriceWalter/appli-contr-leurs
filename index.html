@@ -751,6 +751,8 @@
             });
         }
         
+        function getCurrentUser() { return localStorage.getItem('controleurUser') || ''; }
+        
         document.addEventListener('DOMContentLoaded', function() { initLoginUserSelect(); });
         window.addEventListener('beforeunload', function() { removeUserPresence(); });
 
@@ -815,7 +817,19 @@
             updateInfControleurSelect(); 
         }
         
-        function updateInfControleurSelect() { const select = document.getElementById('infControleur'); if (!select) return; select.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + allControleurs.map(c => '<option value="' + c + '">' + c + '</option>').join(''); }
+        function updateInfControleurSelect() { 
+            const select = document.getElementById('infControleur'); 
+            if (!select) return; 
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+                select.innerHTML = '<option value="' + currentUser + '">' + currentUser + '</option>';
+                select.value = currentUser;
+                select.disabled = true;
+            } else {
+                select.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + allControleurs.map(c => '<option value="' + c + '">' + c + '</option>').join(''); 
+                select.disabled = false;
+            }
+        }
         
         function renderControleurs() { const container = document.getElementById('controleursList'); if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + allControleurs.map((nom, i) => '<div class="carte-item" style="border-left-color:#1565c0;"><div class="carte-item-name">👮 ' + nom + '</div><button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button></div>').join(''); }
         
@@ -964,7 +978,8 @@
             const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
             const motif = document.getElementById('infMotif').value.trim(); 
             const lieu = document.getElementById('infLieu').value; 
-            const controleurSanction = document.getElementById('infControleur').value; 
+            // Utiliser getCurrentUser() directement car le select peut être disabled
+            const controleurSanction = getCurrentUser() || document.getElementById('infControleur').value; 
             
             if (!controleurSanction) { 
                 showAlert('❌ Sélectionnez un contrôleur', 'error'); 
