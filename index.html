@@ -453,7 +453,7 @@
                     <button class="controle-big-btn carpodrome" onclick="openCarpodrome()"><span class="controle-big-icon">🎣</span><span class="controle-big-title">Carpodrome</span><span class="controle-big-desc">Réservations et infractions</span></button>
                 </div>
                 <div style="margin-top:25px; padding-top:20px; border-top:2px dashed #ddd;">
-                    <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); width:100%;"><span class="controle-big-icon">🌲</span><span class="controle-big-title">Breitmatt</span><span class="controle-big-desc">Signaler un contrôle</span></button>
+                    <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); width:100%;"><span class="controle-big-icon">🐠</span><span class="controle-big-title">Breitmatt</span><span class="controle-big-desc">Signaler un contrôle</span></button>
                 </div>
             </div></div>
         </div>
@@ -461,9 +461,9 @@
     
     <div class="modal-overlay" id="breitmattModal">
         <div class="modal-content" style="max-width:400px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);"><h2>🌲 Contrôle Breitmatt</h2><button class="modal-close" onclick="fermerModalBreitmatt()">&times;</button></div>
+            <div class="modal-header" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);"><h2>🐠 Contrôle Breitmatt</h2><button class="modal-close" onclick="fermerModalBreitmatt()">&times;</button></div>
             <div class="modal-body" style="text-align:center;">
-                <div style="font-size:60px; margin-bottom:15px;">🌲</div>
+                <div style="font-size:60px; margin-bottom:15px;">🐠</div>
                 <p style="font-size:16px; margin-bottom:20px;">Confirmer le contrôle de l'étang de la <strong>Breitmatt</strong> ?</p>
                 <p style="background:#e8f5e9; padding:15px; border-radius:10px; margin-bottom:20px;">
                     <strong>👮 Contrôleur :</strong> <span id="breitmattControleur"></span><br>
@@ -581,7 +581,7 @@
         async function envoyerControleBreitmatt() {
             const controleur = getCurrentUser();
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const message = '🌲 *CONTRÔLE BREITMATT*\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
+            const message = '🐠 *CONTRÔLE BREITMATT*\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
             
             fermerModalBreitmatt();
             showAlert('⏳ Envoi en cours...', 'info');
