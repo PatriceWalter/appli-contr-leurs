@@ -275,6 +275,10 @@
                 <p class="menu-subtitle">AAPPMA Gundershoffen</p>
                 <p id="currentUserDisplay" style="margin-top:10px; font-size:13px; opacity:0.9; cursor:pointer;" onclick="promptChangeUser()"></p>
                 <div id="onlineUsers" style="margin-top:8px; font-size:12px; opacity:0.85; background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:8px; display:none;"></div>
+                <div id="notifStatus" style="margin-top:10px;">
+                    <button id="btnActiverNotif" onclick="activerNotifications()" style="background:#ff9800; color:white; border:none; padding:10px 20px; border-radius:20px; font-size:14px; cursor:pointer; display:none;">🔔 Activer les notifications</button>
+                    <span id="notifOK" style="display:none; color:#4caf50; font-size:13px;">✅ Notifications activées</span>
+                </div>
             </div>
             <div class="menu-cards">
                 <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
@@ -538,67 +542,158 @@
         async function initNotifications() {
             try {
                 if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-                    console.log('❌ Notifications non supportées');
+                    console.log('❌ Notifications non supportées sur ce navigateur');
                     return;
                 }
                 
-                // Enregistrer et attendre que le SW soit prêt
+                // Enregistrer le Service Worker
                 await navigator.serviceWorker.register('./firebase-messaging-sw.js');
                 swRegistration = await navigator.serviceWorker.ready;
                 console.log('✅ Service Worker actif');
                 
                 messaging = firebase.messaging(appCentral);
                 
-                // Notifications au premier plan
+                // Notifications au premier plan - TOAST VISUEL
                 messaging.onMessage((payload) => {
                     console.log('📬 Notification reçue:', payload);
-                    const title = payload.notification?.title || '📋 Contrôle AAPPMA';
-                    const body = payload.notification?.body || 'Un contrôle a été effectué';
-                    swRegistration.showNotification(title, { body: body, vibrate: [200, 100, 200] });
+                    const data = payload.data || payload.notification || {};
+                    const title = data.title || '📋 Contrôle AAPPMA';
+                    const body = data.body || 'Un contrôle a été effectué';
+                    
+                    // Toast visuel
+                    afficherToast(title, body);
+                    
+                    // Notification système aussi
+                    if (swRegistration) {
+                        swRegistration.showNotification(title, { body: body, vibrate: [200, 100, 200], requireInteraction: true });
+                    }
                 });
                 
-                if (Notification.permission === 'default') {
-                    await demanderPermissionNotification();
-                } else if (Notification.permission === 'granted') {
-                    await enregistrerToken();
-                }
+                // Vérifier le statut des permissions
+                updateNotifStatus();
+                
             } catch (error) {
                 console.error('❌ Erreur init notifications:', error);
+                document.getElementById('btnActiverNotif').style.display = 'inline-block';
             }
         }
         
-        async function demanderPermissionNotification() {
+        function updateNotifStatus() {
+            const btnActiver = document.getElementById('btnActiverNotif');
+            const notifOK = document.getElementById('notifOK');
+            
+            if (Notification.permission === 'granted') {
+                btnActiver.style.display = 'none';
+                notifOK.style.display = 'inline';
+                // Vérifier si token existe, sinon l'enregistrer
+                enregistrerToken();
+            } else if (Notification.permission === 'denied') {
+                btnActiver.style.display = 'inline-block';
+                btnActiver.textContent = '🔕 Notifications bloquées';
+                btnActiver.style.background = '#f44336';
+                btnActiver.onclick = null;
+                notifOK.style.display = 'none';
+            } else {
+                btnActiver.style.display = 'inline-block';
+                notifOK.style.display = 'none';
+            }
+        }
+        
+        async function activerNotifications() {
+            const btnActiver = document.getElementById('btnActiverNotif');
+            btnActiver.textContent = '⏳ Activation...';
+            btnActiver.disabled = true;
+            
             try {
                 const permission = await Notification.requestPermission();
+                console.log('Permission:', permission);
+                
                 if (permission === 'granted') {
-                    console.log('✅ Permission notifications accordée');
+                    console.log('✅ Permission accordée');
                     await enregistrerToken();
+                    updateNotifStatus();
                 } else {
-                    console.log('❌ Permission notifications refusée');
+                    console.log('❌ Permission refusée:', permission);
+                    btnActiver.textContent = '🔔 Activer les notifications';
+                    btnActiver.disabled = false;
+                    alert('Notifications refusées. Vérifiez les paramètres de votre navigateur.');
                 }
             } catch (error) {
-                console.error('❌ Erreur permission:', error);
+                console.error('❌ Erreur activation:', error);
+                btnActiver.textContent = '🔔 Activer les notifications';
+                btnActiver.disabled = false;
+                alert('Erreur: ' + error.message);
             }
+        }
+        
+        function afficherToast(title, body) {
+            let toast = document.getElementById('fcmToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'fcmToast';
+                toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a472a,#2e7d32);color:white;padding:20px 30px;border-radius:15px;box-shadow:0 8px 30px rgba(0,0,0,0.3);z-index:99999;text-align:center;max-width:90%;font-family:Arial,sans-serif;';
+                document.body.appendChild(toast);
+            }
+            
+            toast.innerHTML = '<div style="font-size:24px;margin-bottom:10px;">🔔</div><div style="font-size:18px;font-weight:bold;margin-bottom:5px;">' + title + '</div><div style="font-size:14px;">' + body + '</div>';
+            toast.style.display = 'block';
+            
+            // Son
+            try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleVUnJ3GX2+KpbCQTRJbW56xuJgpAlM/jqHInCkSc0t+hZB0AWpTJzYhUFABzqcG0bTwCAJnHvJRTHgBwuMOiYiEAAKnQw5hcFgCc1MmYViQAfdzVpF4RAAAAAAAAAAAAAAAAAAAAAAAAAAA=').play(); } catch(e) {}
+            
+            // Vibrer
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            
+            // Masquer après 8 secondes
+            setTimeout(() => { toast.style.display = 'none'; }, 8000);
+        }
+        
+        async function demanderPermissionNotification() {
+            await activerNotifications();
         }
         
         async function enregistrerToken() {
             try {
+                if (!messaging || !swRegistration) {
+                    console.log('❌ Messaging ou SW non prêt');
+                    return;
+                }
+                
+                console.log('🔄 Demande de token FCM...');
                 const token = await messaging.getToken({ 
                     vapidKey: VAPID_KEY,
                     serviceWorkerRegistration: swRegistration
                 });
+                
                 if (token) {
                     const userName = getCurrentUser();
-                    await dbCentral.ref('fcmTokens/' + userName.replace(/[^a-zA-Z0-9]/g, '_')).set({
+                    if (!userName) {
+                        console.log('❌ Pas d\'utilisateur connecté');
+                        return;
+                    }
+                    
+                    // Ajouter un identifiant unique pour chaque appareil
+                    const deviceId = navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop';
+                    const tokenKey = userName.replace(/[^a-zA-Z0-9]/g, '_') + '_' + deviceId;
+                    
+                    await dbCentral.ref('fcmTokens/' + tokenKey).set({
                         token: token,
                         user: userName,
+                        device: deviceId,
                         app: 'Controleur',
                         lastUpdate: new Date().toISOString()
                     });
-                    console.log('✅ Token FCM enregistré pour', userName);
+                    console.log('✅ Token FCM enregistré pour', userName, '(' + deviceId + ')');
+                    
+                    // Mettre à jour l'affichage
+                    document.getElementById('btnActiverNotif').style.display = 'none';
+                    document.getElementById('notifOK').style.display = 'inline';
+                } else {
+                    console.log('❌ Pas de token reçu');
                 }
             } catch (error) {
                 console.error('❌ Erreur enregistrement token:', error);
+                alert('Erreur token: ' + error.message);
             }
         }
 
