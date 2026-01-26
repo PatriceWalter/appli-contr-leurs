@@ -1173,6 +1173,11 @@
                     const idx = currentAvert.length; 
                     await dbCentral.ref('infractions/avertissements/' + idx).set(data); 
                     
+                    // Notification Telegram
+                    const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
+                    await envoyerNotificationTelegram(msgTelegram);
+                    
                     showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
                     document.getElementById('infractionForm').reset(); 
                     await loadAllData(); 
@@ -1238,6 +1243,13 @@
                 
                 const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
                 const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
+                
+                // Notification Telegram
+                const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                const typeExclTelegram = selectedExclusionType === 'temporaire' ? '⏱️ Temporaire (1 mois)' : '🚫 Définitive';
+                const finTelegram = selectedExclusionType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
+                const msgTelegram = '🚫 *EXCLUSION*\n👤 ' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + '\n' + typeExclTelegram + finTelegram + '\n📍 ' + pendingExclusion.lieu + '\n💬 ' + pendingExclusion.motif + '\n👮 ' + pendingExclusion.controleurSanction + '\n🕐 ' + heure;
+                await envoyerNotificationTelegram(msgTelegram);
                 
                 document.getElementById('exclusionModal').classList.remove('visible'); 
                 showAlert('🚫 EXCLUSION ' + typeText + '<br>' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + finText + '<br>👮 Par: ' + pendingExclusion.controleurSanction, 'error'); 
