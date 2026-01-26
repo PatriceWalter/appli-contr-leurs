@@ -580,8 +580,9 @@
         
         async function envoyerControleBreitmatt() {
             const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const message = '🐠 *CONTRÔLE BREITMATT*\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
+            const message = '🐠 *CONTRÔLE BREITMATT*\n📅 ' + date + '\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
             
             fermerModalBreitmatt();
             showAlert('⏳ Envoi en cours...', 'info');
@@ -1175,7 +1176,8 @@
                     
                     // Notification Telegram
                     const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
+                    const dateTelegram = new Date().toLocaleDateString('fr-FR');
+                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n📅 ' + dateTelegram + '\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
                     await envoyerNotificationTelegram(msgTelegram);
                     
                     showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
@@ -1246,9 +1248,10 @@
                 
                 // Notification Telegram
                 const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                const dateTelegram = new Date().toLocaleDateString('fr-FR');
                 const typeExclTelegram = selectedExclusionType === 'temporaire' ? '⏱️ Temporaire (1 mois)' : '🚫 Définitive';
                 const finTelegram = selectedExclusionType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
-                const msgTelegram = '🚫 *EXCLUSION*\n👤 ' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + '\n' + typeExclTelegram + finTelegram + '\n📍 ' + pendingExclusion.lieu + '\n💬 ' + pendingExclusion.motif + '\n👮 ' + pendingExclusion.controleurSanction + '\n🕐 ' + heure;
+                const msgTelegram = '🚫 *EXCLUSION*\n📅 ' + dateTelegram + '\n👤 ' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + '\n' + typeExclTelegram + finTelegram + '\n📍 ' + pendingExclusion.lieu + '\n💬 ' + pendingExclusion.motif + '\n👮 ' + pendingExclusion.controleurSanction + '\n🕐 ' + heure;
                 await envoyerNotificationTelegram(msgTelegram);
                 
                 document.getElementById('exclusionModal').classList.remove('visible'); 
