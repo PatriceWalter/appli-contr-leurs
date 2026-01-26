@@ -965,9 +965,14 @@
         function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
         document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbCentral.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbCentral.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
 
+        let infractionsListenerSetup = false;
+        
         async function loadAllData() { 
             await loadFiches(); 
-            await loadInfractions(); 
+            if (!infractionsListenerSetup) {
+                setupInfractionsListener();
+                infractionsListenerSetup = true;
+            }
             await loadMailsSent();
             await loadSmsSent();
             await loadControleurs();
@@ -1005,6 +1010,40 @@
                     }); 
                 } 
             } catch(e) { console.error(e); } 
+        }
+        
+        function setupInfractionsListener() {
+            dbCentral.ref('infractions').on('value', (snapshot) => {
+                allInfractions = { avertissements: [], bannis: [], archives: [] };
+                const data = snapshot.val();
+                if (data) {
+                    if (data.avertissements) {
+                        Object.entries(data.avertissements).forEach(([key, v]) => {
+                            if (v && v.nom && !v.archived) {
+                                allInfractions.avertissements.push({ key, ...v });
+                            }
+                        });
+                    }
+                    if (data.bannis) {
+                        Object.entries(data.bannis).forEach(([key, v]) => {
+                            if (v && v.nom) {
+                                allInfractions.bannis.push({ key, ...v });
+                            }
+                        });
+                    }
+                    if (data.archives) {
+                        Object.entries(data.archives).forEach(([key, v]) => {
+                            if (v && v.nom) {
+                                allInfractions.archives.push({ key, ...v });
+                            }
+                        });
+                    }
+                }
+                updateHistoriqueCounts();
+                if (document.getElementById('pageHistorique').classList.contains('active')) {
+                    renderHistorique();
+                }
+            });
         }
 
         function updateHistoriqueCounts() { 
