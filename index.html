@@ -453,7 +453,10 @@
                     <button class="controle-big-btn carpodrome" onclick="openCarpodrome()"><span class="controle-big-icon">🎣</span><span class="controle-big-title">Carpodrome</span><span class="controle-big-desc">Réservations et infractions</span></button>
                 </div>
                 <div style="margin-top:25px; padding-top:20px; border-top:2px dashed #ddd;">
-                    <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); width:100%; color:white;"><span class="controle-big-icon">🐠</span><span class="controle-big-title" style="color:white;">Breitmatt</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
+                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                        <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐠</span><span class="controle-big-title" style="color:white;">Breitmatt</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
+                        <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
+                    </div>
                 </div>
             </div></div>
         </div>
@@ -472,6 +475,25 @@
                 <div style="display:flex; gap:10px;">
                     <button class="btn" onclick="fermerModalBreitmatt()" style="flex:1; background:#eee; color:#333;">Annuler</button>
                     <button class="btn btn-primary" onclick="envoyerControleBreitmatt()" style="flex:1; background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);">✅ Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Hardt journée -->
+    <div class="modal-overlay" id="hardtJourneeModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);"><h2>🐟 Contrôle Hardt journée</h2><button class="modal-close" onclick="fermerModalHardtJournee()">&times;</button></div>
+            <div class="modal-body" style="text-align:center;">
+                <div style="font-size:60px; margin-bottom:15px;">🐟</div>
+                <p style="font-size:16px; margin-bottom:20px;">Confirmer le contrôle de l'étang de la <strong>Hardt</strong> (journée) ?</p>
+                <p style="background:#f3e5f5; padding:15px; border-radius:10px; margin-bottom:20px;">
+                    <strong>👮 Contrôleur :</strong> <span id="hardtJourneeControleur"></span><br>
+                    <strong>🕐 Heure :</strong> <span id="hardtJourneeHeure"></span>
+                </p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" onclick="fermerModalHardtJournee()" style="flex:1; background:#eee; color:#333;">Annuler</button>
+                    <button class="btn btn-primary" onclick="envoyerControleHardtJournee()" style="flex:1; background:linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);">✅ Confirmer</button>
                 </div>
             </div>
         </div>
@@ -591,6 +613,33 @@
             
             showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
         }
+        
+        // ===== CONTRÔLE HARDT JOURNÉE =====
+        function ouvrirModalHardtJournee() {
+            const controleur = getCurrentUser();
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('hardtJourneeControleur').textContent = controleur;
+            document.getElementById('hardtJourneeHeure').textContent = heure;
+            document.getElementById('hardtJourneeModal').classList.add('visible');
+        }
+        
+        function fermerModalHardtJournee() {
+            document.getElementById('hardtJourneeModal').classList.remove('visible');
+        }
+        
+        async function envoyerControleHardtJournee() {
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
+            
+            fermerModalHardtJournee();
+            showAlert('⏳ Envoi en cours...', 'info');
+            
+            await envoyerNotificationTelegram(message);
+            
+            showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
+        }
 
         // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
         const DEFAULT_REGLEMENTS = {
@@ -636,13 +685,30 @@
         function loadReglementsFromFirebase() {
             dbCentral.ref('reglements_formulaire').on('value', (snapshot) => {
                 reglementsData = snapshot.exists() ? snapshot.val() : null;
-                console.log('📜 Règlements synchronisés depuis Firebase');
+                console.log('📜 Règlements synchronisés depuis Firebase', reglementsData ? 'OK' : 'défaut');
             });
         }
         
         // Obtenir un règlement (Firebase ou défaut)
         function getReglement(name) {
-            return (reglementsData && reglementsData[name]) ? reglementsData[name] : DEFAULT_REGLEMENTS[name];
+            if (reglementsData && reglementsData[name]) {
+                const fbData = reglementsData[name];
+                // Si Firebase contient le format par sections (horaires, tarifs, etc.), on l'utilise directement
+                if (fbData.horaires || fbData.tarifs || fbData.modalites) {
+                    return fbData;
+                }
+                // Si Firebase contient un format "contenu" unique (nouveau format fiche de renseignement)
+                if (fbData.contenu) {
+                    return { _contenuBrut: fbData.contenu };
+                }
+                // Si c'est une string directement
+                if (typeof fbData === 'string') {
+                    return { _contenuBrut: fbData };
+                }
+                // Sinon on retourne tel quel
+                return fbData;
+            }
+            return DEFAULT_REGLEMENTS[name];
         }
         
         // Formatter une section de règlement
@@ -665,22 +731,81 @@
             return inList ? html + '</ul>' : html;
         }
         
+        // Formatter du contenu brut (nouveau format Firebase avec un seul champ "contenu")
+        function formatContenuBrut(text) {
+            if (!text) return '';
+            let html = '';
+            // Séparer les sections par double saut de ligne ou par titres en majuscules
+            const lines = text.split('\n');
+            let inList = false;
+            
+            lines.forEach(line => {
+                const t = line.trim();
+                if (!t) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    return;
+                }
+                // Détection des titres de sections (tout en majuscules ou avec emoji au début)
+                if (/^[A-ZÉÈÊËÀÂÙÛÎÏÔÖ\s\-:\/]{6,}$/.test(t) || /^(#{1,3})\s/.test(t)) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    const cleanTitle = t.replace(/^#{1,3}\s*/, '');
+                    html += '<h3>' + cleanTitle + '</h3>';
+                } else if (t.startsWith('-') || t.startsWith('❌') || t.startsWith('•') || t.startsWith('*')) {
+                    if (!inList) { html += '<ul>'; inList = true; }
+                    html += '<li>' + t.replace(/^[-❌•*]\s*/, '') + '</li>';
+                } else if (t.startsWith('⚠️')) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p class="warning">' + t + '</p>';
+                } else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p>' + t + '</p>';
+                }
+            });
+            
+            if (inList) html += '</ul>';
+            return html;
+        }
+        
         // Générer le HTML complet d'un règlement
         function generateReglementHTML(name) {
             const reg = getReglement(name);
-            let html = '';
             const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
+            let html = '';
             
-            html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
-            html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
-            html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
+            // Si c'est du contenu brut (nouveau format Firebase), on le formate directement
+            if (reg._contenuBrut) {
+                html = formatContenuBrut(reg._contenuBrut);
+                return { title: titles[name], content: html };
+            }
+            
+            // Format classique par sections
+            if (reg.horaires) html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
+            if (reg.tarifs) html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
+            if (reg.modalites) html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
             if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
-            html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
-            html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
-            html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
+            if (reg.mineurs) html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
+            if (reg.sanctions) html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
+            if (reg.interdictions) html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
             if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
-            html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
-            html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            if (reg.dechets) html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
+            if (reg.contacts) html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            
+            // Si aucune section n'a été trouvée, afficher les données par défaut
+            if (!html) {
+                const defReg = DEFAULT_REGLEMENTS[name];
+                if (defReg) {
+                    html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(defReg.horaires);
+                    html += '<h3>💰 TARIFS</h3>' + formatReglementSection(defReg.tarifs);
+                    html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(defReg.modalites);
+                    if (defReg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(defReg.nuit);
+                    html += '<h3>👶 MINEURS</h3>' + formatReglementSection(defReg.mineurs);
+                    html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(defReg.sanctions);
+                    html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(defReg.interdictions, true);
+                    if (defReg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(defReg.carnassiers);
+                    html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(defReg.dechets);
+                    html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(defReg.contacts) + '</div>';
+                }
+            }
             
             return { title: titles[name], content: html };
         }
