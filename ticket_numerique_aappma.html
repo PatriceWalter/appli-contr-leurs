@@ -609,7 +609,7 @@ try{(function(){
     return base+params;
   }
 
-  // ===== PARTAGE TICKET (IMAGE) =====
+  // ===== PARTAGE TICKET =====
   function openSMS(){
     if(!lastTicket)return;
     var tel=lastTicket.tel.replace(/\s/g,'');
@@ -622,9 +622,21 @@ try{(function(){
       typeLbl+' — '+lastTicket.prix+'€\n'+
       d.toLocaleDateString('fr-FR')+'\n'+
       'Votre ticket avec QR code est joint en image.';
+    var smsTxt='AAPPMA Gundershoffen - Ticket de pêche\n'+
+      '━━━━━━━━━━━━━━━━━━━\n'+
+      'N° '+lastTicket.id+'\n'+
+      (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
+      typeLbl+' — '+lastTicket.prix+'€\n'+
+      d.toLocaleDateString('fr-FR')+'\n'+
+      '━━━━━━━━━━━━━━━━━━━\n'+
+      'Présentez ce ticket lors du contrôle.\nAAPPMA Gundershoffen';
 
     var ticketEl=document.querySelector('#emit-ok-ticket .ticket-card');
-    if(!ticketEl){alert('Erreur: ticket introuvable');return;}
+    if(!ticketEl){
+      // Pas d'image possible, envoyer SMS texte directement
+      if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
+      return;
+    }
 
     var btn=$('btn-sms');
     btn.textContent='⏳ Préparation...';
@@ -637,11 +649,16 @@ try{(function(){
       logging:false
     }).then(function(canvas){
       canvas.toBlob(function(blob){
-        if(!blob){btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;alert('Erreur génération image');return;}
+        if(!blob){
+          // Image échouée → SMS texte
+          btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
+          if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
+          return;
+        }
 
         var file=new File([blob],'ticket-'+lastTicket.id+'.png',{type:'image/png'});
 
-        // Web Share API avec image
+        // 1) Essai partage image (Android/iOS modernes)
         if(navigator.canShare&&navigator.canShare({files:[file]})){
           navigator.share({
             title:'Ticket de pêche - AAPPMA Gundershoffen',
@@ -652,23 +669,27 @@ try{(function(){
             setTimeout(function(){btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;},2000);
           }).catch(function(e){
             btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-            if(e.name!=='AbortError')console.error('Share error:',e);
+            // Annulé par l'utilisateur → rien, sinon fallback SMS
+            if(e.name!=='AbortError'&&tel){
+              window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');
+            }
           });
         } else {
-          // Fallback: télécharger image pour envoi manuel
+          // 2) Fallback: télécharger image + ouvrir SMS texte
           var url=URL.createObjectURL(blob);
           var dlLink=$('dl-ticket');
           dlLink.href=url;
           dlLink.download='ticket-'+lastTicket.id+'.png';
           show($('share-fallback'));
           btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-          alert('Image du ticket prête ! Téléchargez-la puis envoyez-la par MMS ou WhatsApp au pêcheur.');
+          if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
         }
       },'image/png');
     }).catch(function(e){
       console.error('html2canvas error:',e);
       btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-      alert('Erreur lors de la génération de l\'image. Réessayez.');
+      // Image échouée → SMS texte
+      if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
     });
   }
 
