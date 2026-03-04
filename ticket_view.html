@@ -90,8 +90,8 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     var dD=new Date(dateDebut),dF=new Date(dateFin);
     var nbJ=Math.round((dF-dD)/86400000)+1;
     var nbN=nbJ-1;
-    var lblDeb=sejourDebType==='journee'?'Journée':'Demi-journée';
-    var lblFin=sejourFinType==='journee'?'Journée':'Demi-journée';
+    var lblDeb=sejourDebType==='journee'?'Journée':sejourDebType==='demi'?'Demi-journée':'Nuit';
+    var lblFin=sejourFinType==='journee'?'Journée':sejourFinType==='demi'?'Demi-journée':'Nuit';
     dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
     dateHtml+='<div class="tc-detail">'+nbJ+'j / '+nbN+'n — Début : '+lblDeb+', Fin : '+lblFin+'</div>';
   } else if(dateDebut){

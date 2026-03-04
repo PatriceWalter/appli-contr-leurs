@@ -198,16 +198,18 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     </div>
     <div style="margin-top:8px;">
       <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Premier jour (début) :</div>
-      <div class="grid2" id="g-sej-debut">
+      <div class="grid3" id="g-sej-debut">
         <button class="opt" id="opt-sej-deb-journee">Journée<span class="prix">10€</span></button>
         <button class="opt" id="opt-sej-deb-demi">Demi-journée<span class="prix">6€</span></button>
+        <button class="opt" id="opt-sej-deb-nuit">Nuit<span class="prix">10€</span></button>
       </div>
     </div>
     <div style="margin-top:8px;">
       <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Dernier jour (fin) :</div>
-      <div class="grid2" id="g-sej-fin">
+      <div class="grid3" id="g-sej-fin">
         <button class="opt" id="opt-sej-fin-journee">Journée<span class="prix">10€</span></button>
         <button class="opt" id="opt-sej-fin-demi">Demi-journée<span class="prix">6€</span></button>
+        <button class="opt" id="opt-sej-fin-nuit">Nuit<span class="prix">10€</span></button>
       </div>
     </div>
     <div id="sejour-calc" class="hidden" style="margin-top:12px;background:var(--card2);border-radius:12px;padding:14px;text-align:center;">
@@ -659,14 +661,16 @@ try{(function(){
   function pickSejourDebType(type){
     selSejourDebType=type;
     clearOn($('g-sej-debut'));
-    $(type==='journee'?'opt-sej-deb-journee':'opt-sej-deb-demi').classList.add('on');
+    var id=type==='journee'?'opt-sej-deb-journee':type==='demi'?'opt-sej-deb-demi':'opt-sej-deb-nuit';
+    $(id).classList.add('on');
     calcSejour();
   }
 
   function pickSejourFinType(type){
     selSejourFinType=type;
     clearOn($('g-sej-fin'));
-    $(type==='journee'?'opt-sej-fin-journee':'opt-sej-fin-demi').classList.add('on');
+    var id=type==='journee'?'opt-sej-fin-journee':type==='demi'?'opt-sej-fin-demi':'opt-sej-fin-nuit';
+    $(id).classList.add('on');
     calcSejour();
   }
 
@@ -678,23 +682,33 @@ try{(function(){
     var dFin=new Date(fin);
     if(dFin<=dDebut){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
     var nbJours=Math.round((dFin-dDebut)/86400000)+1;
-    var nbNuits=nbJours-1;
     var nbMilieu=nbJours-2;
-    var prixDebut=selSejourDebType==='journee'?10:6;
-    var prixFin=selSejourFinType==='journee'?10:6;
-    var lblDebut=selSejourDebType==='journee'?'Journée':'Demi-journée';
-    var lblFin=selSejourFinType==='journee'?'Journée':'Demi-journée';
-    var total=prixDebut+prixFin+(nbMilieu>0?nbMilieu*10:0)+nbNuits*10;
+
+    // Jour 1 : journée/demi + nuit auto, OU nuit seule
+    var prixJ1=0,lblJ1='';
+    if(selSejourDebType==='journee'){prixJ1=20;lblJ1='Journée + Nuit = 20€';}
+    else if(selSejourDebType==='demi'){prixJ1=16;lblJ1='Demi-journée + Nuit = 16€';}
+    else{prixJ1=10;lblJ1='Nuit (18h→8h) = 10€';}
+
+    // Jours intermédiaires : journée + nuit = 20€ chacun
+    var prixMilieu=nbMilieu>0?nbMilieu*20:0;
+
+    // Dernier jour : journée/demi seule, OU nuit seule
+    var prixJn=0,lblJn='';
+    if(selSejourFinType==='journee'){prixJn=10;lblJn='Journée = 10€';}
+    else if(selSejourFinType==='demi'){prixJn=6;lblJn='Demi-journée = 6€';}
+    else{prixJn=10;lblJn='Nuit (18h→8h) = 10€';}
+
+    var total=prixJ1+prixMilieu+prixJn;
 
     selDate=debut;
     selDateFin=fin;
     selType='multi';
     selPrix=total;
 
-    var detail='1er jour : '+lblDebut+' = '+prixDebut+'€';
-    if(nbMilieu>0)detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' intermédiaire'+(nbMilieu>1?'s':'')+' : journée = '+(nbMilieu*10)+'€';
-    detail+='<br>Dernier jour : '+lblFin+' = '+prixFin+'€';
-    detail+='<br>'+nbNuits+' nuit'+(nbNuits>1?'s':'')+' × 10€ = '+(nbNuits*10)+'€';
+    var detail='1er jour : '+lblJ1;
+    if(nbMilieu>0)detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' intermédiaire'+(nbMilieu>1?'s':'')+' : journée + nuit = '+(nbMilieu*20)+'€';
+    detail+='<br>Dernier jour : '+lblJn;
     $('sejour-detail').innerHTML=detail;
     $('sejour-total').textContent='Total : '+total+'€';
     show($('sejour-calc'));
@@ -807,8 +821,8 @@ try{(function(){
       var dD=new Date(tk.dateDebut),dF=new Date(tk.dateFin);
       var nbJ=Math.round((dF-dD)/86400000)+1;
       var nbN=nbJ-1;
-      var lblDeb=tk.sejourDebType==='journee'?'Journée':'Demi-journée';
-      var lblFin=tk.sejourFinType==='journee'?'Journée':'Demi-journée';
+      var lblDeb=tk.sejourDebType==='journee'?'Journée':tk.sejourDebType==='demi'?'Demi-journée':'Nuit';
+      var lblFin=tk.sejourFinType==='journee'?'Journée':tk.sejourFinType==='demi'?'Demi-journée':'Nuit';
       dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
       dateHtml+='<div class="tc-detail">'+nbJ+'j / '+nbN+'n — Début : '+lblDeb+', Fin : '+lblFin+'</div>';
     } else if(tk.dateDebut){
@@ -1464,8 +1478,10 @@ try{(function(){
   // Multi-jours
   $('opt-sej-deb-journee').addEventListener('click',function(){pickSejourDebType('journee');});
   $('opt-sej-deb-demi').addEventListener('click',function(){pickSejourDebType('demi');});
+  $('opt-sej-deb-nuit').addEventListener('click',function(){pickSejourDebType('nuit');});
   $('opt-sej-fin-journee').addEventListener('click',function(){pickSejourFinType('journee');});
   $('opt-sej-fin-demi').addEventListener('click',function(){pickSejourFinType('demi');});
+  $('opt-sej-fin-nuit').addEventListener('click',function(){pickSejourFinType('nuit');});
   $('inp-sej-debut').addEventListener('change',function(){
     if($('inp-sej-debut').value)$('inp-sej-fin').min=$('inp-sej-debut').value;
     calcSejour();
