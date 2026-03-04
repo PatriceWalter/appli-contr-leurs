@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
 :root{--bg:linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);--card:#fff;--card2:#f8f9fa;--accent:#2d5a3d;--accent2:#4a7c59;--green:#2e7d32;--red:#c62828;--orange:#f57c00;--blue:#1565c0;--text:#333;--text2:#666;--border:#e0e0e0;--radius:15px;}
@@ -179,10 +179,7 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   <div id="emit-ok" class="hidden">
     <div class="rbox ok"><div class="ri">✅</div><div class="rt">Ticket émis !</div><div class="rd" id="emit-ok-id"></div></div>
     <div id="emit-ok-ticket"></div>
-    <button class="btn btn-green mt12" id="btn-sms">📤 Envoyer le ticket au pêcheur</button>
-    <div id="share-fallback" class="hidden" style="text-align:center;margin-top:8px;">
-      <a id="dl-ticket" download="ticket.png" style="color:var(--accent);font-weight:600;font-size:14px;">💾 Télécharger l'image du ticket</a>
-    </div>
+    <button class="btn btn-green mt12" id="btn-sms">📱 Envoyer par SMS</button>
     <button class="btn btn-out mt8" id="btn-new">Nouveau ticket</button>
   </div>
 </div>
@@ -193,8 +190,9 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   <div id="scan-input">
     <div class="card">
       <div class="card-t">📸 Scanner le QR Code du ticket</div>
-      <input type="file" accept="image/*" capture="environment" id="inp-scan" style="position:absolute;left:-9999px;">
-      <button class="btn btn-blue" id="btn-photo" style="font-size:18px;padding:18px;">📷 Photographier le QR Code</button>
+      <div id="qr-reader" style="width:100%;border-radius:10px;overflow:hidden;"></div>
+      <button class="btn btn-blue mt8" id="btn-start-scan" style="font-size:18px;padding:18px;">📷 Lancer le scan</button>
+      <button class="btn btn-out mt8 hidden" id="btn-stop-scan">⏹️ Arrêter le scan</button>
       <div id="scan-status" class="hidden"></div>
     </div>
     <div class="sep-or">OU</div>
@@ -333,7 +331,6 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   </div>
 </div>
 
-<div id="qr-reader" style="width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px;"></div>
 
 
 
@@ -548,8 +545,7 @@ try{(function(){
     renderTicket(tk,'emit-ok-ticket');
     hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-tel'));hide($('step-recap'));
     show($('emit-ok'));
-    $('btn-sms').style.display='';
-    hide($('share-fallback'));
+    $('btn-sms').style.display=tel?'':'none';
     updateVenteStats();
     }catch(e){alert('Erreur: '+e.message);console.error(e);}
   }
@@ -609,93 +605,62 @@ try{(function(){
     return base+params;
   }
 
-  // ===== PARTAGE TICKET =====
+  // ===== SMS =====
   function openSMS(){
     if(!lastTicket)return;
     var tel=lastTicket.tel.replace(/\s/g,'');
+    if(!tel)return;
     var d=new Date(lastTicket.date);
     var cl=lastTicket.carte==='titulaire'?' (Titulaire carte)':lastTicket.carte==='sans'?' (Sans carte)':'';
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===lastTicket.type)typeLbl=TARIFS_FLAT[i][1];}
-    var txtMsg='🎣 AAPPMA Gundershoffen\nTicket de pêche N° '+lastTicket.id+'\n'+
-      (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
-      typeLbl+' — '+lastTicket.prix+'€\n'+
-      d.toLocaleDateString('fr-FR')+'\n'+
-      'Votre ticket avec QR code est joint en image.';
-    var smsTxt='AAPPMA Gundershoffen - Ticket de pêche\n'+
-      '━━━━━━━━━━━━━━━━━━━\n'+
-      'N° '+lastTicket.id+'\n'+
-      (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
-      typeLbl+' — '+lastTicket.prix+'€\n'+
-      d.toLocaleDateString('fr-FR')+'\n'+
-      '━━━━━━━━━━━━━━━━━━━\n'+
-      'Présentez ce ticket lors du contrôle.\nAAPPMA Gundershoffen';
-
-    var ticketEl=document.querySelector('#emit-ok-ticket .ticket-card');
-    if(!ticketEl){
-      // Pas d'image possible, envoyer SMS texte directement
-      if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
-      return;
-    }
+    var ticketUrl=buildTicketUrl(lastTicket);
 
     var btn=$('btn-sms');
     btn.textContent='⏳ Préparation...';
     btn.disabled=true;
 
-    html2canvas(ticketEl,{
-      scale:2,
-      useCORS:true,
-      backgroundColor:'#ffffff',
-      logging:false
-    }).then(function(canvas){
-      canvas.toBlob(function(blob){
-        if(!blob){
-          // Image échouée → SMS texte
-          btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-          if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
-          return;
-        }
-
-        var file=new File([blob],'ticket-'+lastTicket.id+'.png',{type:'image/png'});
-
-        // 1) Essai partage image (Android/iOS modernes)
-        if(navigator.canShare&&navigator.canShare({files:[file]})){
-          navigator.share({
-            title:'Ticket de pêche - AAPPMA Gundershoffen',
-            text:txtMsg,
-            files:[file]
-          }).then(function(){
-            btn.textContent='✅ Envoyé !';
-            setTimeout(function(){btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;},2000);
-          }).catch(function(e){
-            btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-            // Annulé par l'utilisateur → rien, sinon fallback SMS
-            if(e.name!=='AbortError'&&tel){
-              window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');
-            }
-          });
-        } else {
-          // 2) Fallback: télécharger image + ouvrir SMS texte
-          var url=URL.createObjectURL(blob);
-          var dlLink=$('dl-ticket');
-          dlLink.href=url;
-          dlLink.download='ticket-'+lastTicket.id+'.png';
-          show($('share-fallback'));
-          btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-          if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
-        }
-      },'image/png');
-    }).catch(function(e){
-      console.error('html2canvas error:',e);
-      btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-      // Image échouée → SMS texte
-      if(tel){window.open('sms:'+tel+'?body='+encodeURIComponent(smsTxt),'_self');}
+    // Raccourcir le lien puis envoyer SMS
+    shortenUrl(ticketUrl,function(shortUrl){
+      var msg=encodeURIComponent(
+        'AAPPMA Gundershoffen\nTicket de pêche\n'+
+        '━━━━━━━━━━━━━━━━━━━\n'+
+        'N° '+lastTicket.id+'\n'+
+        (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
+        typeLbl+' — '+lastTicket.prix+'€\n'+
+        d.toLocaleDateString('fr-FR')+'\n'+
+        '━━━━━━━━━━━━━━━━━━━\n\n'+
+        '🎣 Accès à votre ticket :\n'+shortUrl
+      );
+      btn.textContent='📱 Envoyer par SMS';btn.disabled=false;
+      window.open('sms:'+tel+'?body='+msg,'_self');
     });
   }
 
+  function shortenUrl(url,cb){
+    // Essai TinyURL
+    fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(url))
+      .then(function(r){return r.text();})
+      .then(function(short){
+        if(short&&short.indexOf('http')===0)cb(short);
+        else cb(url);
+      })
+      .catch(function(){cb(url);});
+  }
+
   // ===== SCAN =====
+  function stopScanner(){
+    if(scanner){
+      try{scanner.stop().catch(function(){});}catch(e){}
+      try{scanner.clear();}catch(e){}
+      scanner=null;
+    }
+    hide($('btn-stop-scan'));
+    show($('btn-start-scan'));
+  }
+
   function resetScan(){
-    if(scanner){try{scanner.clear();}catch(e){}scanner=null;}
+    stopScanner();
     hide($('scan-out'));show($('scan-input'));
     hide($('scan-status'));
     $('inp-tkid').value='';
@@ -704,14 +669,27 @@ try{(function(){
     hide($('scan-btns'));
   }
 
-  function doScanFile(file){
-    if(!hasScan)return;
-    setStatus('Analyse du QR Code en cours...',false);
-    if(!scanner)scanner=new Html5Qrcode('qr-reader');
-    scanner.scanFile(file,true).then(function(decoded){
-      handleScanResult(decoded);
+  function startLiveScan(){
+    if(!hasScan){setStatus('❌ Scanner non disponible',true);return;}
+    if(scanner){stopScanner();}
+    scanner=new Html5Qrcode('qr-reader');
+    hide($('btn-start-scan'));
+    show($('btn-stop-scan'));
+    setStatus('Recherche de la caméra...',false);
+    scanner.start(
+      {facingMode:'environment'},
+      {fps:10,qrbox:{width:250,height:250}},
+      function(decoded){
+        stopScanner();
+        hide($('scan-status'));
+        handleScanResult(decoded);
+      },
+      function(){}
+    ).then(function(){
+      hide($('scan-status'));
     }).catch(function(err){
-      setStatus('❌ Aucun QR Code détecté dans cette image',true);
+      stopScanner();
+      setStatus('❌ Impossible d\'accéder à la caméra. Vérifiez les autorisations.',true);
     });
   }
 
@@ -1113,11 +1091,9 @@ try{(function(){
   $('btn-new').addEventListener('click',resetVente);
 
   // Scan
-  $('back-scan').addEventListener('click',function(){goPage('pg-menu');});
-  $('btn-photo').addEventListener('click',function(){$('inp-scan').click();});
-  $('inp-scan').addEventListener('change',function(e){
-    if(e.target.files&&e.target.files[0])doScanFile(e.target.files[0]);
-  });
+  $('back-scan').addEventListener('click',function(){stopScanner();goPage('pg-menu');});
+  $('btn-start-scan').addEventListener('click',startLiveScan);
+  $('btn-stop-scan').addEventListener('click',stopScanner);
   $('btn-search-tk').addEventListener('click',searchTk);
   $('inp-tkid').addEventListener('keydown',function(e){if(e.key==='Enter')searchTk();});
   $('btn-ctrl-oui').addEventListener('click',function(){validateCtrl(true);});
