@@ -7,6 +7,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
@@ -70,7 +72,13 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
 .scan-status{text-align:center;padding:16px;border-radius:10px;margin-top:12px;font-size:14px;font-weight:600;}
 .scan-status.info{background:#e3f2fd;color:var(--blue);}
 .scan-status.err{background:#ffebee;color:var(--red);}
-.hitem{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;}.hitem:last-child{border-bottom:none;}
+.hitem{display:flex;flex-direction:column;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}.hitem:last-child{border-bottom:none;}
+.hitem-top{display:flex;justify-content:space-between;align-items:center;}
+.hitem-actions{display:flex;gap:6px;}
+.hact{padding:6px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+.hact-sms{background:#e8f5e9;color:var(--green);}
+.hact-qr{background:#e3f2fd;color:var(--blue);}
+.hact:active{transform:scale(0.95);}
 .hid{font-weight:700;color:var(--accent);font-size:12px;}.hinfo{color:var(--text2);font-size:11px;}
 .hbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;}
 .hbadge.actif{background:#e8f5e9;color:var(--green);}
@@ -331,8 +339,14 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   </div>
 </div>
 
-
-
+<!-- MODAL VISUALISATION TICKET -->
+<div id="modal-view-tk" class="overlay hidden">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">🎫 Visualisation du ticket</div>
+    <div id="view-tk-content"></div>
+    <button class="btn btn-out mt12" id="btn-view-tk-close">Fermer</button>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded',function(){
@@ -388,17 +402,66 @@ try{(function(){
     if(id==='pg-histo')refreshHisto();
   }
 
-  // ===== STORAGE =====
-  function dbGet(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
-  function dbSave(a){localStorage.setItem(SK,JSON.stringify(a));}
-  function dbAdd(t){var a=dbGet();a.unshift(t);dbSave(a);}
-  function dbFind(id){var a=dbGet();for(var i=0;i<a.length;i++){if(a[i].id===id)return a[i];}return null;}
-  function dbUpdate(id,u){var a=dbGet();for(var i=0;i<a.length;i++){if(a[i].id===id){for(var k in u)a[i][k]=u[k];break;}}dbSave(a);}
-  function dbRemove(id){var a=dbGet();var b=[];for(var i=0;i<a.length;i++){if(a[i].id!==id)b.push(a[i]);}dbSave(b);}
+  // ===== FIREBASE INIT =====
+  var fbApp=firebase.initializeApp({
+    apiKey:"AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
+    authDomain:"appli-controleur-gunder.firebaseapp.com",
+    databaseURL:"https://appli-controleur-gunder-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:"appli-controleur-gunder",
+    storageBucket:"appli-controleur-gunder.firebasestorage.app",
+    messagingSenderId:"780831512988",
+    appId:"1:780831512988:web:f0f263cfaf9abd18269059"
+  },'ticketApp');
+  var fbDb=firebase.database(fbApp);
+  var fbTickets=fbDb.ref('ticketsVente');
+  var fbEnc=fbDb.ref('ticketsEncaisse');
 
-  // ===== ENCAISSEMENT STORAGE =====
-  function encGet(){try{return JSON.parse(localStorage.getItem(SK_ENC)||'{}');}catch(e){return{};}}
-  function encSave(o){localStorage.setItem(SK_ENC,JSON.stringify(o));}
+  // ===== STORAGE (Firebase + cache local) =====
+  var _tickets=[];
+  var _enc={};
+  var _fbReady=false;
+
+  // Écoute temps réel des tickets
+  fbTickets.on('value',function(snap){
+    var data=snap.val()||{};
+    _tickets=[];
+    for(var k in data){if(data[k]&&data[k].id)_tickets.push(data[k]);}
+    _tickets.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    _fbReady=true;
+    // Rafraîchir si on est sur l'historique
+    var histoPage=document.getElementById('pg-histo');
+    if(histoPage&&histoPage.classList.contains('on'))refreshHisto();
+    var detailPage=document.getElementById('pg-histo-detail');
+    if(detailPage&&detailPage.classList.contains('on')&&currentDetailVendeur)showVendeurDetail(currentDetailVendeur);
+  });
+
+  // Écoute temps réel des encaissements
+  fbEnc.on('value',function(snap){
+    _enc=snap.val()||{};
+  });
+
+  function dbGet(){return _tickets;}
+  function dbAdd(t){
+    _tickets.unshift(t);
+    fbTickets.child(t.id).set(t);
+  }
+  function dbFind(id){
+    for(var i=0;i<_tickets.length;i++){if(_tickets[i].id===id)return _tickets[i];}
+    return null;
+  }
+  function dbUpdate(id,u){
+    for(var i=0;i<_tickets.length;i++){
+      if(_tickets[i].id===id){for(var k in u)_tickets[i][k]=u[k];fbTickets.child(id).set(_tickets[i]);break;}
+    }
+  }
+  function dbRemove(id){
+    var b=[];for(var i=0;i<_tickets.length;i++){if(_tickets[i].id!==id)b.push(_tickets[i]);}
+    _tickets=b;
+    fbTickets.child(id).remove();
+  }
+
+  function encGet(){return _enc;}
+  function encSave(o){_enc=o;fbEnc.set(o);}
 
   // ===== CRYPTO =====
   function makeId(){return 'TK-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();}
@@ -761,21 +824,48 @@ try{(function(){
     showScanResult(true,'TICKET CONFORME','Trouvé en base locale',tk);
   }
 
+  // ===== NOTIFICATION TELEGRAM =====
+  var TELEGRAM_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec';
+  function envoyerTelegram(msg){
+    try{
+      fetch(TELEGRAM_SCRIPT_URL,{
+        method:'POST',mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:msg})
+      });
+    }catch(e){console.error('Telegram error:',e);}
+  }
+
   function validateCtrl(valid){
     var rbox=$('scan-rbox');
-    // Find the ticket ID from scan-ticket
     var cards=$('scan-ticket').querySelectorAll('.tc-num');
     if(cards.length===0)return;
     var tkId=cards[0].textContent;
     var tk=dbFind(tkId);
     if(!tk)return;
-    dbUpdate(tkId,{controlled:true,controlResult:valid,controlDate:new Date().toISOString()});
+    dbUpdate(tkId,{controlled:true,controlResult:valid,controlDate:new Date().toISOString(),controleur:currentVendeur});
     tk=dbFind(tkId);
     renderTicket(tk,'scan-ticket');
     hide($('scan-btns'));
     var color=valid?'var(--green)':'var(--red)';
     var text=valid?'✅ Contrôle VALIDÉ':'❌ Contrôle NON VALIDÉ';
     rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>';
+
+    // Notification Telegram
+    if(valid){
+      var d=new Date();
+      var heure=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      var dateFr=d.toLocaleDateString('fr-FR');
+      var typeLbl='';
+      for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+      var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*\n'+
+        '📅 '+dateFr+' à '+heure+'\n'+
+        '📍 '+(LIEUX[tk.lieu]||tk.lieu)+'\n'+
+        '🎟️ '+tk.id+'\n'+
+        '⏱️ '+typeLbl+' — '+tk.prix+'€\n'+
+        '👮 Contrôleur : '+(currentVendeur||'Inconnu');
+      envoyerTelegram(msgTg);
+    }
   }
 
   // ===== HISTORIQUE =====
@@ -897,12 +987,18 @@ try{(function(){
       }
       var opacity=t.encaisse?'opacity:0.6;':'';
       html+='<div class="hitem" style="'+opacity+'">';
+      html+='<div class="hitem-top">';
       html+='<div><div class="hid">'+t.id+'</div>';
       html+='<div class="hinfo">'+(LIEUX[t.lieu]||t.lieu)+' • '+typeLbl+' • '+t.prix+'€ • '+d.toLocaleDateString('fr-FR')+'</div>';
       html+='</div>';
       html+='<div class="hright">'+badge;
       html+='<button class="hdel" onclick="window._openDel(\''+t.id+'\')">🗑️</button>';
       html+='</div></div>';
+      html+='<div class="hitem-actions">';
+      if(t.tel)html+='<button class="hact hact-sms" onclick="window._resendSMS(\''+t.id+'\')">📱 Renvoyer SMS</button>';
+      html+='<button class="hact hact-qr" onclick="window._viewTicket(\''+t.id+'\')">🔍 Visualiser</button>';
+      html+='</div>';
+      html+='</div>';
     }
     html+='</div>';
     $('hd-tickets').innerHTML=html;
@@ -983,9 +1079,9 @@ try{(function(){
         a[i].encaisse=true;
         a[i].encaisseDate=now;
         montant+=a[i].prix;
+        fbTickets.child(a[i].id).set(a[i]);
       }
     }
-    dbSave(a);
 
     // Trace encaissement
     var enc=encGet();
@@ -998,11 +1094,47 @@ try{(function(){
     if(currentDetailVendeur)showVendeurDetail(currentDetailVendeur);
   }
 
+  // ===== RENVOYER SMS DEPUIS HISTORIQUE =====
+  function resendSMS(tkId){
+    var tk=dbFind(tkId);
+    if(!tk||!tk.tel)return;
+    var tel=tk.tel.replace(/\s/g,'');
+    var d=new Date(tk.date);
+    var cl=tk.carte==='titulaire'?' (Titulaire carte)':tk.carte==='sans'?' (Sans carte)':'';
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+    var ticketUrl=buildTicketUrl(tk);
+    shortenUrl(ticketUrl,function(shortUrl){
+      var msg=encodeURIComponent(
+        'AAPPMA Gundershoffen\nTicket de pêche\n'+
+        '━━━━━━━━━━━━━━━━━━━\n'+
+        'N° '+tk.id+'\n'+
+        (LIEUX[tk.lieu]||tk.lieu)+cl+'\n'+
+        typeLbl+' — '+tk.prix+'€\n'+
+        d.toLocaleDateString('fr-FR')+'\n'+
+        '━━━━━━━━━━━━━━━━━━━\n\n'+
+        '🎣 Accès à votre ticket :\n'+shortUrl
+      );
+      window.open('sms:'+tel+'?body='+msg,'_self');
+    });
+  }
+
+  // ===== VISUALISER TICKET (MODAL) =====
+  function viewTicket(tkId){
+    var tk=dbFind(tkId);
+    if(!tk)return;
+    renderTicket(tk,'view-tk-content');
+    show($('modal-view-tk'));
+  }
+  function closeViewTk(){hide($('modal-view-tk'));$('view-tk-content').innerHTML='';}
+
   // ===== INIT & EVENTS =====
   // Expose for onclick
   window._openDel=openDel;
   window._openEnc=openEnc;
   window._showDetail=showVendeurDetail;
+  window._resendSMS=resendSMS;
+  window._viewTicket=viewTicket;
   window._toggleVgrp=function(el){
     el.classList.toggle('open');
     var body=el.nextElementSibling;
@@ -1028,8 +1160,10 @@ try{(function(){
   function startReset(){hide($('admin-step2'));show($('admin-step3'));}
   function confirmReset1(){hide($('admin-step3'));show($('admin-step4'));}
   function doResetAll(){
-    localStorage.removeItem(SK);
-    localStorage.removeItem(SK_ENC);
+    fbTickets.remove();
+    fbEnc.remove();
+    _tickets=[];
+    _enc={};
     localStorage.removeItem(SK_VENDEUR);
     closeAdmin();
     goPage('pg-menu');
@@ -1124,6 +1258,10 @@ try{(function(){
   $('btn-reset-confirm1').addEventListener('click',confirmReset1);
   $('btn-reset-cancel2').addEventListener('click',function(){hide($('admin-step4'));show($('admin-step2'));});
   $('btn-reset-final').addEventListener('click',doResetAll);
+
+  // Modal visualisation ticket
+  $('btn-view-tk-close').addEventListener('click',closeViewTk);
+  $('modal-view-tk').addEventListener('click',function(e){if(e.target===this)closeViewTk();});
 
 })();
 }catch(e){
