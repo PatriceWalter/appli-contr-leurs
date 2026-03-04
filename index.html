@@ -293,6 +293,7 @@
                 <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card menu-card-ticket" id="ticketMenuCard"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);">🎫</div><div class="menu-card-content"><div class="menu-card-title">Vente de Tickets</div><div class="menu-card-desc">Module de vente de tickets numériques</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="travail"><div class="menu-card-icon" style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);">🛠️</div><div class="menu-card-content"><div class="menu-card-title">Journées de Travail</div><div class="menu-card-desc">Listing des pêcheurs bénévoles</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
@@ -474,6 +475,30 @@
                         <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
                     </div>
                 </div>
+            </div></div>
+        </div>
+
+        <div class="page" id="pageTravail">
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">🛠️ Journées de Travail</h1>
+                <div id="travail-mois-nav" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">
+                    <button class="btn-nav-mois" id="travPrev" style="background:#1a472a;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">‹</button>
+                    <span id="travMoisLabel" style="font-size:16px;font-weight:700;color:#1a472a;min-width:160px;text-align:center;"></span>
+                    <button class="btn-nav-mois" id="travNext" style="background:#1a472a;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">›</button>
+                </div>
+                <div id="travail-add-zone" style="display:none;margin-bottom:20px;">
+                    <div style="background:#f1f8e9;border-radius:12px;padding:16px;">
+                        <div style="font-size:13px;font-weight:700;color:#2e7d32;margin-bottom:10px;">➕ Ajouter un participant</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <input type="text" id="travNom" placeholder="NOM" style="flex:1;min-width:100px;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;text-transform:uppercase;">
+                            <input type="text" id="travPrenom" placeholder="Prénom" style="flex:1;min-width:100px;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;">
+                            <input type="date" id="travDate" style="padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;">
+                        </div>
+                        <button class="btn btn-primary" id="btnAddTravail" style="margin-top:10px;width:100%;">✅ Ajouter</button>
+                    </div>
+                </div>
+                <div id="travail-stats" style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;"></div>
+                <div id="travail-list"></div>
             </div></div>
         </div>
     </div>
@@ -853,6 +878,7 @@
             document.getElementById('navButtons').classList.toggle('visible', id !== 'menu');
             if (id === 'recherche') renderPecheursAlphabetique();
             if (id === 'historique') renderHistorique();
+            if (id === 'travail') renderTravail();
         }
         
         document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
@@ -1668,6 +1694,152 @@
         document.getElementById('ticketMenuCard').addEventListener('click', function() {
             window.location.href = 'ticket_numerique_aappma.html';
         });
+
+        // ===== JOURNÉES DE TRAVAIL =====
+        let travMoisCourant = new Date();
+        const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+        function isPatrice() {
+            const u = getCurrentUser().toLowerCase();
+            return u.indexOf('patrice') !== -1;
+        }
+
+        function getTravMoisKey(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        }
+
+        function renderTravail() {
+            const moisKey = getTravMoisKey(travMoisCourant);
+            const label = MOIS_FR[travMoisCourant.getMonth()] + ' ' + travMoisCourant.getFullYear();
+            document.getElementById('travMoisLabel').textContent = label;
+
+            // Show/hide add zone for Patrice only
+            document.getElementById('travail-add-zone').style.display = isPatrice() ? 'block' : 'none';
+
+            // Set default date
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            document.getElementById('travDate').value = todayStr;
+
+            // Load data from Firebase
+            const listEl = document.getElementById('travail-list');
+            const statsEl = document.getElementById('travail-stats');
+            listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
+            statsEl.innerHTML = '';
+
+            dbCentral.ref('journees_travail/' + moisKey).once('value').then(snapshot => {
+                const data = snapshot.val();
+                const entries = [];
+                if (data) {
+                    Object.keys(data).forEach(k => {
+                        entries.push({ key: k, ...data[k] });
+                    });
+                }
+                // Sort by date desc
+                entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+                // Stats
+                const personnes = {};
+                entries.forEach(e => {
+                    const nom = (e.nom || '') + ' ' + (e.prenom || '');
+                    personnes[nom] = (personnes[nom] || 0) + 1;
+                });
+                const nbTotal = entries.length;
+                const nbPersonnes = Object.keys(personnes).length;
+
+                statsEl.innerHTML =
+                    '<div style="flex:1;min-width:120px;background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:22px;font-weight:700;color:#2e7d32;">' + nbTotal + '</div>' +
+                    '<div style="font-size:11px;color:#666;">journée' + (nbTotal > 1 ? 's' : '') + '</div></div>' +
+                    '<div style="flex:1;min-width:120px;background:#e3f2fd;border-radius:10px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:22px;font-weight:700;color:#1565c0;">' + nbPersonnes + '</div>' +
+                    '<div style="font-size:11px;color:#666;">participant' + (nbPersonnes > 1 ? 's' : '') + '</div></div>';
+
+                if (entries.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">Aucune journée de travail enregistrée pour ' + label + '</div>';
+                    return;
+                }
+
+                // Group by date
+                const grouped = {};
+                entries.forEach(e => {
+                    const d = e.date || 'Sans date';
+                    if (!grouped[d]) grouped[d] = [];
+                    grouped[d].push(e);
+                });
+
+                let html = '';
+                Object.keys(grouped).sort().reverse().forEach(date => {
+                    const items = grouped[date];
+                    const dObj = new Date(date);
+                    const jourSemaine = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][dObj.getDay()];
+                    const dateFr = dObj.toLocaleDateString('fr-FR');
+
+                    html += '<div style="margin-bottom:15px;">';
+                    html += '<div style="font-size:13px;font-weight:700;color:#1a472a;margin-bottom:8px;padding:6px 12px;background:#e8f5e9;border-radius:8px;">📅 ' + jourSemaine + ' ' + dateFr + ' — ' + items.length + ' participant' + (items.length > 1 ? 's' : '') + '</div>';
+                    items.forEach(e => {
+                        html += '<div style="background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">';
+                        html += '<div style="font-weight:600;font-size:14px;color:#333;">👤 ' + (e.nom || '') + ' ' + (e.prenom || '') + '</div>';
+                        if (isPatrice()) {
+                            html += '<button onclick="supprimerTravail(\'' + moisKey + '\',\'' + e.key + '\')" style="background:#ffebee;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;" title="Supprimer">🗑️</button>';
+                        }
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                });
+                listEl.innerHTML = html;
+            }).catch(err => {
+                listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
+                console.error(err);
+            });
+        }
+
+        function ajouterTravail() {
+            if (!isPatrice()) { showAlert('❌ Accès réservé à Patrice', 'error'); return; }
+            const nom = document.getElementById('travNom').value.trim().toUpperCase();
+            const prenom = document.getElementById('travPrenom').value.trim();
+            const date = document.getElementById('travDate').value;
+            if (!nom || !prenom || !date) { showAlert('❌ Nom, prénom et date obligatoires', 'error'); return; }
+
+            const moisKey = date.substring(0, 7);
+            const entry = {
+                nom: nom,
+                prenom: prenom,
+                date: date,
+                addedBy: getCurrentUser(),
+                timestamp: new Date().toISOString()
+            };
+
+            dbCentral.ref('journees_travail/' + moisKey).push(entry).then(() => {
+                showAlert('✅ Journée ajoutée pour ' + nom + ' ' + prenom, 'success');
+                document.getElementById('travNom').value = '';
+                document.getElementById('travPrenom').value = '';
+                if (getTravMoisKey(travMoisCourant) === moisKey) renderTravail();
+            }).catch(err => {
+                showAlert('❌ Erreur : ' + err.message, 'error');
+            });
+        }
+
+        function supprimerTravail(moisKey, entryKey) {
+            if (!isPatrice()) return;
+            if (!confirm('Supprimer cette entrée ?')) return;
+            dbCentral.ref('journees_travail/' + moisKey + '/' + entryKey).remove().then(() => {
+                showAlert('🗑️ Entrée supprimée', 'warning');
+                renderTravail();
+            }).catch(err => {
+                showAlert('❌ Erreur : ' + err.message, 'error');
+            });
+        }
+
+        document.getElementById('travPrev').addEventListener('click', () => {
+            travMoisCourant.setMonth(travMoisCourant.getMonth() - 1);
+            renderTravail();
+        });
+        document.getElementById('travNext').addEventListener('click', () => {
+            travMoisCourant.setMonth(travMoisCourant.getMonth() + 1);
+            renderTravail();
+        });
+        document.getElementById('btnAddTravail').addEventListener('click', ajouterTravail);
 
         function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 5000); }
     </script>
