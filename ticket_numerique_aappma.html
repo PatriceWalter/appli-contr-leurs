@@ -788,6 +788,7 @@ try{(function(){
       controlled:false,
       controlResult:null,
       controlDate:null,
+      controls:[],
       encaisse:false,
       encaisseDate:null,
       sig:''
@@ -832,7 +833,16 @@ try{(function(){
     }
 
     var badge='';
-    if(tk.controlled){
+    if(tk.sejour){
+      var controls=tk.controls||[];
+      var nbCtrl=0;
+      for(var ci=0;ci<controls.length;ci++){if(controls[ci].result)nbCtrl++;}
+      if(nbCtrl>0){
+        badge='<div class="tc-status controlled">✅ '+nbCtrl+' contrôle'+(nbCtrl>1?'s':'')+' effectué'+(nbCtrl>1?'s':'')+'</div>';
+      } else {
+        badge='<div class="tc-status valid">Valide</div>';
+      }
+    } else if(tk.controlled){
       badge='<div class="tc-status controlled">✅ Contrôlé le '+new Date(tk.controlDate).toLocaleDateString('fr-FR')+'</div>';
     } else {
       badge='<div class="tc-status valid">Valide</div>';
@@ -1005,26 +1015,9 @@ try{(function(){
       return;
     }
     // Vérification de la date
-    var today=new Date();
-    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-    var dateOk=true;
-    var dateMsg='';
-    if(stored.dateDebut&&stored.dateFin){
-      if(todayStr<stored.dateDebut){
-        dateOk=false;
-        dateMsg='Ticket pas encore valide (début : '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+')';
-      } else if(todayStr>stored.dateFin){
-        dateOk=false;
-        dateMsg='Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')';
-      }
-    } else if(stored.dateDebut){
-      if(todayStr!==stored.dateDebut){
-        dateOk=false;
-        dateMsg='Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement';
-      }
-    }
-    if(!dateOk){
-      showScanResult(false,'⚠️ DATE NON VALIDE',dateMsg,stored);
+    var dCheck=checkTicketDate(stored);
+    if(!dCheck.ok){
+      showScanResult(false,'⚠️ DATE NON VALIDE',dCheck.msg,stored);
       return;
     }
     showScanResult(true,'TICKET CONFORME','Signature vérifiée • Date valide',stored);
@@ -1041,16 +1034,63 @@ try{(function(){
       '</div>';
     if(ok&&tk){
       renderTicket(tk,'scan-ticket');
-      if(tk.controlled){
-        rbox.innerHTML+='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:700;">⚠️ Déjà contrôlé le '+new Date(tk.controlDate).toLocaleDateString('fr-FR')+'</div>';
-        hide($('scan-btns'));
+      if(tk.sejour){
+        // Multi-jours : vérifier le créneau actuel
+        var now=new Date();
+        var h=now.getHours();
+        var creneau=(h>=18||h<8)?'nuit':'jour';
+        var creneauLbl=creneau==='nuit'?'🌙 Nuit (18h→8h)':'☀️ Jour (8h→18h)';
+        var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+        var controls=tk.controls||[];
+        var dejaCtrl=false;
+        for(var c=0;c<controls.length;c++){
+          if(controls[c].date===todayStr&&controls[c].creneau===creneau&&controls[c].result)dejaCtrl=true;
+        }
+        // Afficher historique des contrôles
+        if(controls.length>0){
+          var histHtml='<div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.1);border-radius:10px;"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;">📋 Contrôles précédents :</div>';
+          for(var c2=0;c2<controls.length;c2++){
+            var cc=controls[c2];
+            var cDate=new Date(cc.timestamp);
+            var cIcon=cc.result?'✅':'❌';
+            var cCreneauLbl=cc.creneau==='nuit'?'🌙 Nuit':'☀️ Jour';
+            histHtml+='<div style="font-size:11px;color:rgba(255,255,255,0.8);padding:2px 0;">'+cIcon+' '+cDate.toLocaleDateString('fr-FR')+' '+cCreneauLbl+' — '+(cc.controleur||'?')+'</div>';
+          }
+          histHtml+='</div>';
+          rbox.innerHTML+=histHtml;
+        }
+        rbox.innerHTML+='<div style="text-align:center;padding:8px;font-weight:700;color:#fff;font-size:14px;">Créneau actuel : '+creneauLbl+'</div>';
+        if(dejaCtrl){
+          rbox.innerHTML+='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:700;">⚠️ Déjà contrôlé pour ce créneau</div>';
+          hide($('scan-btns'));
+        } else {
+          show($('scan-btns'));
+        }
       } else {
-        show($('scan-btns'));
+        // Ticket 1 jour
+        if(tk.controlled){
+          rbox.innerHTML+='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:700;">⚠️ Déjà contrôlé le '+new Date(tk.controlDate).toLocaleDateString('fr-FR')+'</div>';
+          hide($('scan-btns'));
+        } else {
+          show($('scan-btns'));
+        }
       }
     } else {
       $('scan-ticket').innerHTML='';
       hide($('scan-btns'));
     }
+  }
+
+  function checkTicketDate(stored){
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    if(stored.dateDebut&&stored.dateFin&&stored.dateDebut!==stored.dateFin){
+      if(todayStr<stored.dateDebut)return{ok:false,msg:'Ticket pas encore valide (début : '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+')'};
+      if(todayStr>stored.dateFin)return{ok:false,msg:'Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')'};
+    } else if(stored.dateDebut){
+      if(todayStr!==stored.dateDebut)return{ok:false,msg:'Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement'};
+    }
+    return{ok:true};
   }
 
   function searchTk(){
@@ -1065,7 +1105,12 @@ try{(function(){
       showScanResult(false,'⚠️ SIGNATURE INVALIDE','Ticket potentiellement altéré');
       return;
     }
-    showScanResult(true,'TICKET CONFORME','Trouvé en base locale',tk);
+    var dCheck=checkTicketDate(tk);
+    if(!dCheck.ok){
+      showScanResult(false,'⚠️ DATE NON VALIDE',dCheck.msg,tk);
+      return;
+    }
+    showScanResult(true,'TICKET CONFORME','Trouvé en base • Date valide',tk);
   }
 
   // ===== NOTIFICATION TELEGRAM =====
@@ -1087,26 +1132,48 @@ try{(function(){
     var tkId=cards[0].textContent;
     var tk=dbFind(tkId);
     if(!tk)return;
-    dbUpdate(tkId,{controlled:true,controlResult:valid,controlDate:new Date().toISOString(),controleur:currentVendeur});
+
+    var now=new Date();
+    var h=now.getHours();
+    var creneau=(h>=18||h<8)?'nuit':'jour';
+    var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+
+    if(tk.sejour){
+      // Multi-jours : ajouter au tableau controls
+      var controls=tk.controls||[];
+      controls.push({
+        date:todayStr,
+        creneau:creneau,
+        result:valid,
+        controleur:currentVendeur||'Inconnu',
+        timestamp:now.toISOString()
+      });
+      dbUpdate(tkId,{controls:controls,controlled:true,controlResult:valid,controlDate:now.toISOString(),controleur:currentVendeur});
+    } else {
+      // Ticket 1 jour : comportement classique
+      dbUpdate(tkId,{controlled:true,controlResult:valid,controlDate:now.toISOString(),controleur:currentVendeur});
+    }
+
     tk=dbFind(tkId);
     renderTicket(tk,'scan-ticket');
     hide($('scan-btns'));
     var color=valid?'var(--green)':'var(--red)';
-    var text=valid?'✅ Contrôle VALIDÉ':'❌ Contrôle NON VALIDÉ';
+    var creneauLbl=creneau==='nuit'?'🌙 Nuit':'☀️ Jour';
+    var text=valid?'✅ Contrôle VALIDÉ ('+creneauLbl+')':'❌ Contrôle NON VALIDÉ ('+creneauLbl+')';
     rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>';
 
     // Notification Telegram
     if(valid){
-      var d=new Date();
-      var heure=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-      var dateFr=d.toLocaleDateString('fr-FR');
+      var heure=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      var dateFr=now.toLocaleDateString('fr-FR');
       var typeLbl='';
       for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
-      var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*\n'+
+      var multiInfo=tk.sejour?' (Multi-jours '+creneauLbl+')':'';
+      var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*'+multiInfo+'\n'+
         '📅 '+dateFr+' à '+heure+'\n'+
         '📍 '+(LIEUX[tk.lieu]||tk.lieu)+'\n'+
         '🎟️ '+tk.id+'\n'+
-        '⏱️ '+typeLbl+' — '+tk.prix+'€\n'+
+        '⏱️ '+(typeLbl||'Multi-jours')+' — '+tk.prix+'€\n'+
         '👮 Contrôleur : '+(currentVendeur||'Inconnu');
       envoyerTelegram(msgTg);
     }
