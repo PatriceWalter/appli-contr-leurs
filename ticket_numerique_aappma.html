@@ -609,7 +609,7 @@ try{(function(){
     return base+params;
   }
 
-  // ===== PARTAGE TICKET (IMAGE + TEXTE) =====
+  // ===== PARTAGE TICKET (IMAGE) =====
   function openSMS(){
     if(!lastTicket)return;
     var tel=lastTicket.tel.replace(/\s/g,'');
@@ -617,13 +617,11 @@ try{(function(){
     var cl=lastTicket.carte==='titulaire'?' (Titulaire carte)':lastTicket.carte==='sans'?' (Sans carte)':'';
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===lastTicket.type)typeLbl=TARIFS_FLAT[i][1];}
-    var ticketUrl=buildTicketUrl(lastTicket);
-    var txtMsg='AAPPMA Gundershoffen - Ticket de pêche\n'+
-      'N° '+lastTicket.id+'\n'+
+    var txtMsg='🎣 AAPPMA Gundershoffen\nTicket de pêche N° '+lastTicket.id+'\n'+
       (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
       typeLbl+' — '+lastTicket.prix+'€\n'+
-      d.toLocaleDateString('fr-FR')+'\n\n'+
-      '👉 Votre ticket avec QR code :\n'+ticketUrl;
+      d.toLocaleDateString('fr-FR')+'\n'+
+      'Votre ticket avec QR code est joint en image.';
 
     var ticketEl=document.querySelector('#emit-ok-ticket .ticket-card');
     if(!ticketEl){alert('Erreur: ticket introuvable');return;}
@@ -643,7 +641,7 @@ try{(function(){
 
         var file=new File([blob],'ticket-'+lastTicket.id+'.png',{type:'image/png'});
 
-        // Web Share API avec fichier
+        // Web Share API avec image
         if(navigator.canShare&&navigator.canShare({files:[file]})){
           navigator.share({
             title:'Ticket de pêche - AAPPMA Gundershoffen',
@@ -657,25 +655,20 @@ try{(function(){
             if(e.name!=='AbortError')console.error('Share error:',e);
           });
         } else {
-          // Fallback: télécharger image + ouvrir SMS texte
+          // Fallback: télécharger image pour envoi manuel
           var url=URL.createObjectURL(blob);
           var dlLink=$('dl-ticket');
           dlLink.href=url;
           dlLink.download='ticket-'+lastTicket.id+'.png';
           show($('share-fallback'));
           btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-          if(tel){
-            window.open('sms:'+tel+'?body='+encodeURIComponent(txtMsg),'_self');
-          }
+          alert('Image du ticket prête ! Téléchargez-la puis envoyez-la par MMS ou WhatsApp au pêcheur.');
         }
       },'image/png');
     }).catch(function(e){
       console.error('html2canvas error:',e);
       btn.textContent='📤 Envoyer le ticket au pêcheur';btn.disabled=false;
-      // Fallback SMS texte
-      if(tel){
-        window.open('sms:'+tel+'?body='+encodeURIComponent(txtMsg),'_self');
-      }
+      alert('Erreur lors de la génération de l\'image. Réessayez.');
     });
   }
 
