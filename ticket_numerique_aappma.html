@@ -1041,7 +1041,7 @@ try{(function(){
         var now=new Date();
         var h=now.getHours();
         var creneau=(h>=18||h<8)?'nuit':'jour';
-        var creneauLbl=creneau==='nuit'?'🌙 Nuit (18h→8h)':'☀️ Jour (8h→18h)';
+        var creneauLbl=creneau==='nuit'?'🌙 Créneau nuit (18h→8h)':'☀️ Créneau journée (8h→18h)';
         var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
         var controls=tk.controls||[];
         var dejaCtrl=false;
@@ -1055,7 +1055,7 @@ try{(function(){
             var cc=controls[c2];
             var cDate=new Date(cc.timestamp);
             var cIcon=cc.result?'✅':'❌';
-            var cCreneauLbl=cc.creneau==='nuit'?'🌙 Nuit':'☀️ Jour';
+            var cCreneauLbl=cc.creneau==='nuit'?'🌙 Créneau nuit':'☀️ Créneau journée';
             histHtml+='<div style="font-size:11px;color:rgba(255,255,255,0.8);padding:2px 0;">'+cIcon+' '+cDate.toLocaleDateString('fr-FR')+' '+cCreneauLbl+' — '+(cc.controleur||'?')+'</div>';
           }
           histHtml+='</div>';
@@ -1160,7 +1160,7 @@ try{(function(){
     renderTicket(tk,'scan-ticket');
     hide($('scan-btns'));
     var color=valid?'var(--green)':'var(--red)';
-    var creneauLbl=creneau==='nuit'?'🌙 Nuit':'☀️ Jour';
+    var creneauLbl=creneau==='nuit'?'🌙 Créneau nuit':'☀️ Créneau journée';
     var text=valid?'✅ Contrôle VALIDÉ ('+creneauLbl+')':'❌ Contrôle NON VALIDÉ ('+creneauLbl+')';
     rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>';
 
@@ -1171,11 +1171,15 @@ try{(function(){
       var typeLbl='';
       for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
       var multiInfo=tk.sejour?' (Multi-jours '+creneauLbl+')':'';
+      var validite='';
+      if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+        validite='\n📆 Validité : du '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tk.dateFin).toLocaleDateString('fr-FR');
+      }
       var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*'+multiInfo+'\n'+
         '📅 '+dateFr+' à '+heure+'\n'+
         '📍 '+(LIEUX[tk.lieu]||tk.lieu)+'\n'+
         '🎟️ '+tk.id+'\n'+
-        '⏱️ '+(typeLbl||'Multi-jours')+' — '+tk.prix+'€\n'+
+        '⏱️ '+(typeLbl||'Multi-jours')+' — '+tk.prix+'€'+validite+'\n'+
         '👮 Contrôleur : '+(currentVendeur||'Inconnu');
       envoyerTelegram(msgTg);
     }
