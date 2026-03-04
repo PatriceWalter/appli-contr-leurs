@@ -225,6 +225,16 @@
         .exclusion-type-option .title { font-weight: 700; color: #333; }
         .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
         @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
+
+        /* --- Module Tickets (ajout) --- */
+        .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
+        .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
+        .tk-user-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
+        .tk-user-item label { flex: 1; font-weight: 600; color: #333; cursor: pointer; }
+        .tk-user-item.enabled label { color: #1a472a; }
+        .menu-card-ticket { display: none; }
+        .menu-card-ticket.visible { display: flex; }
     </style>
 </head>
 <body>
@@ -282,6 +292,7 @@
                 <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card menu-card-ticket" id="ticketMenuCard"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);">🎫</div><div class="menu-card-content"><div class="menu-card-title">Vente de Tickets</div><div class="menu-card-desc">Module de vente de tickets numériques</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
@@ -398,6 +409,7 @@
                     <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches</button>
                     <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes</button>
                     <button class="admin-tab" onclick="switchAdminTab('controleurs')">👮 Contrôleurs</button>
+                    <button class="admin-tab" onclick="switchAdminTab('tickets')">🎫 Tickets</button>
                 </div>
                 <div id="adminTabFiches" class="admin-tab-content active"><div id="adminFichesList"></div></div>
                 <div id="adminTabCartes" class="admin-tab-content">
@@ -409,6 +421,10 @@
                     <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Liste des contrôleurs</p>
                         <div class="add-carte-form"><input type="text" id="newControleurNom" placeholder="Nom" class="carte-input"><button class="btn btn-primary" onclick="addControleur()">➕</button></div>
                     </div><div id="controleursList"></div>
+                </div>
+                <div id="adminTabTickets" class="admin-tab-content">
+                    <p style="color:#666;margin-bottom:15px;">Cochez les contrôleurs autorisés à utiliser le module de vente de tickets numériques.</p>
+                    <div id="ticketModuleUsersList" class="tk-user-list"></div>
                 </div>
             </div></div>
         </div>
@@ -814,7 +830,7 @@
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
         let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
         let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [];
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
 
         // BLOCAGE BOUTON RETOUR ANDROID
@@ -995,7 +1011,7 @@
 
         function loadAdminFiches() { const container = document.getElementById('adminFichesList'); const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + item.fiche.nom + ' ' + item.fiche.prenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>').join(''); }
 
-        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } }
+        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); } }
 
         async function loadCartesValides() { 
             const container = document.getElementById('cartesValidesList'); 
@@ -1103,7 +1119,8 @@
             await loadSmsSent();
             await loadControleurs();
             loadReglementsFromFirebase();
-            updateHistoriqueCounts(); 
+            updateHistoriqueCounts();
+            await loadTicketModuleUsers(); 
         }
         
         async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
@@ -1581,6 +1598,76 @@
             document.getElementById('smsPrenom').value = '';
             document.getElementById('smsNumero').value = '';
         }
+
+
+        // ===== MODULE TICKETS - GESTION ACCÈS =====
+        async function loadTicketModuleUsers() {
+            try {
+                const snap = await dbCentral.ref('ticketModuleUsers').once('value');
+                if (snap.val()) {
+                    ticketModuleUsers = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val());
+                } else {
+                    // Initialisation par défaut : Patrice activé
+                    ticketModuleUsers = ['Patrice'];
+                    await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
+                }
+            } catch(e) {
+                ticketModuleUsers = ['Patrice'];
+            }
+            updateTicketMenuVisibility();
+        }
+
+        async function saveTicketModuleUsers() {
+            await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
+            updateTicketMenuVisibility();
+        }
+
+        function updateTicketMenuVisibility() {
+            const user = getCurrentUser();
+            const card = document.getElementById('ticketMenuCard');
+            if (card) {
+                const isEnabled = ticketModuleUsers.some(u => u.toLowerCase() === user.toLowerCase());
+                card.classList.toggle('visible', isEnabled);
+            }
+        }
+
+        function renderTicketModuleSettings() {
+            const container = document.getElementById('ticketModuleUsersList');
+            if (allControleurs.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun contrôleur configuré</div>';
+                return;
+            }
+            container.innerHTML = allControleurs.map(function(nom, idx) {
+                var checked = ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
+                var cls = checked ? ' enabled' : '';
+                var safeId = 'tkchk_' + idx;
+                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + '><label for="' + safeId + '">' + '👤 ' + nom + '</label></div>';
+            }).join('');
+            container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+                cb.addEventListener('change', function() {
+                    var nom = allControleurs[parseInt(this.dataset.idx)];
+                    toggleTicketUser(nom, this.checked);
+                });
+            });
+        }
+
+        async function toggleTicketUser(nom, enabled) {
+            if (enabled) {
+                if (!ticketModuleUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
+                    ticketModuleUsers.push(nom);
+                }
+            } else {
+                ticketModuleUsers = ticketModuleUsers.filter(u => u.toLowerCase() !== nom.toLowerCase());
+            }
+            await saveTicketModuleUsers();
+            renderTicketModuleSettings();
+            showAlert(enabled ? '✅ Module tickets activé pour ' + nom : '❌ Module tickets désactivé pour ' + nom, enabled ? 'success' : 'warning');
+        }
+
+        // Ouverture du module tickets
+        document.getElementById('ticketMenuCard').addEventListener('click', function() {
+            window.location.href = 'ticket_numerique_aappma.html';
+        });
 
         function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 5000); }
     </script>
