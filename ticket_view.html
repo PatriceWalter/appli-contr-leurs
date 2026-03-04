@@ -90,10 +90,10 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     var dD=new Date(dateDebut),dF=new Date(dateFin);
     var nbJ=Math.round((dF-dD)/86400000)+1;
     var nbN=nbJ-1;
-    var lblDeb=sejourDebType==='journee'?'Journée':sejourDebType==='demi'?'Demi-journée':'Nuit';
-    var lblFin=sejourFinType==='journee'?'Journée':sejourFinType==='demi'?'Demi-journée':'Nuit';
+    var lblDeb=sejourDebType==='journee'?'Journée (8h)':sejourDebType==='demi'?'Demi-journée (14h)':'Nuit (18h)';
+    var lblFin=sejourFinType==='matin'?'Départ 8h':sejourFinType==='demi'?'Départ 14h':'Départ 18h';
     dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
-    dateHtml+='<div class="tc-detail">'+nbJ+'j / '+nbN+'n — Début : '+lblDeb+', Fin : '+lblFin+'</div>';
+    dateHtml+='<div class="tc-detail">🟢 '+lblDeb+' → 🔴 '+lblFin+'</div>';
   } else if(dateDebut){
     dateHtml='<div class="tc-detail">📅 Valable le '+new Date(dateDebut).toLocaleDateString('fr-FR')+'</div>';
   } else {
