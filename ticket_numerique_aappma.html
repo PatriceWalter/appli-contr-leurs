@@ -178,6 +178,36 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     <div class="moment" id="lbl-moment"></div>
     <div id="g-type"></div>
   </div>
+  <div class="card hidden" id="step-date">
+    <div class="card-t">📅 Date de validité</div>
+    <div class="grid2">
+      <button class="opt on" id="opt-today">📅 Aujourd'hui</button>
+      <button class="opt" id="opt-otherdate">📆 Autre date</button>
+    </div>
+    <div id="date-custom" class="hidden" style="margin-top:12px;">
+      <label class="field"><span class="lbl">Choisir la date</span>
+        <input type="date" id="inp-date">
+      </label>
+    </div>
+  </div>
+  <div class="card hidden" id="step-sejour">
+    <div class="card-t">🏕️ Multi-jours à la Hardt</div>
+    <div class="grid2">
+      <label class="field"><span class="lbl">Date début</span><input type="date" id="inp-sej-debut"></label>
+      <label class="field"><span class="lbl">Date fin</span><input type="date" id="inp-sej-fin"></label>
+    </div>
+    <div style="margin-top:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Type par jour :</div>
+      <div class="grid2">
+        <button class="opt" id="opt-sej-journee">Journée<span class="prix">10€/j</span></button>
+        <button class="opt" id="opt-sej-demi">Demi-journée<span class="prix">6€/j</span></button>
+      </div>
+    </div>
+    <div id="sejour-calc" class="hidden" style="margin-top:12px;background:var(--card2);border-radius:12px;padding:14px;text-align:center;">
+      <div id="sejour-detail" style="font-size:13px;color:var(--text2);line-height:1.6;"></div>
+      <div id="sejour-total" style="font-size:20px;font-weight:700;color:var(--accent);margin-top:6px;"></div>
+    </div>
+  </div>
   <div class="card hidden" id="step-tel">
     <div class="card-t">📱 Coordonnées pêcheur</div>
     <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX"></label>
@@ -489,10 +519,16 @@ try{(function(){
 
 
   // ===== VENTE =====
+  var selSejour=false;
+  var selDate='';
+  var selDateFin='';
+  var selSejourType='';
+
   function resetVente(){
     selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;
+    selSejour=false;selDate='';selDateFin='';selSejourType='';
     clearOn($('g-lieu'));
-    hide($('step-carte'));hide($('step-type'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
+    hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
     show($('step-lieu'));
     $('inp-tel').value='';
     updateVenteStats();
@@ -515,11 +551,11 @@ try{(function(){
   }
 
   function pickLieu(lieu){
-    selLieu=lieu;selCarte=null;selType=null;selPrix=null;
+    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selDate='';selDateFin='';selSejourType='';
     clearOn($('g-lieu'));
     var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):$('opt-carpo');
     if(btn)btn.classList.add('on');
-    hide($('step-type'));hide($('step-tel'));hide($('step-recap'));
+    hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
     if(lieu==='carpodrome'){
       show($('step-carte'));clearOn($('g-carte'));
     } else {
@@ -529,11 +565,11 @@ try{(function(){
   }
 
   function pickCarte(c){
-    selCarte=c;selType=null;selPrix=null;
+    selCarte=c;selType=null;selPrix=null;selSejour=false;
     clearOn($('g-carte'));
     var btn=c==='titulaire'?$('opt-tit'):$('opt-sans');
     if(btn)btn.classList.add('on');
-    hide($('step-tel'));hide($('step-recap'));
+    hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
     buildTypes();
   }
 
@@ -544,7 +580,10 @@ try{(function(){
     if(!arr)return;
     var g=$('g-type');
     g.innerHTML='';
-    var cls=arr.length<=2?'grid2':'grid3';
+    // For Hardt: add séjour option, so always use grid2 with 4 items (2x2)
+    var hasSejourOpt=(selLieu==='hardt');
+    var totalItems=arr.length+(hasSejourOpt?1:0);
+    var cls=totalItems<=2?'grid2':totalItems<=3?'grid3':'grid2';
     g.className=cls;
     for(var i=0;i<arr.length;i++){
       var b=document.createElement('button');
@@ -555,35 +594,150 @@ try{(function(){
       (function(bi){b.addEventListener('click',function(){pickType(bi[0],bi[2]);});})(arr[i]);
       g.appendChild(b);
     }
+    if(hasSejourOpt){
+      var bs=document.createElement('button');
+      bs.className='opt';
+      bs.setAttribute('data-type','sejour');
+      bs.innerHTML='🏕️ Multi-jours';
+      bs.addEventListener('click',function(){pickSejour();});
+      g.appendChild(bs);
+    }
     var now=new Date();
     $('lbl-moment').textContent=now.getHours()<14?'☀️ Actuellement : Matin':'🌅 Actuellement : Après-midi';
     show($('step-type'));
   }
 
   function pickType(t,p){
-    selType=t;selPrix=p;
+    selType=t;selPrix=p;selSejour=false;
     clearOn($('g-type'));
     var btns=$('g-type').querySelectorAll('.opt');
     for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')===t)btns[i].classList.add('on');}
+    hide($('step-sejour'));
+    // Show date step
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    selDate=todayStr;
+    $('inp-date').value=todayStr;
+    $('inp-date').min=todayStr;
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-today').classList.add('on');
+    hide($('date-custom'));
+    show($('step-date'));
     show($('step-tel'));
     updateRecap();
     show($('step-recap'));
+  }
+
+  function pickSejour(){
+    selSejour=true;selType=null;selPrix=null;selSejourType='';
+    clearOn($('g-type'));
+    var btns=$('g-type').querySelectorAll('.opt');
+    for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')==='sejour')btns[i].classList.add('on');}
+    hide($('step-date'));
+    // Init séjour dates
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    $('inp-sej-debut').value=todayStr;
+    $('inp-sej-debut').min=todayStr;
+    $('inp-sej-fin').value='';
+    $('inp-sej-fin').min=todayStr;
+    clearOn(document.querySelector('#step-sejour .grid2:last-of-type'));
+    hide($('sejour-calc'));
+    hide($('step-tel'));hide($('step-recap'));
+    show($('step-sejour'));
+  }
+
+  function pickSejourType(type){
+    selSejourType=type;
+    var btns=$('step-sejour').querySelectorAll('.opt');
+    for(var i=0;i<btns.length;i++){
+      if(btns[i].id==='opt-sej-journee'||btns[i].id==='opt-sej-demi')btns[i].classList.remove('on');
+    }
+    $(type==='journee'?'opt-sej-journee':'opt-sej-demi').classList.add('on');
+    calcSejour();
+  }
+
+  function calcSejour(){
+    var debut=$('inp-sej-debut').value;
+    var fin=$('inp-sej-fin').value;
+    if(!debut||!fin||!selSejourType){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    var dDebut=new Date(debut);
+    var dFin=new Date(fin);
+    if(dFin<dDebut){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    var nbJours=Math.round((dFin-dDebut)/(86400000))+1;
+    var nbNuits=nbJours-1;
+    var prixJour=selSejourType==='journee'?10:6;
+    var prixNuit=10;
+    var total=nbJours*prixJour+nbNuits*prixNuit;
+    var typeLbl=selSejourType==='journee'?'Journée':'Demi-journée';
+
+    selDate=debut;
+    selDateFin=fin;
+    selType=selSejourType;
+    selPrix=total;
+
+    var detail=nbJours+' '+typeLbl.toLowerCase()+(nbJours>1?'s':'')+' × '+prixJour+'€ = '+nbJours*prixJour+'€';
+    if(nbNuits>0)detail+='<br>'+nbNuits+' nuit'+(nbNuits>1?'s':'')+' × '+prixNuit+'€ = '+nbNuits*prixNuit+'€';
+    $('sejour-detail').innerHTML=detail;
+    $('sejour-total').textContent='Total : '+total+'€';
+    show($('sejour-calc'));
+    show($('step-tel'));
+    updateRecap();
+    show($('step-recap'));
+  }
+
+  function pickDateToday(){
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    selDate=todayStr;
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-today').classList.add('on');
+    hide($('date-custom'));
+    updateRecap();
+  }
+
+  function pickDateOther(){
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-otherdate').classList.add('on');
+    show($('date-custom'));
+    if($('inp-date').value)selDate=$('inp-date').value;
+    updateRecap();
+  }
+
+  function onDateChange(){
+    selDate=$('inp-date').value;
+    updateRecap();
   }
 
   function updateRecap(){
     var cl=selCarte==='titulaire'?' (Titulaire carte)':selCarte==='sans'?' (Sans carte)':'';
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===selType)typeLbl=TARIFS_FLAT[i][1];}
+
+    var dateStr='';
+    if(selSejour&&selDate&&selDateFin){
+      var dD=new Date(selDate),dF=new Date(selDateFin);
+      dateStr='Du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR');
+      var nbJ=Math.round((dF-dD)/86400000)+1;
+      var nbN=nbJ-1;
+      typeLbl='Multi-jours '+nbJ+'j'+(nbN>0?'/'+nbN+'n':'');
+    } else if(selDate){
+      dateStr=new Date(selDate).toLocaleDateString('fr-FR');
+    } else {
+      dateStr=new Date().toLocaleDateString('fr-FR');
+    }
+
     $('recap-txt').innerHTML=
       '<b>📍 '+LIEUX[selLieu]+'</b>'+cl+'<br>'+
       '<b>⏱ '+typeLbl+'</b> — <b style="color:var(--accent)">'+selPrix+'€</b><br>'+
-      '<b>📅 '+new Date().toLocaleDateString('fr-FR')+'</b>';
+      '<b>📅 '+dateStr+'</b>';
   }
 
   // ===== EMISSION =====
   function emitTicket(){
     try{
     if(!selLieu||!selType||!selPrix){alert('Sélections incomplètes');return;}
+    if(!selDate){alert('Date non sélectionnée');return;}
     var tel=$('inp-tel').value.trim();
     var now=new Date();
     var tk={
@@ -593,6 +747,9 @@ try{(function(){
       prix:selPrix,
       carte:selCarte||'na',
       date:now.toISOString(),
+      dateDebut:selDate,
+      dateFin:selSejour?selDateFin:selDate,
+      sejour:selSejour,
       tel:tel,
       vendeur:currentVendeur,
       controlled:false,
@@ -608,7 +765,7 @@ try{(function(){
 
     $('emit-ok-id').textContent='Ticket '+tk.id;
     renderTicket(tk,'emit-ok-ticket');
-    hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-tel'));hide($('step-recap'));
+    hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
     show($('emit-ok'));
     $('btn-sms').style.display=tel?'':'none';
     updateVenteStats();
@@ -624,6 +781,20 @@ try{(function(){
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
     var lieuName=LIEUX[tk.lieu]||tk.lieu;
+
+    // Date display
+    var dateHtml='';
+    if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+      var dD=new Date(tk.dateDebut),dF=new Date(tk.dateFin);
+      var nbJ=Math.round((dF-dD)/86400000)+1;
+      var nbN=nbJ-1;
+      dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
+      dateHtml+='<div class="tc-detail">'+nbJ+' '+typeLbl.toLowerCase()+(nbJ>1?'s':'')+' + '+nbN+' nuit'+(nbN>1?'s':'')+'</div>';
+    } else if(tk.dateDebut){
+      dateHtml='<div class="tc-detail">📅 Valable le '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+'</div>';
+    } else {
+      dateHtml='<div class="tc-detail">'+d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';
+    }
 
     var badge='';
     if(tk.controlled){
@@ -641,7 +812,7 @@ try{(function(){
       '<div class="tc-detail"><b>'+lieuName+'</b></div>'+
       (cl?'<div class="tc-detail">'+cl+'</div>':'')+
       '<div class="tc-detail"><b>'+typeLbl+'</b> — <b>'+tk.prix+'€</b></div>'+
-      '<div class="tc-detail">'+d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>'+
+      dateHtml+
       '<div class="tc-qr" id="qr-'+containerId+'"></div>'+
       badge+
       '</div>';
@@ -666,6 +837,9 @@ try{(function(){
       '&prix='+encodeURIComponent(tk.prix)+
       '&carte='+encodeURIComponent(tk.carte||'na')+
       '&date='+encodeURIComponent(tk.date)+
+      '&dateDebut='+encodeURIComponent(tk.dateDebut||'')+
+      '&dateFin='+encodeURIComponent(tk.dateFin||'')+
+      '&sejour='+encodeURIComponent(tk.sejour?'1':'0')+
       '&sig='+encodeURIComponent((tk.sig||'').substring(0,16));
     return base+params;
   }
@@ -679,6 +853,14 @@ try{(function(){
     var cl=lastTicket.carte==='titulaire'?' (Titulaire carte)':lastTicket.carte==='sans'?' (Sans carte)':'';
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===lastTicket.type)typeLbl=TARIFS_FLAT[i][1];}
+    var dateInfo='';
+    if(lastTicket.sejour&&lastTicket.dateDebut&&lastTicket.dateFin){
+      dateInfo='Du '+new Date(lastTicket.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(lastTicket.dateFin).toLocaleDateString('fr-FR');
+    } else if(lastTicket.dateDebut){
+      dateInfo='Valable le '+new Date(lastTicket.dateDebut).toLocaleDateString('fr-FR');
+    } else {
+      dateInfo=d.toLocaleDateString('fr-FR');
+    }
     var ticketUrl=buildTicketUrl(lastTicket);
 
     var btn=$('btn-sms');
@@ -693,7 +875,7 @@ try{(function(){
         'N° '+lastTicket.id+'\n'+
         (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
         typeLbl+' — '+lastTicket.prix+'€\n'+
-        d.toLocaleDateString('fr-FR')+'\n'+
+        dateInfo+'\n'+
         '━━━━━━━━━━━━━━━━━━━\n\n'+
         '🎣 Accès à votre ticket :\n'+shortUrl
       );
@@ -785,7 +967,30 @@ try{(function(){
       showScanResult(false,'⚠️ SIGNATURE INVALIDE','Ticket potentiellement falsifié');
       return;
     }
-    showScanResult(true,'TICKET CONFORME','Signature vérifiée • Ticket existant',stored);
+    // Vérification de la date
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    var dateOk=true;
+    var dateMsg='';
+    if(stored.dateDebut&&stored.dateFin){
+      if(todayStr<stored.dateDebut){
+        dateOk=false;
+        dateMsg='Ticket pas encore valide (début : '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+')';
+      } else if(todayStr>stored.dateFin){
+        dateOk=false;
+        dateMsg='Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')';
+      }
+    } else if(stored.dateDebut){
+      if(todayStr!==stored.dateDebut){
+        dateOk=false;
+        dateMsg='Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement';
+      }
+    }
+    if(!dateOk){
+      showScanResult(false,'⚠️ DATE NON VALIDE',dateMsg,stored);
+      return;
+    }
+    showScanResult(true,'TICKET CONFORME','Signature vérifiée • Date valide',stored);
   }
 
   function showScanResult(ok,title,detail,tk){
@@ -1101,10 +1306,17 @@ try{(function(){
     var tk=dbFind(tkId);
     if(!tk||!tk.tel)return;
     var tel=tk.tel.replace(/\s/g,'');
-    var d=new Date(tk.date);
     var cl=tk.carte==='titulaire'?' (Titulaire carte)':tk.carte==='sans'?' (Sans carte)':'';
     var typeLbl='';
     for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+    var dateInfo='';
+    if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+      dateInfo='Du '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tk.dateFin).toLocaleDateString('fr-FR');
+    } else if(tk.dateDebut){
+      dateInfo='Valable le '+new Date(tk.dateDebut).toLocaleDateString('fr-FR');
+    } else {
+      dateInfo=new Date(tk.date).toLocaleDateString('fr-FR');
+    }
     var ticketUrl=buildTicketUrl(tk);
     shortenUrl(ticketUrl,function(shortUrl){
       var msg=encodeURIComponent(
@@ -1113,7 +1325,7 @@ try{(function(){
         'N° '+tk.id+'\n'+
         (LIEUX[tk.lieu]||tk.lieu)+cl+'\n'+
         typeLbl+' — '+tk.prix+'€\n'+
-        d.toLocaleDateString('fr-FR')+'\n'+
+        dateInfo+'\n'+
         '━━━━━━━━━━━━━━━━━━━\n\n'+
         '🎣 Accès à votre ticket :\n'+shortUrl
       );
@@ -1220,6 +1432,20 @@ try{(function(){
   // Vente - carte
   $('opt-tit').addEventListener('click',function(){pickCarte('titulaire');});
   $('opt-sans').addEventListener('click',function(){pickCarte('sans');});
+
+  // Date selection
+  $('opt-today').addEventListener('click',pickDateToday);
+  $('opt-otherdate').addEventListener('click',pickDateOther);
+  $('inp-date').addEventListener('change',onDateChange);
+
+  // Multi-jours
+  $('opt-sej-journee').addEventListener('click',function(){pickSejourType('journee');});
+  $('opt-sej-demi').addEventListener('click',function(){pickSejourType('demi');});
+  $('inp-sej-debut').addEventListener('change',function(){
+    if($('inp-sej-debut').value)$('inp-sej-fin').min=$('inp-sej-debut').value;
+    calcSejour();
+  });
+  $('inp-sej-fin').addEventListener('change',calcSejour);
 
   // Vente - emit
   $('btn-emit').addEventListener('click',emitTicket);

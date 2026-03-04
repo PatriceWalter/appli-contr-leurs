@@ -63,6 +63,9 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   var carte=getParam('carte');
   var date=getParam('date');
   var sig=getParam('sig');
+  var dateDebut=getParam('dateDebut');
+  var dateFin=getParam('dateFin');
+  var sejour=getParam('sejour')==='1';
 
   if(!id||!lieu||!prix){
     container.innerHTML=
@@ -76,11 +79,22 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
 
   var d;
   try{d=new Date(date);}catch(e){d=new Date();}
-  var dateFr=d.toLocaleDateString('fr-FR');
-  var heureFr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   var lieuName=LIEUX[lieu]||lieu;
   var typeName=TYPES[type]||type;
   var carteLbl=carte==='titulaire'?'Titulaire carte de pêche':carte==='sans'?'Sans carte de pêche':'';
+
+  var dateHtml='';
+  if(sejour&&dateDebut&&dateFin){
+    var dD=new Date(dateDebut),dF=new Date(dateFin);
+    var nbJ=Math.round((dF-dD)/86400000)+1;
+    var nbN=nbJ-1;
+    dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
+    dateHtml+='<div class="tc-detail">'+nbJ+' '+typeName.toLowerCase()+(nbJ>1?'s':'')+' + '+nbN+' nuit'+(nbN>1?'s':'')+'</div>';
+  } else if(dateDebut){
+    dateHtml='<div class="tc-detail">📅 Valable le '+new Date(dateDebut).toLocaleDateString('fr-FR')+'</div>';
+  } else {
+    dateHtml='<div class="tc-detail">'+d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';
+  }
 
   container.innerHTML=
     '<div class="ticket-card">'+
@@ -92,7 +106,7 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
       '<div class="tc-detail"><b>'+lieuName+'</b></div>'+
       (carteLbl?'<div class="tc-detail">'+carteLbl+'</div>':'')+
       '<div class="tc-detail"><b>'+typeName+'</b> — <b>'+prix+'€</b></div>'+
-      '<div class="tc-detail">'+dateFr+' à '+heureFr+'</div>'+
+      dateHtml+
       '<div class="tc-sep"></div>'+
       '<div class="tc-qr" id="qr-view"></div>'+
       '<div class="tc-badge">✅ Ticket valide</div>'+
