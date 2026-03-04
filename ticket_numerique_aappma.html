@@ -197,10 +197,17 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
       <label class="field"><span class="lbl">Date fin</span><input type="date" id="inp-sej-fin"></label>
     </div>
     <div style="margin-top:8px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Type par jour :</div>
-      <div class="grid2">
-        <button class="opt" id="opt-sej-journee">Journée<span class="prix">10€/j</span></button>
-        <button class="opt" id="opt-sej-demi">Demi-journée<span class="prix">6€/j</span></button>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Premier jour (début) :</div>
+      <div class="grid2" id="g-sej-debut">
+        <button class="opt" id="opt-sej-deb-journee">Journée<span class="prix">10€</span></button>
+        <button class="opt" id="opt-sej-deb-demi">Demi-journée<span class="prix">6€</span></button>
+      </div>
+    </div>
+    <div style="margin-top:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Dernier jour (fin) :</div>
+      <div class="grid2" id="g-sej-fin">
+        <button class="opt" id="opt-sej-fin-journee">Journée<span class="prix">10€</span></button>
+        <button class="opt" id="opt-sej-fin-demi">Demi-journée<span class="prix">6€</span></button>
       </div>
     </div>
     <div id="sejour-calc" class="hidden" style="margin-top:12px;background:var(--card2);border-radius:12px;padding:14px;text-align:center;">
@@ -523,10 +530,12 @@ try{(function(){
   var selDate='';
   var selDateFin='';
   var selSejourType='';
+  var selSejourDebType='';
+  var selSejourFinType='';
 
   function resetVente(){
     selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;
-    selSejour=false;selDate='';selDateFin='';selSejourType='';
+    selSejour=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
     clearOn($('g-lieu'));
     hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
     show($('step-lieu'));
@@ -551,7 +560,7 @@ try{(function(){
   }
 
   function pickLieu(lieu){
-    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selDate='';selDateFin='';selSejourType='';
+    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
     clearOn($('g-lieu'));
     var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):$('opt-carpo');
     if(btn)btn.classList.add('on');
@@ -629,55 +638,63 @@ try{(function(){
   }
 
   function pickSejour(){
-    selSejour=true;selType=null;selPrix=null;selSejourType='';
+    selSejour=true;selType=null;selPrix=null;selSejourDebType='';selSejourFinType='';
     clearOn($('g-type'));
     var btns=$('g-type').querySelectorAll('.opt');
     for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')==='sejour')btns[i].classList.add('on');}
     hide($('step-date'));
-    // Init séjour dates
     var today=new Date();
     var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
     $('inp-sej-debut').value=todayStr;
     $('inp-sej-debut').min=todayStr;
     $('inp-sej-fin').value='';
     $('inp-sej-fin').min=todayStr;
-    clearOn(document.querySelector('#step-sejour .grid2:last-of-type'));
+    clearOn($('g-sej-debut'));
+    clearOn($('g-sej-fin'));
     hide($('sejour-calc'));
     hide($('step-tel'));hide($('step-recap'));
     show($('step-sejour'));
   }
 
-  function pickSejourType(type){
-    selSejourType=type;
-    var btns=$('step-sejour').querySelectorAll('.opt');
-    for(var i=0;i<btns.length;i++){
-      if(btns[i].id==='opt-sej-journee'||btns[i].id==='opt-sej-demi')btns[i].classList.remove('on');
-    }
-    $(type==='journee'?'opt-sej-journee':'opt-sej-demi').classList.add('on');
+  function pickSejourDebType(type){
+    selSejourDebType=type;
+    clearOn($('g-sej-debut'));
+    $(type==='journee'?'opt-sej-deb-journee':'opt-sej-deb-demi').classList.add('on');
+    calcSejour();
+  }
+
+  function pickSejourFinType(type){
+    selSejourFinType=type;
+    clearOn($('g-sej-fin'));
+    $(type==='journee'?'opt-sej-fin-journee':'opt-sej-fin-demi').classList.add('on');
     calcSejour();
   }
 
   function calcSejour(){
     var debut=$('inp-sej-debut').value;
     var fin=$('inp-sej-fin').value;
-    if(!debut||!fin||!selSejourType){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    if(!debut||!fin||!selSejourDebType||!selSejourFinType){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
     var dDebut=new Date(debut);
     var dFin=new Date(fin);
-    if(dFin<dDebut){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
-    var nbJours=Math.round((dFin-dDebut)/(86400000))+1;
+    if(dFin<=dDebut){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    var nbJours=Math.round((dFin-dDebut)/86400000)+1;
     var nbNuits=nbJours-1;
-    var prixJour=selSejourType==='journee'?10:6;
-    var prixNuit=10;
-    var total=nbJours*prixJour+nbNuits*prixNuit;
-    var typeLbl=selSejourType==='journee'?'Journée':'Demi-journée';
+    var nbMilieu=nbJours-2;
+    var prixDebut=selSejourDebType==='journee'?10:6;
+    var prixFin=selSejourFinType==='journee'?10:6;
+    var lblDebut=selSejourDebType==='journee'?'Journée':'Demi-journée';
+    var lblFin=selSejourFinType==='journee'?'Journée':'Demi-journée';
+    var total=prixDebut+prixFin+(nbMilieu>0?nbMilieu*10:0)+nbNuits*10;
 
     selDate=debut;
     selDateFin=fin;
-    selType=selSejourType;
+    selType='multi';
     selPrix=total;
 
-    var detail=nbJours+' '+typeLbl.toLowerCase()+(nbJours>1?'s':'')+' × '+prixJour+'€ = '+nbJours*prixJour+'€';
-    if(nbNuits>0)detail+='<br>'+nbNuits+' nuit'+(nbNuits>1?'s':'')+' × '+prixNuit+'€ = '+nbNuits*prixNuit+'€';
+    var detail='1er jour : '+lblDebut+' = '+prixDebut+'€';
+    if(nbMilieu>0)detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' intermédiaire'+(nbMilieu>1?'s':'')+' : journée = '+(nbMilieu*10)+'€';
+    detail+='<br>Dernier jour : '+lblFin+' = '+prixFin+'€';
+    detail+='<br>'+nbNuits+' nuit'+(nbNuits>1?'s':'')+' × 10€ = '+(nbNuits*10)+'€';
     $('sejour-detail').innerHTML=detail;
     $('sejour-total').textContent='Total : '+total+'€';
     show($('sejour-calc'));
@@ -720,7 +737,7 @@ try{(function(){
       dateStr='Du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR');
       var nbJ=Math.round((dF-dD)/86400000)+1;
       var nbN=nbJ-1;
-      typeLbl='Multi-jours '+nbJ+'j'+(nbN>0?'/'+nbN+'n':'');
+      typeLbl='Multi-jours ('+nbJ+'j/'+nbN+'n)';
     } else if(selDate){
       dateStr=new Date(selDate).toLocaleDateString('fr-FR');
     } else {
@@ -750,6 +767,8 @@ try{(function(){
       dateDebut:selDate,
       dateFin:selSejour?selDateFin:selDate,
       sejour:selSejour,
+      sejourDebType:selSejourDebType||'',
+      sejourFinType:selSejourFinType||'',
       tel:tel,
       vendeur:currentVendeur,
       controlled:false,
@@ -788,8 +807,10 @@ try{(function(){
       var dD=new Date(tk.dateDebut),dF=new Date(tk.dateFin);
       var nbJ=Math.round((dF-dD)/86400000)+1;
       var nbN=nbJ-1;
+      var lblDeb=tk.sejourDebType==='journee'?'Journée':'Demi-journée';
+      var lblFin=tk.sejourFinType==='journee'?'Journée':'Demi-journée';
       dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
-      dateHtml+='<div class="tc-detail">'+nbJ+' '+typeLbl.toLowerCase()+(nbJ>1?'s':'')+' + '+nbN+' nuit'+(nbN>1?'s':'')+'</div>';
+      dateHtml+='<div class="tc-detail">'+nbJ+'j / '+nbN+'n — Début : '+lblDeb+', Fin : '+lblFin+'</div>';
     } else if(tk.dateDebut){
       dateHtml='<div class="tc-detail">📅 Valable le '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+'</div>';
     } else {
@@ -840,6 +861,8 @@ try{(function(){
       '&dateDebut='+encodeURIComponent(tk.dateDebut||'')+
       '&dateFin='+encodeURIComponent(tk.dateFin||'')+
       '&sejour='+encodeURIComponent(tk.sejour?'1':'0')+
+      '&sejourDebType='+encodeURIComponent(tk.sejourDebType||'')+
+      '&sejourFinType='+encodeURIComponent(tk.sejourFinType||'')+
       '&sig='+encodeURIComponent((tk.sig||'').substring(0,16));
     return base+params;
   }
@@ -1439,8 +1462,10 @@ try{(function(){
   $('inp-date').addEventListener('change',onDateChange);
 
   // Multi-jours
-  $('opt-sej-journee').addEventListener('click',function(){pickSejourType('journee');});
-  $('opt-sej-demi').addEventListener('click',function(){pickSejourType('demi');});
+  $('opt-sej-deb-journee').addEventListener('click',function(){pickSejourDebType('journee');});
+  $('opt-sej-deb-demi').addEventListener('click',function(){pickSejourDebType('demi');});
+  $('opt-sej-fin-journee').addEventListener('click',function(){pickSejourFinType('journee');});
+  $('opt-sej-fin-demi').addEventListener('click',function(){pickSejourFinType('demi');});
   $('inp-sej-debut').addEventListener('change',function(){
     if($('inp-sej-debut').value)$('inp-sej-fin').min=$('inp-sej-debut').value;
     calcSejour();

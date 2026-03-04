@@ -66,6 +66,8 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   var dateDebut=getParam('dateDebut');
   var dateFin=getParam('dateFin');
   var sejour=getParam('sejour')==='1';
+  var sejourDebType=getParam('sejourDebType');
+  var sejourFinType=getParam('sejourFinType');
 
   if(!id||!lieu||!prix){
     container.innerHTML=
@@ -88,8 +90,10 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     var dD=new Date(dateDebut),dF=new Date(dateFin);
     var nbJ=Math.round((dF-dD)/86400000)+1;
     var nbN=nbJ-1;
+    var lblDeb=sejourDebType==='journee'?'Journée':'Demi-journée';
+    var lblFin=sejourFinType==='journee'?'Journée':'Demi-journée';
     dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
-    dateHtml+='<div class="tc-detail">'+nbJ+' '+typeName.toLowerCase()+(nbJ>1?'s':'')+' + '+nbN+' nuit'+(nbN>1?'s':'')+'</div>';
+    dateHtml+='<div class="tc-detail">'+nbJ+'j / '+nbN+'n — Début : '+lblDeb+', Fin : '+lblFin+'</div>';
   } else if(dateDebut){
     dateHtml='<div class="tc-detail">📅 Valable le '+new Date(dateDebut).toLocaleDateString('fr-FR')+'</div>';
   } else {
