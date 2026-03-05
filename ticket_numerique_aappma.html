@@ -164,6 +164,7 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
       <button class="opt" id="opt-breit">Étang<br>Breitmatt</button>
       <button class="opt" id="opt-hardt">Étang<br>de la Hardt</button>
       <button class="opt" id="opt-carpo" style="grid-column:span 2">Carpodrome</button>
+      <button class="opt" id="opt-offert" style="grid-column:span 2;background:linear-gradient(135deg,#fff8e1,#fff3e0);border:2px solid #ff9800;">🎁 Ticket Offert<br><span style="font-size:11px;color:#e65100;">Journée de travail bénévole</span></button>
     </div>
   </div>
   <div class="card hidden" id="step-carte">
@@ -192,6 +193,26 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   </div>
   <div class="card hidden" id="step-sejour">
     <div class="card-t">🏕️ Multi-jours à la Hardt</div>
+    <div id="sejour-offert-toggle" style="margin-bottom:10px;background:linear-gradient(135deg,#fff8e1,#fff3e0);border:2px solid #ff9800;border-radius:10px;padding:10px 14px;">
+      <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="toggleSejourOffert()">
+        <input type="checkbox" id="chk-sej-offert" style="width:20px;height:20px;accent-color:#ff9800;">
+        <div><div style="font-weight:700;color:#e65100;font-size:14px;">🎁 Créditer des créneaux offerts</div><div style="font-size:11px;color:#bf360c;">Journée de travail bénévole</div></div>
+      </div>
+      <div id="offert-details" class="hidden" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:600;color:#e65100;margin-bottom:4px;">Journées</div>
+          <input type="number" id="inp-off-journee" min="0" value="0" style="width:50px;padding:6px;border-radius:8px;border:1px solid #ff9800;text-align:center;font-size:16px;font-weight:700;">
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:600;color:#e65100;margin-bottom:4px;">Demi-j.</div>
+          <input type="number" id="inp-off-demi" min="0" value="0" style="width:50px;padding:6px;border-radius:8px;border:1px solid #ff9800;text-align:center;font-size:16px;font-weight:700;">
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:600;color:#e65100;margin-bottom:4px;">Nuits</div>
+          <input type="number" id="inp-off-nuit" min="0" value="0" style="width:50px;padding:6px;border-radius:8px;border:1px solid #ff9800;text-align:center;font-size:16px;font-weight:700;">
+        </div>
+      </div>
+    </div>
     <div class="grid2">
       <label class="field"><span class="lbl">Date début</span><input type="date" id="inp-sej-debut"></label>
       <label class="field"><span class="lbl">Date fin</span><input type="date" id="inp-sej-fin"></label>
@@ -216,6 +237,10 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
       <div id="sejour-detail" style="font-size:13px;color:var(--text2);line-height:1.6;"></div>
       <div id="sejour-total" style="font-size:20px;font-weight:700;color:var(--accent);margin-top:6px;"></div>
     </div>
+  </div>
+  <div class="card hidden" id="step-poste">
+    <div class="card-t">📍 Numéro de poste (Hardt)</div>
+    <label class="field"><span class="lbl">N° de poste</span><input type="text" id="inp-poste" placeholder="Ex: 12" inputmode="numeric" style="text-align:center;font-size:18px;font-weight:700;"></label>
   </div>
   <div class="card hidden" id="step-tel">
     <div class="card-t">📱 Coordonnées pêcheur</div>
@@ -402,13 +427,14 @@ try{(function(){
   var SK='aappma_tk';
   var SK_ENC='aappma_enc';
   var SK_VENDEUR='aappma_vendeur';
-  var LIEUX={breitmatt:'Étang Breitmatt',hardt:'Étang de la Hardt',carpodrome:'Carpodrome'};
+  var LIEUX={breitmatt:'Étang Breitmatt',hardt:'Étang de la Hardt',carpodrome:'Carpodrome',offert:'🎁 Ticket Offert (Travail)'};
   var TARIFS={
     breitmatt:[['demi','Demi-journée',6],['journee','Journée',10]],
     hardt_sans:[['demi','Demi-journée',6],['journee','Journée',10],['nuit','Nuit',10]],
     hardt_tit:[['demi','Demi-journée',0],['journee','Journée',0],['nuit','Nuit',10]],
     carpo_tit:[['demi','Demi-journée',3],['journee','Journée',5]],
-    carpo_sans:[['demi','Demi-journée',6],['journee','Journée',10]]
+    carpo_sans:[['demi','Demi-journée',6],['journee','Journée',10]],
+    offert:[['demi','Demi-journée offerte',0],['journee','Journée offerte',0],['nuit','Nuit offerte',0]]
   };
   var TARIFS_FLAT=[['demi','Demi-journée'],['journee','Journée'],['nuit','Nuit']];
 
@@ -417,7 +443,7 @@ try{(function(){
   var currentVendeur='';
   var ADMIN_NAME='patrice';
   function isAdmin(){return currentVendeur.toLowerCase()===ADMIN_NAME;}
-  var selLieu=null,selCarte=null,selType=null,selPrix=null;
+  var selLieu=null,selCarte=null,selType=null,selPrix=null,selPoste='';
   var lastTicket=null;
   var delTarget=null;
   var encTarget=null;
@@ -529,7 +555,7 @@ try{(function(){
 
 
   // ===== VENTE =====
-  var selSejour=false;
+  var selSejour=false,selSejourOffert=false;
   var selDate='';
   var selDateFin='';
   var selSejourType='';
@@ -537,12 +563,13 @@ try{(function(){
   var selSejourFinType='';
 
   function resetVente(){
-    selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;
-    selSejour=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
+    selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;selPoste='';
+    selSejour=false;selSejourOffert=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
     clearOn($('g-lieu'));
-    hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
+    hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
     show($('step-lieu'));
-    $('inp-tel').value='';
+    $('inp-tel').value='';$('inp-poste').value='';$('chk-sej-offert').checked=false;$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
+    var det=$('offert-details');det.classList.add('hidden');det.style.display='none';
     updateVenteStats();
   }
 
@@ -563,12 +590,13 @@ try{(function(){
   }
 
   function pickLieu(lieu){
-    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
+    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selSejourOffert=false;selPoste='';selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
     clearOn($('g-lieu'));
-    var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):$('opt-carpo');
+    var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):lieu==='carpodrome'?$('opt-carpo'):$('opt-offert');
     if(btn)btn.classList.add('on');
-    hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
-    if(lieu==='breitmatt'){
+    hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
+    $('inp-poste').value='';$('chk-sej-offert').checked=false;
+    if(lieu==='breitmatt'||lieu==='offert'){
       hide($('step-carte'));selCarte='na';
       buildTypes();
     } else {
@@ -577,11 +605,11 @@ try{(function(){
   }
 
   function pickCarte(c){
-    selCarte=c;selType=null;selPrix=null;selSejour=false;
+    selCarte=c;selType=null;selPrix=null;selSejour=false;selSejourOffert=false;
     clearOn($('g-carte'));
     var btn=c==='titulaire'?$('opt-tit'):$('opt-sans');
     if(btn)btn.classList.add('on');
-    hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
+    hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
     buildTypes();
   }
 
@@ -628,7 +656,6 @@ try{(function(){
     var btns=$('g-type').querySelectorAll('.opt');
     for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')===t)btns[i].classList.add('on');}
     hide($('step-sejour'));
-    // Show date step
     var today=new Date();
     var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
     selDate=todayStr;
@@ -638,13 +665,16 @@ try{(function(){
     $('opt-today').classList.add('on');
     hide($('date-custom'));
     show($('step-date'));
+    if(selLieu==='hardt')show($('step-poste'));else hide($('step-poste'));
     show($('step-tel'));
     updateRecap();
     show($('step-recap'));
   }
 
   function pickSejour(){
-    selSejour=true;selType=null;selPrix=null;selSejourDebType='';selSejourFinType='';
+    selSejour=true;selType=null;selPrix=null;selSejourDebType='';selSejourFinType='';selSejourOffert=false;
+    $('chk-sej-offert').checked=false;$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
+    var det=$('offert-details');det.classList.add('hidden');det.style.display='none';
     clearOn($('g-type'));
     var btns=$('g-type').querySelectorAll('.opt');
     for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')==='sejour')btns[i].classList.add('on');}
@@ -658,7 +688,7 @@ try{(function(){
     clearOn($('g-sej-debut'));
     clearOn($('g-sej-fin'));
     hide($('sejour-calc'));
-    hide($('step-tel'));hide($('step-recap'));
+    hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
     show($('step-sejour'));
   }
 
@@ -678,62 +708,80 @@ try{(function(){
     calcSejour();
   }
 
+  function toggleSejourOffert(){
+    var checked=$('chk-sej-offert').checked;
+    selSejourOffert=checked;
+    var det=$('offert-details');
+    if(checked){det.classList.remove('hidden');det.style.display='grid';}
+    else{det.classList.add('hidden');det.style.display='none';$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;}
+    calcSejour();
+  }
+
   function calcSejour(){
     var debut=$('inp-sej-debut').value;
     var fin=$('inp-sej-fin').value;
-    if(!debut||!fin||!selSejourDebType||!selSejourFinType){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    if(!debut||!fin||!selSejourDebType||!selSejourFinType){hide($('sejour-calc'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));return;}
     var dDebut=new Date(debut);
     var dFin=new Date(fin);
-    if(dFin<=dDebut){hide($('sejour-calc'));hide($('step-tel'));hide($('step-recap'));return;}
+    if(dFin<=dDebut){hide($('sejour-calc'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));return;}
     var nbJours=Math.round((dFin-dDebut)/86400000)+1;
     var nbMilieu=nbJours-2;
 
-    var tit=(selLieu==='hardt'&&selCarte==='titulaire');
-    // Prix unitaires — titulaire : journée et demi gratuites, nuit payante
+    var tit=(selCarte==='titulaire');
     var pJournee=tit?0:10;
     var pDemi=tit?0:6;
     var pNuit=10;
 
-    // Arrivée (premier jour)
-    var prixJ1=0,lblJ1='';
-    if(selSejourDebType==='journee'){
-      prixJ1=pJournee+pNuit;
-      lblJ1='Arrivée 8h : journée '+(tit?'gratuite':'10€')+' + nuit 10€ = '+prixJ1+'€';
-    } else if(selSejourDebType==='demi'){
-      prixJ1=pDemi+pNuit;
-      lblJ1='Arrivée 14h : demi-journée '+(tit?'gratuite':'6€')+' + nuit 10€ = '+prixJ1+'€';
-    } else {
-      prixJ1=pNuit;
-      lblJ1='Arrivée 18h : nuit 10€';
-    }
+    // Compter les créneaux
+    var totalJ=0,totalD=0,totalN=0;
+    // Arrivée
+    if(selSejourDebType==='journee'){totalJ++;totalN++;}
+    else if(selSejourDebType==='demi'){totalD++;totalN++;}
+    else{totalN++;} // nuit
+    // Milieu
+    totalJ+=nbMilieu>0?nbMilieu:0;
+    totalN+=nbMilieu>0?nbMilieu:0;
+    // Départ
+    if(selSejourFinType==='soir')totalJ++;
+    else if(selSejourFinType==='demi')totalD++;
 
-    // Jours intermédiaires : journée + nuit
-    var prixJourComplet=pJournee+pNuit;
-    var prixMilieu=nbMilieu>0?nbMilieu*prixJourComplet:0;
+    // Offerts
+    var offJ=selSejourOffert?parseInt($('inp-off-journee').value)||0:0;
+    var offD=selSejourOffert?parseInt($('inp-off-demi').value)||0:0;
+    var offN=selSejourOffert?parseInt($('inp-off-nuit').value)||0:0;
+    // Limiter aux max dispo
+    offJ=Math.min(offJ,totalJ);offD=Math.min(offD,totalD);offN=Math.min(offN,totalN);
 
-    // Départ (dernier jour)
-    var prixJn=0,lblJn='';
-    if(selSejourFinType==='matin'){prixJn=0;lblJn='Départ 8h : 0€';}
-    else if(selSejourFinType==='demi'){prixJn=pDemi;lblJn='Départ 14h : demi-journée '+(tit?'gratuite':'= 6€');}
-    else{prixJn=pJournee;lblJn='Départ 18h : journée '+(tit?'gratuite':'= 10€');}
+    var payJ=totalJ-offJ;
+    var payD=totalD-offD;
+    var payN=totalN-offN;
 
-    var total=prixJ1+prixMilieu+prixJn;
+    var total=(payJ*pJournee)+(payD*pDemi)+(payN*pNuit);
 
     selDate=debut;
     selDateFin=fin;
     selType='multi';
     selPrix=total;
 
-    var detail=lblJ1;
-    if(nbMilieu>0){
-      var lblMilieu=tit?'nuit seule = '+pNuit+'€':'journée + nuit = '+prixJourComplet+'€';
-      detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' complet'+(nbMilieu>1?'s':'')+' : '+(nbMilieu>1?nbMilieu+' × ':'')+lblMilieu+' = '+prixMilieu+'€';
+    // Détail affiché
+    var detail='';
+    detail+='📊 <b>Créneaux du séjour :</b><br>';
+    if(totalJ>0)detail+=totalJ+' journée'+(totalJ>1?'s':'')+' × '+(tit?'gratuit':'10€')+' = '+(totalJ*pJournee)+'€<br>';
+    if(totalD>0)detail+=totalD+' demi-journée'+(totalD>1?'s':'')+' × '+(tit?'gratuit':'6€')+' = '+(totalD*pDemi)+'€<br>';
+    detail+=totalN+' nuit'+(totalN>1?'s':'')+' × 10€ = '+(totalN*pNuit)+'€';
+
+    if(offJ>0||offD>0||offN>0){
+      detail+='<br><br>🎁 <b>Créneaux offerts :</b><br>';
+      if(offJ>0)detail+=offJ+' journée'+(offJ>1?'s':'')+' offerte'+(offJ>1?'s':'')+' = -'+(offJ*pJournee)+'€<br>';
+      if(offD>0)detail+=offD+' demi-journée'+(offD>1?'s':'')+' offerte'+(offD>1?'s':'')+' = -'+(offD*pDemi)+'€<br>';
+      if(offN>0)detail+=offN+' nuit'+(offN>1?'s':'')+' offerte'+(offN>1?'s':'')+' = -'+(offN*pNuit)+'€';
     }
-    detail+='<br>'+lblJn;
-    if(tit)detail+='<br><span style="color:#2e7d32;font-weight:700;">🎫 Titulaire carte : journées/demi-journées offertes</span>';
+    if(tit)detail+='<br><span style="color:#2e7d32;font-weight:700;">🎫 Titulaire carte : journées/demi-journées déjà gratuites</span>';
+
     $('sejour-detail').innerHTML=detail;
-    $('sejour-total').textContent='Total : '+total+'€';
+    $('sejour-total').textContent='Total : '+(total===0?'GRATUIT':total+'€');
     show($('sejour-calc'));
+    show($('step-poste'));
     show($('step-tel'));
     updateRecap();
     show($('step-recap'));
@@ -780,18 +828,35 @@ try{(function(){
       dateStr=new Date().toLocaleDateString('fr-FR');
     }
 
+    var isOffertLieu=(selLieu==='offert');
+    var hasOffInput=selSejourOffert&&(parseInt($('inp-off-journee').value)||0)+(parseInt($('inp-off-demi').value)||0)+(parseInt($('inp-off-nuit').value)||0)>0;
+    var offertLbl='';
+    if(isOffertLieu){
+      offertLbl='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:6px 10px;border-radius:8px;text-align:center;font-weight:700;font-size:13px;margin-bottom:6px;">🎁 OFFERT — Journée de travail bénévole</div>';
+    } else if(hasOffInput){
+      var oJ=parseInt($('inp-off-journee').value)||0,oD=parseInt($('inp-off-demi').value)||0,oN=parseInt($('inp-off-nuit').value)||0;
+      var parts=[];
+      if(oJ>0)parts.push(oJ+' journée'+(oJ>1?'s':''));
+      if(oD>0)parts.push(oD+' demi-j.');
+      if(oN>0)parts.push(oN+' nuit'+(oN>1?'s':''));
+      offertLbl='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:6px 10px;border-radius:8px;text-align:center;font-size:12px;margin-bottom:6px;"><b>🎁 Offert :</b> '+parts.join(' • ')+'</div>';
+    }
+    var posteLbl=(selLieu==='hardt'&&$('inp-poste').value.trim())?'<br><b>📍 Poste n°'+$('inp-poste').value.trim()+'</b>':'';
+
     $('recap-txt').innerHTML=
+      offertLbl+
       '<b>📍 '+LIEUX[selLieu]+'</b>'+cl+'<br>'+
       '<b>⏱ '+typeLbl+'</b> — <b style="color:var(--accent)">'+(selPrix===0?'Gratuit':selPrix+'€')+'</b><br>'+
-      '<b>📅 '+dateStr+'</b>';
+      '<b>📅 '+dateStr+'</b>'+posteLbl;
   }
 
   // ===== EMISSION =====
   function emitTicket(){
     try{
-    if(!selLieu||!selType||!selPrix){alert('Sélections incomplètes');return;}
+    if(!selLieu||!selType||selPrix===null||selPrix===undefined){alert('Sélections incomplètes');return;}
     if(!selDate){alert('Date non sélectionnée');return;}
     var tel=$('inp-tel').value.trim();
+    var poste=(selLieu==='hardt')?$('inp-poste').value.trim():'';
     var now=new Date();
     var tk={
       id:makeId(),
@@ -799,10 +864,15 @@ try{(function(){
       type:selType,
       prix:selPrix,
       carte:selCarte||'na',
+      poste:poste,
       date:now.toISOString(),
       dateDebut:selDate,
       dateFin:selSejour?selDateFin:selDate,
       sejour:selSejour,
+      sejourOffert:selSejourOffert,
+      offJournees:selSejourOffert?parseInt($('inp-off-journee').value)||0:0,
+      offDemis:selSejourOffert?parseInt($('inp-off-demi').value)||0:0,
+      offNuits:selSejourOffert?parseInt($('inp-off-nuit').value)||0:0,
       sejourDebType:selSejourDebType||'',
       sejourFinType:selSejourFinType||'',
       tel:tel,
@@ -821,7 +891,7 @@ try{(function(){
 
     $('emit-ok-id').textContent='Ticket '+tk.id;
     renderTicket(tk,'emit-ok-ticket');
-    hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
+    hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
     show($('emit-ok'));
     $('btn-sms').style.display=tel?'':'none';
     updateVenteStats();
@@ -870,13 +940,28 @@ try{(function(){
       badge='<div class="tc-status valid">Valide</div>';
     }
 
+    var hasOfferts=(tk.offJournees>0||tk.offDemis>0||tk.offNuits>0);
+    var isOffert=(tk.lieu==='offert'||hasOfferts);
+    var offertBanner='';
+    if(tk.lieu==='offert'){
+      offertBanner='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:8px 12px;border-radius:8px;text-align:center;font-weight:700;font-size:14px;margin:8px 0;">🎁 OFFERT — Journée de travail bénévole</div>';
+    } else if(hasOfferts){
+      var offParts=[];
+      if(tk.offJournees>0)offParts.push(tk.offJournees+' journée'+(tk.offJournees>1?'s':''));
+      if(tk.offDemis>0)offParts.push(tk.offDemis+' demi-j.');
+      if(tk.offNuits>0)offParts.push(tk.offNuits+' nuit'+(tk.offNuits>1?'s':''));
+      offertBanner='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:8px 12px;border-radius:8px;text-align:center;font-size:13px;margin:8px 0;"><b>🎁 Offert (travail)</b><br>'+offParts.join(' • ')+'</div>';
+    }
+    var posteLbl=(tk.poste)?'<div class="tc-detail">📍 Poste n°'+tk.poste+'</div>':'';
     el.innerHTML=
       '<div class="ticket-card">'+
       '<img src="'+LOGO+'" alt="AAPPMA" class="tc-img-logo">'+
       '<div class="tc-title">Autorisation de pêche</div>'+
       '<div class="tc-sub2">AAPPMA GUNDERSHOFFEN</div>'+
       '<div class="tc-num">'+tk.id+'</div>'+
-      '<div class="tc-detail"><b>'+lieuName+'</b></div>'+
+      offertBanner+
+      (isOffert&&tk.lieu==='offert'?'':'<div class="tc-detail"><b>'+lieuName+'</b></div>')+
+      posteLbl+
       (cl?'<div class="tc-detail">'+cl+'</div>':'')+
       '<div class="tc-detail"><b>'+typeLbl+'</b> — <b>'+(tk.prix===0?'Gratuit':tk.prix+'€')+'</b></div>'+
       dateHtml+
@@ -909,6 +994,11 @@ try{(function(){
       '&sejour='+encodeURIComponent(tk.sejour?'1':'0')+
       '&sejourDebType='+encodeURIComponent(tk.sejourDebType||'')+
       '&sejourFinType='+encodeURIComponent(tk.sejourFinType||'')+
+      '&sejourOffert='+encodeURIComponent(tk.sejourOffert?'1':'0')+
+      '&offJ='+encodeURIComponent(tk.offJournees||0)+
+      '&offD='+encodeURIComponent(tk.offDemis||0)+
+      '&offN='+encodeURIComponent(tk.offNuits||0)+
+      '&poste='+encodeURIComponent(tk.poste||'')+
       '&sig='+encodeURIComponent((tk.sig||'').substring(0,16));
     return base+params;
   }
@@ -938,12 +1028,15 @@ try{(function(){
 
     // Raccourcir le lien puis envoyer SMS
     shortenUrl(ticketUrl,function(shortUrl){
+      var offertSms=lastTicket.lieu==='offert'?'🎁 OFFERT - Journée de travail\n':'';
+      var prixSms=lastTicket.prix===0?'Gratuit':lastTicket.prix+'€';
       var msg=encodeURIComponent(
         'AAPPMA Gundershoffen\nTicket de pêche\n'+
         '━━━━━━━━━━━━━━━━━━━\n'+
+        offertSms+
         'N° '+lastTicket.id+'\n'+
         (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
-        typeLbl+' — '+lastTicket.prix+'€\n'+
+        typeLbl+' — '+prixSms+'\n'+
         dateInfo+'\n'+
         '━━━━━━━━━━━━━━━━━━━\n\n'+
         '🎣 Accès à votre ticket :\n'+shortUrl
@@ -1195,11 +1288,18 @@ try{(function(){
       if(tk.sejour&&tk.dateDebut&&tk.dateFin){
         validite='\n📆 Validité : du '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tk.dateFin).toLocaleDateString('fr-FR');
       }
+      var posteTg=tk.poste?'\n📍 Poste n°'+tk.poste:'';
+      var offParts=[];
+      if(tk.offJournees>0)offParts.push(tk.offJournees+' journée'+(tk.offJournees>1?'s':''));
+      if(tk.offDemis>0)offParts.push(tk.offDemis+' demi-j.');
+      if(tk.offNuits>0)offParts.push(tk.offNuits+' nuit'+(tk.offNuits>1?'s':''));
+      var offertTg=(tk.lieu==='offert')?'\n🎁 TICKET OFFERT (Journée de travail)':offParts.length>0?'\n🎁 Offert : '+offParts.join(', '):'';
+      var prixTg=tk.prix===0?'Gratuit':tk.prix+'€';
       var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*'+multiInfo+'\n'+
         '📅 '+dateFr+' à '+heure+'\n'+
-        '📍 '+(LIEUX[tk.lieu]||tk.lieu)+'\n'+
-        '🎟️ '+tk.id+'\n'+
-        '⏱️ '+(typeLbl||'Multi-jours')+' — '+tk.prix+'€'+validite+'\n'+
+        '📍 '+(LIEUX[tk.lieu]||tk.lieu)+posteTg+'\n'+
+        '🎟️ '+tk.id+offertTg+'\n'+
+        '⏱️ '+(typeLbl||'Multi-jours')+' — '+prixTg+validite+'\n'+
         '👮 Contrôleur : '+(currentVendeur||'Inconnu');
       envoyerTelegram(msgTg);
     }
@@ -1449,12 +1549,15 @@ try{(function(){
     }
     var ticketUrl=buildTicketUrl(tk);
     shortenUrl(ticketUrl,function(shortUrl){
+      var offertSms=tk.lieu==='offert'?'🎁 OFFERT - Journée de travail\n':'';
+      var prixSms=tk.prix===0?'Gratuit':tk.prix+'€';
       var msg=encodeURIComponent(
         'AAPPMA Gundershoffen\nTicket de pêche\n'+
         '━━━━━━━━━━━━━━━━━━━\n'+
+        offertSms+
         'N° '+tk.id+'\n'+
         (LIEUX[tk.lieu]||tk.lieu)+cl+'\n'+
-        typeLbl+' — '+tk.prix+'€\n'+
+        typeLbl+' — '+prixSms+'\n'+
         dateInfo+'\n'+
         '━━━━━━━━━━━━━━━━━━━\n\n'+
         '🎣 Accès à votre ticket :\n'+shortUrl
@@ -1558,6 +1661,7 @@ try{(function(){
   $('opt-breit').addEventListener('click',function(){pickLieu('breitmatt');});
   $('opt-hardt').addEventListener('click',function(){pickLieu('hardt');});
   $('opt-carpo').addEventListener('click',function(){pickLieu('carpodrome');});
+  $('opt-offert').addEventListener('click',function(){pickLieu('offert');});
 
   // Vente - carte
   $('opt-tit').addEventListener('click',function(){pickCarte('titulaire');});
@@ -1580,6 +1684,9 @@ try{(function(){
     calcSejour();
   });
   $('inp-sej-fin').addEventListener('change',calcSejour);
+  $('inp-off-journee').addEventListener('input',calcSejour);
+  $('inp-off-demi').addEventListener('input',calcSejour);
+  $('inp-off-nuit').addEventListener('input',calcSejour);
 
   // Vente - emit
   $('btn-emit').addEventListener('click',emitTicket);
