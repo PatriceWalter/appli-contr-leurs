@@ -430,7 +430,7 @@ try{(function(){
   var TARIFS={
     breitmatt:[['demi','Demi-journée',6],['journee','Journée',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]],
     hardt_sans:[['demi','Demi-journée',6],['journee','Journée',10],['nuit','Nuit',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0],['nuit_off','🎁 Nuit offerte',0]],
-    hardt_tit:[['demi','Demi-journée',0],['journee','Journée',0],['nuit','Nuit',10],['nuit_off','🎁 Nuit offerte',0]],
+    hardt_tit:[['nuit','Nuit',10],['nuit_off','🎁 Nuit offerte',0]],
     carpo_tit:[['demi','Demi-journée',3],['journee','Journée',5],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]],
     carpo_sans:[['demi','Demi-journée',6],['journee','Journée',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]]
   };
@@ -763,21 +763,39 @@ try{(function(){
     if(selSejourFinType==='soir')totalJ++;
     else if(selSejourFinType==='demi')totalD++;
 
-    // Mise à jour max offerts
-    $('inp-off-journee').max=totalJ;$('lbl-max-j').textContent='max '+totalJ;
-    $('inp-off-demi').max=totalD;$('lbl-max-d').textContent='max '+totalD;
+    // Mise à jour max offerts avec cohérence
+    // Règle : offJ + ceil(offD/2) <= totalJ (demi et journées puisent dans le même stock)
+    if(tit){
+      $('inp-off-journee').parentElement.style.display='none';
+      $('inp-off-demi').parentElement.style.display='none';
+      $('inp-off-nuit').parentElement.style.display='';
+      $('inp-off-journee').value=0;$('inp-off-demi').value=0;
+    } else {
+      $('inp-off-journee').parentElement.style.display='';
+      $('inp-off-demi').parentElement.style.display='';
+      $('inp-off-nuit').parentElement.style.display='';
+      // Lire valeurs actuelles
+      var curJ=parseInt($('inp-off-journee').value)||0;
+      var curD=parseInt($('inp-off-demi').value)||0;
+      // Max journées = totalJ - journées déjà prises par les demi (2 demi = 1 journée)
+      var joursParDemi=Math.ceil(curD/2);
+      var maxJ=Math.max(0,totalJ-joursParDemi);
+      // Max demi = (totalJ - journées offertes) × 2
+      var maxD=Math.max(0,(totalJ-curJ)*2);
+      $('inp-off-journee').max=maxJ;$('lbl-max-j').textContent='max '+maxJ;
+      $('inp-off-demi').max=maxD;$('lbl-max-d').textContent='max '+maxD;
+    }
     $('inp-off-nuit').max=totalN;$('lbl-max-n').textContent='max '+totalN;
     clampOffert($('inp-off-journee'));clampOffert($('inp-off-demi'));clampOffert($('inp-off-nuit'));
-    // Lire offerts
+    // Lire offerts après clamp
     var offJ=selSejourOffert?parseInt($('inp-off-journee').value)||0:0;
     var offD=selSejourOffert?parseInt($('inp-off-demi').value)||0:0;
     var offN=selSejourOffert?parseInt($('inp-off-nuit').value)||0:0;
 
-    var payJ=totalJ-offJ;
-    var payD=totalD-offD;
-    var payN=totalN-offN;
-
-    var total=(payJ*pJournee)+(payD*pDemi)+(payN*pNuit);
+    // Calcul : brut - réductions offertes
+    var brut=(totalJ*pJournee)+(totalD*pDemi)+(totalN*pNuit);
+    var reduc=(offJ*pJournee)+(offD*6)+(offN*pNuit);
+    var total=Math.max(0,brut-reduc);
 
     selDate=debut;
     selDateFin=fin;
@@ -794,7 +812,7 @@ try{(function(){
     if(offJ>0||offD>0||offN>0){
       detail+='<br><br>🎁 <b>Créneaux offerts :</b><br>';
       if(offJ>0)detail+=offJ+' journée'+(offJ>1?'s':'')+' offerte'+(offJ>1?'s':'')+' = -'+(offJ*pJournee)+'€<br>';
-      if(offD>0)detail+=offD+' demi-journée'+(offD>1?'s':'')+' offerte'+(offD>1?'s':'')+' = -'+(offD*pDemi)+'€<br>';
+      if(offD>0)detail+=offD+' demi-journée'+(offD>1?'s':'')+' offerte'+(offD>1?'s':'')+' = -'+(offD*6)+'€<br>';
       if(offN>0)detail+=offN+' nuit'+(offN>1?'s':'')+' offerte'+(offN>1?'s':'')+' = -'+(offN*pNuit)+'€';
     }
     if(tit)detail+='<br><span style="color:#2e7d32;font-weight:700;">🎫 Titulaire carte : journées/demi-journées déjà gratuites</span>';
