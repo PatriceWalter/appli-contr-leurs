@@ -405,7 +405,8 @@ try{(function(){
   var LIEUX={breitmatt:'Étang Breitmatt',hardt:'Étang de la Hardt',carpodrome:'Carpodrome'};
   var TARIFS={
     breitmatt:[['demi','Demi-journée',6],['journee','Journée',10]],
-    hardt:[['demi','Demi-journée',6],['journee','Journée',10],['nuit','Nuit',10]],
+    hardt_sans:[['demi','Demi-journée',6],['journee','Journée',10],['nuit','Nuit',10]],
+    hardt_tit:[['demi','Demi-journée',0],['journee','Journée',0],['nuit','Nuit',10]],
     carpo_tit:[['demi','Demi-journée',3],['journee','Journée',5]],
     carpo_sans:[['demi','Demi-journée',6],['journee','Journée',10]]
   };
@@ -567,11 +568,11 @@ try{(function(){
     var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):$('opt-carpo');
     if(btn)btn.classList.add('on');
     hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-tel'));hide($('step-recap'));
-    if(lieu==='carpodrome'){
-      show($('step-carte'));clearOn($('g-carte'));
-    } else {
+    if(lieu==='breitmatt'){
       hide($('step-carte'));selCarte='na';
       buildTypes();
+    } else {
+      show($('step-carte'));clearOn($('g-carte'));
     }
   }
 
@@ -587,6 +588,7 @@ try{(function(){
   function buildTypes(){
     var key=selLieu;
     if(selLieu==='carpodrome')key=selCarte==='titulaire'?'carpo_tit':'carpo_sans';
+    if(selLieu==='hardt')key=selCarte==='titulaire'?'hardt_tit':'hardt_sans';
     var arr=TARIFS[key];
     if(!arr)return;
     var g=$('g-type');
@@ -601,7 +603,7 @@ try{(function(){
       b.className='opt';
       b.setAttribute('data-type',arr[i][0]);
       b.setAttribute('data-prix',arr[i][2]);
-      b.innerHTML=arr[i][1]+'<span class="prix">'+arr[i][2]+'€</span>';
+      b.innerHTML=arr[i][1]+'<span class="prix">'+(arr[i][2]===0?'Gratuit':arr[i][2]+'€')+'</span>';
       (function(bi){b.addEventListener('click',function(){pickType(bi[0],bi[2]);});})(arr[i]);
       g.appendChild(b);
     }
@@ -609,7 +611,9 @@ try{(function(){
       var bs=document.createElement('button');
       bs.className='opt';
       bs.setAttribute('data-type','sejour');
-      bs.innerHTML='🏕️ Multi-jours';
+      var sejourLbl='🏕️ Multi-jours';
+      if(selCarte==='titulaire')sejourLbl+='<span class="prix">Nuits payantes</span>';
+      bs.innerHTML=sejourLbl;
       bs.addEventListener('click',function(){pickSejour();});
       g.appendChild(bs);
     }
@@ -684,22 +688,34 @@ try{(function(){
     var nbJours=Math.round((dFin-dDebut)/86400000)+1;
     var nbMilieu=nbJours-2;
 
-    // Arrivée (premier jour)
-    // journee(8h)=jour+nuit=20 | demi(14h)=demi+nuit=16 | nuit(18h)=nuit=10
-    var prixJ1=0,lblJ1='';
-    if(selSejourDebType==='journee'){prixJ1=20;lblJ1='Arrivée 8h : journée 10€ + nuit 10€ = 20€';}
-    else if(selSejourDebType==='demi'){prixJ1=16;lblJ1='Arrivée 14h : demi-journée 6€ + nuit 10€ = 16€';}
-    else{prixJ1=10;lblJ1='Arrivée 18h : nuit 10€';}
+    var tit=(selLieu==='hardt'&&selCarte==='titulaire');
+    // Prix unitaires — titulaire : journée et demi gratuites, nuit payante
+    var pJournee=tit?0:10;
+    var pDemi=tit?0:6;
+    var pNuit=10;
 
-    // Jours intermédiaires : journée + nuit = 20€
-    var prixMilieu=nbMilieu>0?nbMilieu*20:0;
+    // Arrivée (premier jour)
+    var prixJ1=0,lblJ1='';
+    if(selSejourDebType==='journee'){
+      prixJ1=pJournee+pNuit;
+      lblJ1='Arrivée 8h : journée '+(tit?'gratuite':'10€')+' + nuit 10€ = '+prixJ1+'€';
+    } else if(selSejourDebType==='demi'){
+      prixJ1=pDemi+pNuit;
+      lblJ1='Arrivée 14h : demi-journée '+(tit?'gratuite':'6€')+' + nuit 10€ = '+prixJ1+'€';
+    } else {
+      prixJ1=pNuit;
+      lblJ1='Arrivée 18h : nuit 10€';
+    }
+
+    // Jours intermédiaires : journée + nuit
+    var prixJourComplet=pJournee+pNuit;
+    var prixMilieu=nbMilieu>0?nbMilieu*prixJourComplet:0;
 
     // Départ (dernier jour)
-    // matin(8h)=0 | demi(14h)=demi=6 | soir(18h)=journée=10
     var prixJn=0,lblJn='';
     if(selSejourFinType==='matin'){prixJn=0;lblJn='Départ 8h : 0€';}
-    else if(selSejourFinType==='demi'){prixJn=6;lblJn='Départ 14h : demi-journée = 6€';}
-    else{prixJn=10;lblJn='Départ 18h : journée = 10€';}
+    else if(selSejourFinType==='demi'){prixJn=pDemi;lblJn='Départ 14h : demi-journée '+(tit?'gratuite':'= 6€');}
+    else{prixJn=pJournee;lblJn='Départ 18h : journée '+(tit?'gratuite':'= 10€');}
 
     var total=prixJ1+prixMilieu+prixJn;
 
@@ -709,8 +725,12 @@ try{(function(){
     selPrix=total;
 
     var detail=lblJ1;
-    if(nbMilieu>0)detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' complet'+(nbMilieu>1?'s':'')+' : '+(nbMilieu>1?nbMilieu+' × ':'')+'20€ = '+prixMilieu+'€';
+    if(nbMilieu>0){
+      var lblMilieu=tit?'nuit seule = '+pNuit+'€':'journée + nuit = '+prixJourComplet+'€';
+      detail+='<br>'+nbMilieu+' jour'+(nbMilieu>1?'s':'')+' complet'+(nbMilieu>1?'s':'')+' : '+(nbMilieu>1?nbMilieu+' × ':'')+lblMilieu+' = '+prixMilieu+'€';
+    }
     detail+='<br>'+lblJn;
+    if(tit)detail+='<br><span style="color:#2e7d32;font-weight:700;">🎫 Titulaire carte : journées/demi-journées offertes</span>';
     $('sejour-detail').innerHTML=detail;
     $('sejour-total').textContent='Total : '+total+'€';
     show($('sejour-calc'));
@@ -762,7 +782,7 @@ try{(function(){
 
     $('recap-txt').innerHTML=
       '<b>📍 '+LIEUX[selLieu]+'</b>'+cl+'<br>'+
-      '<b>⏱ '+typeLbl+'</b> — <b style="color:var(--accent)">'+selPrix+'€</b><br>'+
+      '<b>⏱ '+typeLbl+'</b> — <b style="color:var(--accent)">'+(selPrix===0?'Gratuit':selPrix+'€')+'</b><br>'+
       '<b>📅 '+dateStr+'</b>';
   }
 
@@ -858,7 +878,7 @@ try{(function(){
       '<div class="tc-num">'+tk.id+'</div>'+
       '<div class="tc-detail"><b>'+lieuName+'</b></div>'+
       (cl?'<div class="tc-detail">'+cl+'</div>':'')+
-      '<div class="tc-detail"><b>'+typeLbl+'</b> — <b>'+tk.prix+'€</b></div>'+
+      '<div class="tc-detail"><b>'+typeLbl+'</b> — <b>'+(tk.prix===0?'Gratuit':tk.prix+'€')+'</b></div>'+
       dateHtml+
       '<div class="tc-qr" id="qr-'+containerId+'"></div>'+
       badge+

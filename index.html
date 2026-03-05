@@ -1710,7 +1710,8 @@
 
         function renderTravail() {
             const moisKey = getTravMoisKey(travMoisCourant);
-            const label = MOIS_FR[travMoisCourant.getMonth()] + ' ' + travMoisCourant.getFullYear();
+            const annee = travMoisCourant.getFullYear();
+            const label = MOIS_FR[travMoisCourant.getMonth()] + ' ' + annee;
             document.getElementById('travMoisLabel').textContent = label;
 
             // Show/hide add zone for Patrice only
@@ -1721,12 +1722,12 @@
             const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             document.getElementById('travDate').value = todayStr;
 
-            // Load data from Firebase
             const listEl = document.getElementById('travail-list');
             const statsEl = document.getElementById('travail-stats');
             listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
             statsEl.innerHTML = '';
 
+            // Load current month
             dbCentral.ref('journees_travail/' + moisKey).once('value').then(snapshot => {
                 const data = snapshot.val();
                 const entries = [];
@@ -1735,30 +1736,7 @@
                         entries.push({ key: k, ...data[k] });
                     });
                 }
-                // Sort by date desc
                 entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-                // Stats
-                const personnes = {};
-                entries.forEach(e => {
-                    const nom = (e.nom || '') + ' ' + (e.prenom || '');
-                    personnes[nom] = (personnes[nom] || 0) + 1;
-                });
-                const nbTotal = entries.length;
-                const nbPersonnes = Object.keys(personnes).length;
-
-                statsEl.innerHTML =
-                    '<div style="flex:1;min-width:120px;background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">' +
-                    '<div style="font-size:22px;font-weight:700;color:#2e7d32;">' + nbTotal + '</div>' +
-                    '<div style="font-size:11px;color:#666;">journée' + (nbTotal > 1 ? 's' : '') + '</div></div>' +
-                    '<div style="flex:1;min-width:120px;background:#e3f2fd;border-radius:10px;padding:12px;text-align:center;">' +
-                    '<div style="font-size:22px;font-weight:700;color:#1565c0;">' + nbPersonnes + '</div>' +
-                    '<div style="font-size:11px;color:#666;">participant' + (nbPersonnes > 1 ? 's' : '') + '</div></div>';
-
-                if (entries.length === 0) {
-                    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">Aucune journée de travail enregistrée pour ' + label + '</div>';
-                    return;
-                }
 
                 // Group by date
                 const grouped = {};
@@ -1768,29 +1746,79 @@
                     grouped[d].push(e);
                 });
 
-                let html = '';
-                Object.keys(grouped).sort().reverse().forEach(date => {
-                    const items = grouped[date];
-                    const dObj = new Date(date);
-                    const jourSemaine = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][dObj.getDay()];
-                    const dateFr = dObj.toLocaleDateString('fr-FR');
+                const nbJournees = Object.keys(grouped).length;
+                const nbParticipants = entries.length;
 
-                    html += '<div style="margin-bottom:15px;">';
-                    html += '<div style="font-size:13px;font-weight:700;color:#1a472a;margin-bottom:8px;padding:6px 12px;background:#e8f5e9;border-radius:8px;">📅 ' + jourSemaine + ' ' + dateFr + ' — ' + items.length + ' participant' + (items.length > 1 ? 's' : '') + '</div>';
-                    items.forEach(e => {
-                        html += '<div style="background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">';
-                        html += '<div style="font-weight:600;font-size:14px;color:#333;">👤 ' + (e.nom || '') + ' ' + (e.prenom || '') + '</div>';
-                        if (isPatrice()) {
-                            html += '<button onclick="supprimerTravail(\'' + moisKey + '\',\'' + e.key + '\')" style="background:#ffebee;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;" title="Supprimer">🗑️</button>';
-                        }
+                // Stats mois
+                statsEl.innerHTML =
+                    '<div style="flex:1;min-width:100px;background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:22px;font-weight:700;color:#2e7d32;">' + nbJournees + '</div>' +
+                    '<div style="font-size:11px;color:#666;">journée' + (nbJournees > 1 ? 's' : '') + '</div></div>' +
+                    '<div style="flex:1;min-width:100px;background:#e3f2fd;border-radius:10px;padding:12px;text-align:center;">' +
+                    '<div style="font-size:22px;font-weight:700;color:#1565c0;">' + nbParticipants + '</div>' +
+                    '<div style="font-size:11px;color:#666;">participant' + (nbParticipants > 1 ? 's' : '') + '</div></div>';
+
+                if (entries.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">Aucune journée de travail enregistrée pour ' + label + '</div>';
+                } else {
+                    let html = '';
+                    Object.keys(grouped).sort().reverse().forEach(date => {
+                        const items = grouped[date];
+                        const dObj = new Date(date);
+                        const jourSemaine = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][dObj.getDay()];
+                        const dateFr = dObj.toLocaleDateString('fr-FR');
+
+                        html += '<div style="margin-bottom:15px;">';
+                        html += '<div style="font-size:13px;font-weight:700;color:#1a472a;margin-bottom:8px;padding:6px 12px;background:#e8f5e9;border-radius:8px;">📅 ' + jourSemaine + ' ' + dateFr + ' — ' + items.length + ' participant' + (items.length > 1 ? 's' : '') + '</div>';
+                        items.forEach(e => {
+                            html += '<div style="background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:space-between;">';
+                            html += '<div style="font-weight:600;font-size:14px;color:#333;">👤 ' + (e.nom || '') + ' ' + (e.prenom || '') + '</div>';
+                            if (isPatrice()) {
+                                html += '<button onclick="supprimerTravail(\'' + moisKey + '\',\'' + e.key + '\')" style="background:#ffebee;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;" title="Supprimer">🗑️</button>';
+                            }
+                            html += '</div>';
+                        });
                         html += '</div>';
                     });
-                    html += '</div>';
-                });
-                listEl.innerHTML = html;
+                    listEl.innerHTML = html;
+                }
+
+                // Load annual total
+                loadTravailAnnuel(annee);
             }).catch(err => {
                 listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
                 console.error(err);
+            });
+        }
+
+        function loadTravailAnnuel(annee) {
+            dbCentral.ref('journees_travail').once('value').then(snapshot => {
+                const allData = snapshot.val() || {};
+                let totalJournees = 0;
+                let totalParticipants = 0;
+                const allDates = {};
+
+                Object.keys(allData).forEach(moisKey => {
+                    if (!moisKey.startsWith(annee + '-')) return;
+                    const moisData = allData[moisKey];
+                    if (!moisData) return;
+                    Object.keys(moisData).forEach(k => {
+                        const e = moisData[k];
+                        totalParticipants++;
+                        const d = e.date || 'x';
+                        allDates[d] = true;
+                    });
+                });
+                totalJournees = Object.keys(allDates).length;
+
+                const annuelEl = document.getElementById('travail-stats');
+                annuelEl.innerHTML +=
+                    '<div style="width:100%;background:linear-gradient(135deg,#1a472a,#2e7d32);border-radius:10px;padding:12px;text-align:center;margin-top:4px;">' +
+                    '<div style="font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:4px;">📊 Total ' + annee + '</div>' +
+                    '<div style="display:flex;justify-content:center;gap:20px;">' +
+                    '<div><span style="font-size:20px;font-weight:700;color:#fff;">' + totalJournees + '</span> <span style="font-size:11px;color:rgba(255,255,255,0.8);">journée' + (totalJournees > 1 ? 's' : '') + '</span></div>' +
+                    '<div><span style="font-size:20px;font-weight:700;color:#fff;">' + totalParticipants + '</span> <span style="font-size:11px;color:rgba(255,255,255,0.8);">participation' + (totalParticipants > 1 ? 's' : '') + '</span></div>' +
+                    '</div></div>';
             });
         }
 
