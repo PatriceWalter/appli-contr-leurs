@@ -271,10 +271,9 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     <div class="sep-or">OU</div>
     <div class="card">
       <div class="card-t">🔢 Saisir le numéro du ticket</div>
-      <div style="display:flex;align-items:center;gap:0;margin-bottom:12px;">
-        <span style="background:#1a472a;color:#fff;padding:12px 10px;border-radius:10px 0 0 10px;font-size:18px;font-weight:700;letter-spacing:1px;">TK-</span>
-        <input type="text" id="inp-tkid" placeholder="XXXX" maxlength="4" autocomplete="off" autocapitalize="characters" style="flex:1;border-radius:0 10px 10px 0;font-size:18px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:12px;border:2px solid #1a472a;border-left:none;">
-      </div>
+      <label class="field"><span class="lbl">Code du ticket (4 caractères après TK-)</span>
+        <input type="text" id="inp-tkid" placeholder="ex: A3F9" maxlength="4" autocomplete="off" autocapitalize="characters" style="text-align:center;font-size:22px;font-weight:700;letter-spacing:4px;text-transform:uppercase;">
+      </label>
       <button class="btn btn-out" id="btn-search-tk">Vérifier</button>
     </div>
   </div>
