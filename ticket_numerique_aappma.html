@@ -271,9 +271,10 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     <div class="sep-or">OU</div>
     <div class="card">
       <div class="card-t">🔢 Saisir le numéro du ticket</div>
-      <label class="field"><span class="lbl">Numéro du ticket</span>
-        <input type="text" id="inp-tkid" placeholder="TK-XXXXXXXX-XXXXXX" autocomplete="off" autocapitalize="characters">
-      </label>
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:12px;">
+        <span style="background:#1a472a;color:#fff;padding:12px 10px;border-radius:10px 0 0 10px;font-size:18px;font-weight:700;letter-spacing:1px;">TK-</span>
+        <input type="text" id="inp-tkid" placeholder="XXXX" maxlength="4" autocomplete="off" autocapitalize="characters" style="flex:1;border-radius:0 10px 10px 0;font-size:18px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:12px;border:2px solid #1a472a;border-left:none;">
+      </div>
       <button class="btn btn-out" id="btn-search-tk">Vérifier</button>
     </div>
   </div>
@@ -530,7 +531,7 @@ try{(function(){
   function encSave(o){_enc=o;fbEnc.set(o);}
 
   // ===== CRYPTO =====
-  function makeId(){return 'TK-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();}
+  function makeId(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var a=dbGet();var existing={};for(var i=0;i<a.length;i++)existing[a[i].id]=true;var id;do{var r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];id='TK-'+r;}while(existing[id]);return id;}
 
   function signTk(d){
     if(!hasCrypto)return'nosig';
@@ -1011,11 +1012,11 @@ try{(function(){
       '</div>';
 
     if(hasQR){
-      var qrData=tk.id+'|'+tk.lieu+'|'+tk.type+'|'+tk.prix+'|'+tk.carte+'|'+tk.date+'|'+tk.sig.substring(0,16);
+      var qrData=tk.id+'|'+(tk.dateDebut||'')+'|'+(tk.dateFin||'')+'|'+(tk.sig||'').substring(0,16);
       new QRCode(document.getElementById('qr-'+containerId),{
         text:qrData,width:180,height:180,
         colorDark:'#000000',colorLight:'#ffffff',
-        correctLevel:QRCode.CorrectLevel.M
+        correctLevel:QRCode.CorrectLevel.H
       });
     }
     }catch(e){console.error('renderTicket error:',e);}
@@ -1128,7 +1129,7 @@ try{(function(){
     setStatus('Recherche de la caméra...',false);
     scanner.start(
       {facingMode:'environment'},
-      {fps:10,qrbox:{width:250,height:250}},
+      {fps:15,qrbox:{width:280,height:280},aspectRatio:1.0,formatsToSupport:[0]},
       function(decoded){
         stopScanner();
         hide($('scan-status'));
@@ -1144,24 +1145,23 @@ try{(function(){
   }
 
   function handleScanResult(decoded){
-    var tk;
-    // Try pipe-delimited format first: id|lieu|type|prix|carte|date|sig16
     var parts=decoded.split('|');
-    if(parts.length>=6){
-      tk={id:parts[0],lieu:parts[1],type:parts[2],prix:Number(parts[3]),carte:parts[4],date:parts[5],sig:parts[6]||''};
+    var tkId=null;
+    // Nouveau format: id|dateDebut|dateFin|sig16 (4 parts)
+    // Ancien format: id|lieu|type|prix|carte|date|sig16 (7 parts)
+    if(parts.length>=1&&parts[0].indexOf('TK-')===0){
+      tkId=parts[0];
     } else {
-      // Fallback: try JSON
-      try{tk=JSON.parse(decoded);}catch(e){
+      try{var j=JSON.parse(decoded);tkId=j.id;}catch(e){
         showScanResult(false,'QR Code invalide','Format non reconnu');
         return;
       }
     }
-    if(!tk.id||!tk.lieu||!tk.type||!tk.prix||!tk.date){
-      showScanResult(false,'Données incomplètes','Champs manquants dans le QR');
+    if(!tkId){
+      showScanResult(false,'Données incomplètes','ID ticket manquant');
       return;
     }
-    // Verify from stored ticket (has full signature)
-    var stored=dbFind(tk.id);
+    var stored=dbFind(tkId);
     if(!stored){
       showScanResult(false,'⚠️ Ticket inconnu','Non émis par ce système');
       return;
@@ -1170,7 +1170,6 @@ try{(function(){
       showScanResult(false,'⚠️ SIGNATURE INVALIDE','Ticket potentiellement falsifié');
       return;
     }
-    // Vérification de la date
     var dCheck=checkTicketDate(stored);
     if(!dCheck.ok){
       showScanResult(false,'⚠️ DATE NON VALIDE',dCheck.msg,stored);
@@ -1252,7 +1251,8 @@ try{(function(){
   function searchTk(){
     var val=$('inp-tkid').value.trim().toUpperCase();
     if(!val)return;
-    var tk=dbFind(val);
+    var tkId='TK-'+val;
+    var tk=dbFind(tkId);
     if(!tk){
       showScanResult(false,'Ticket non trouvé','Aucun ticket avec ce numéro');
       return;

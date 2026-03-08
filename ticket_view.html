@@ -138,11 +138,11 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     '</div>';
 
   if(typeof QRCode!=='undefined'){
-    var qrData=id+'|'+lieu+'|'+type+'|'+prix+'|'+carte+'|'+date+'|'+(sig||'').substring(0,16);
+    var qrData=id+'|'+(dateDebut||'')+'|'+(dateFin||'')+'|'+(sig||'').substring(0,16);
     new QRCode(document.getElementById('qr-view'),{
       text:qrData,width:200,height:200,
       colorDark:'#000000',colorLight:'#ffffff',
-      correctLevel:QRCode.CorrectLevel.M
+      correctLevel:QRCode.CorrectLevel.H
     });
   }
 })();
