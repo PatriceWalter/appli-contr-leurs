@@ -400,11 +400,22 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
     <div id="admin-step2" class="hidden">
       <div class="admin-menu">
         <div class="admin-menu-title">🛠️ Panneau d'administration</div>
+        <button class="admin-item" id="btn-admin-contacts" style="border-color:#1565c0;background:#e3f2fd;color:#1565c0;">📇 Contacts tickets</button>
         <button class="admin-item" id="btn-reset-all">🗑️ Tout réinitialiser</button>
       </div>
       <div class="modal-btns" style="margin-top:12px;">
         <button class="btn btn-out" id="btn-admin-cancel2">Fermer</button>
       </div>
+    </div>
+    <div id="admin-step5" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:700;color:var(--text);">📇 Contacts tickets</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-out" id="btn-contacts-add" style="padding:6px 12px;font-size:12px;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;">➕ Ajouter</button>
+          <button class="btn btn-out" id="btn-contacts-back" style="padding:6px 12px;font-size:12px;">← Retour</button>
+        </div>
+      </div>
+      <div id="contacts-list" style="max-height:400px;overflow-y:auto;"></div>
     </div>
     <div id="admin-step3" class="hidden">
       <div style="text-align:center;padding:12px 0;">
@@ -1673,7 +1684,7 @@ try{(function(){
 
   // ===== ADMIN SETTINGS =====
   function openAdmin(){
-    hide($('admin-step2'));hide($('admin-step3'));hide($('admin-step4'));
+    hide($('admin-step2'));hide($('admin-step3'));hide($('admin-step4'));hide($('admin-step5'));
     show($('admin-step1'));
     $('admin-pwd').value='';hide($('admin-err'));
     show($('modal-admin'));
@@ -1688,6 +1699,64 @@ try{(function(){
     }
   }
   function startReset(){hide($('admin-step2'));show($('admin-step3'));}
+
+  // ===== GESTION CONTACTS TICKETS =====
+  function showAdminContacts(){
+    hide($('admin-step2'));show($('admin-step5'));
+    loadAdminContacts();
+  }
+
+  function loadAdminContacts(){
+    var list=$('contacts-list');
+    list.innerHTML='<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
+    fbDb.ref('contactsTickets').once('value').then(function(snap){
+      var data=snap.val()||{};
+      var contacts=[];
+      for(var k in data){
+        if(data[k]&&data[k].nom)contacts.push({key:k,nom:data[k].nom,prenom:data[k].prenom||'',telephone:data[k].telephone||''});
+      }
+      contacts.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
+      if(contacts.length===0){
+        list.innerHTML='<div style="text-align:center;padding:20px;color:#999;">Aucun contact enregistré</div>';
+        return;
+      }
+      var html='<div style="font-size:12px;color:#888;margin-bottom:8px;text-align:center;">'+contacts.length+' contact'+(contacts.length>1?'s':'')+'</div>';
+      for(var i=0;i<contacts.length;i++){
+        var c=contacts[i];
+        html+='<div style="background:#f8f9fa;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">';
+        html+='<div style="flex:1;min-width:0;">';
+        html+='<div style="font-weight:700;font-size:14px;color:#333;">'+c.nom+' '+c.prenom+'</div>';
+        html+='<div style="font-size:13px;color:#1565c0;">'+(c.telephone||'Pas de numéro')+'</div>';
+        html+='</div>';
+        html+='<div style="display:flex;gap:6px;flex-shrink:0;">';
+        html+='<button data-key="'+c.key+'" data-nom="'+c.nom+'" data-prenom="'+c.prenom+'" data-tel="'+(c.telephone||'')+'" class="ct-edit" style="background:#e3f2fd;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:13px;">✏️</button>';
+        html+='<button data-key="'+c.key+'" data-nom="'+c.nom+' '+c.prenom+'" class="ct-del" style="background:#ffebee;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:13px;">🗑️</button>';
+        html+='</div></div>';
+      }
+      list.innerHTML=html;
+      list.querySelectorAll('.ct-del').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var key=this.dataset.key;
+          var nom=this.dataset.nom;
+          if(confirm('Supprimer '+nom+' ?')){
+            fbDb.ref('contactsTickets/'+key).remove().then(function(){loadAdminContacts();loadPecheurs();});
+          }
+        });
+      });
+      list.querySelectorAll('.ct-edit').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var key=this.dataset.key;
+          var nom=prompt('Nom :',this.dataset.nom);
+          if(nom===null)return;
+          var prenom=prompt('Prénom :',this.dataset.prenom);
+          if(prenom===null)return;
+          var tel=prompt('Téléphone :',this.dataset.tel);
+          if(tel===null)return;
+          fbDb.ref('contactsTickets/'+key).update({nom:nom.toUpperCase().trim(),prenom:prenom.trim(),telephone:tel.trim()}).then(function(){loadAdminContacts();loadPecheurs();});
+        });
+      });
+    });
+  }
   function confirmReset1(){hide($('admin-step3'));show($('admin-step4'));}
   function doResetAll(){
     fbTickets.remove();
@@ -1805,7 +1874,27 @@ try{(function(){
           }
         }
       }
-      // Source 2 : Réservations Carpodrome (Firebase Carpodrome)
+      // Source 2 : Contacts ajoutés depuis les tickets
+      loadContactsTickets(seen);
+    });
+  }
+
+  function loadContactsTickets(seen){
+    fbDb.ref('contactsTickets').once('value').then(function(snap){
+      var data=snap.val()||{};
+      for(var k in data){
+        if(data[k]&&data[k].nom){
+          var nom=data[k].nom.toUpperCase();
+          var prenom=data[k].prenom||'';
+          var tel=data[k].telephone||'';
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'ticket',key:k});
+          }
+        }
+      }
+      // Source 3 : Réservations Carpodrome (Firebase Carpodrome)
       loadCarpoContacts(seen);
     });
   }
@@ -1865,7 +1954,7 @@ try{(function(){
       html+='<div class="sr-item" data-idx="'+j+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;">';
       html+='<b>'+m.nom+' '+m.prenom+'</b>';
       if(m.telephone)html+='<span style="float:right;color:#1565c0;">'+m.telephone+'</span>';
-      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
+      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':m.source==='ticket'?'<div style="font-size:10px;color:#888;">📋 Contact tickets</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
       html+=srcLbl;
       html+='</div>';
     }
@@ -1912,9 +2001,9 @@ try{(function(){
     var prenom=$('new-pech-prenom').value.trim();
     var tel=$('new-pech-tel').value.trim();
     if(!nom||!prenom){alert('Nom et prénom obligatoires');return;}
-    var newFiche={nom:nom,prenom:prenom,telephone:tel,adresse:'',codePostal:'',ville:'',urgence:{nom:'',prenom:'',telephone:''}};
-    fbDb.ref('fiches').push(newFiche).then(function(ref){
-      allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,key:ref.key});
+    var newContact={nom:nom,prenom:prenom,telephone:tel};
+    fbDb.ref('contactsTickets').push(newContact).then(function(ref){
+      allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'ticket',key:ref.key});
       selectPecheur(nom+' '+prenom,tel);
       $('add-pecheur-form').style.display='none';
       $('new-pech-nom').value='';$('new-pech-prenom').value='';$('new-pech-tel').value='';
@@ -1967,6 +2056,19 @@ try{(function(){
   $('btn-admin-check').addEventListener('click',checkAdminPwd);
   $('btn-admin-cancel2').addEventListener('click',closeAdmin);
   $('btn-reset-all').addEventListener('click',startReset);
+  $('btn-admin-contacts').addEventListener('click',showAdminContacts);
+  $('btn-contacts-back').addEventListener('click',function(){hide($('admin-step5'));show($('admin-step2'));});
+  $('btn-contacts-add').addEventListener('click',function(){
+    var nom=prompt('Nom :');
+    if(!nom)return;
+    var prenom=prompt('Prénom :');
+    if(prenom===null)return;
+    var tel=prompt('Téléphone :');
+    if(tel===null)return;
+    fbDb.ref('contactsTickets').push({nom:nom.toUpperCase().trim(),prenom:prenom.trim(),telephone:tel.trim()}).then(function(){
+      loadAdminContacts();loadPecheurs();
+    });
+  });
   $('btn-reset-cancel').addEventListener('click',function(){hide($('admin-step3'));show($('admin-step2'));});
   $('btn-reset-confirm1').addEventListener('click',confirmReset1);
   $('btn-reset-cancel2').addEventListener('click',function(){hide($('admin-step4'));show($('admin-step2'));});
