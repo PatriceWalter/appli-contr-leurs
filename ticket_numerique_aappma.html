@@ -243,7 +243,7 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   </div>
   <div class="card hidden" id="step-tel">
     <div class="card-t">📱 Coordonnées pêcheur</div>
-    <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX"></label>
+    <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX" autocomplete="tel"></label>
     <button type="button" id="btn-contacts" style="width:100%;padding:10px;background:#e3f2fd;border:1px solid #1565c0;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:#1565c0;">📇 Choisir dans mes contacts</button>
   </div>
   <div id="step-recap" class="hidden">
@@ -1757,21 +1757,26 @@ try{(function(){
   $('btn-sms').addEventListener('click',openSMS);
   $('btn-new').addEventListener('click',resetVente);
 
-  // Contact Picker API
-  function pickContact(){
-    if(!('contacts' in navigator)||!('ContactsManager' in window)){
-      alert('Non disponible sur cet appareil.\nSaisissez le numéro manuellement.');
+  // Bouton contacts
+  $('btn-contacts').addEventListener('click',function(){
+    if(window.location.protocol!=='https:'){
+      alert('📇 Pour accéder à vos contacts, publiez l\'application sur GitHub Pages (HTTPS obligatoire).');
       return;
     }
-    navigator.contacts.select(['tel'],{multiple:false}).then(function(contacts){
-      if(contacts&&contacts.length>0&&contacts[0].tel&&contacts[0].tel.length>0){
-        $('inp-tel').value=contacts[0].tel[0];
-      }
-    }).catch(function(e){
-      if(e.name!=='TypeError')console.error('Contact picker error:',e);
-    });
-  }
-  $('btn-contacts').addEventListener('click',pickContact);
+    if(navigator.contacts&&navigator.contacts.select){
+      // Chrome : accès direct aux contacts
+      navigator.contacts.select(['tel'],{multiple:false}).then(function(c){
+        if(c&&c.length>0&&c[0].tel&&c[0].tel.length>0){
+          $('inp-tel').value=c[0].tel[0].replace(/[^0-9+]/g,'');
+        }
+      }).catch(function(){});
+    } else {
+      // Firefox ou autre : ouvrir Chrome directement sans demander
+      var chromeIntent='intent://'+window.location.host+window.location.pathname+window.location.search+'#Intent;scheme=https;package=com.android.chrome;end';
+      window.location.href=chromeIntent;
+    }
+  });
+
   $('btn-preview-tk').addEventListener('click',function(){
     var tk=$('emit-ok-ticket');
     var btn=$('btn-preview-tk');
