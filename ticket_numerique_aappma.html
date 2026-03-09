@@ -1805,25 +1805,29 @@ try{(function(){
   }
 
   function loadCarpoContacts(seen){
-    // Chargement via JSONP (fiable avec Google Apps Script)
-    window._handleCarpoContacts=function(contacts){
+    // Utiliser l'API existante du Carpodrome (déjà déployée, pas de modif nécessaire)
+    window._carpoCallback=function(response){
       try{
-        for(var i=0;i<contacts.length;i++){
-          var c=contacts[i];
-          var parts=c.nom.split(' ');
-          var nom=parts[0]?parts[0].toUpperCase():'';
-          var prenom=parts.slice(1).join(' ')||'';
-          var key=nom+' '+prenom.toLowerCase();
-          if(!seen[key]&&nom){
-            seen[key]=true;
-            allPecheurs.push({nom:nom,prenom:prenom,telephone:c.tel||'',source:'carpodrome',key:''});
+        if(response&&response.reservations){
+          var resv=response.reservations;
+          for(var i=0;i<resv.length;i++){
+            var r=resv[i];
+            var nom=(r.nom||'').toUpperCase();
+            var prenom=r.prenom||'';
+            var tel=r.telephone||'';
+            if(!nom||!tel)continue;
+            var key=nom+' '+prenom.toLowerCase();
+            if(!seen[key]){
+              seen[key]=true;
+              allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'carpodrome',key:''});
+            }
           }
+          allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
         }
-        allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
       }catch(e){console.error('Carpo contacts error:',e);}
     };
     var s=document.createElement('script');
-    s.src=CARPO_SCRIPT+'?action=getContacts&callback=_handleCarpoContacts';
+    s.src=CARPO_SCRIPT+'?callback=_carpoCallback';
     s.onerror=function(){console.log('Carpo contacts: chargement échoué');};
     document.body.appendChild(s);
   }
