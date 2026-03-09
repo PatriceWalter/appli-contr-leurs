@@ -1776,17 +1776,54 @@ try{(function(){
   $('btn-sms').addEventListener('click',openSMS);
   $('btn-new').addEventListener('click',resetVente);
 
-  // ===== RECHERCHE PÊCHEURS (FIREBASE) =====
+  // ===== RECHERCHE PÊCHEURS (FIREBASE + CARPODROME) =====
   var allPecheurs=[];
-  fbDb.ref('fiches').once('value').then(function(snap){
-    var data=snap.val()||{};
+  var CARPO_SCRIPT='https://script.google.com/macros/s/AKfycbyAQDfPFUMrEQGxgY8JRufTTjYT1HknQ31WXOaid0w6Qfy9UBsSP-_UVW3t3az-F_ZZGg/exec';
+
+  function loadPecheurs(){
     allPecheurs=[];
-    for(var k in data){
-      if(data[k]&&data[k].nom){
-        allPecheurs.push({nom:data[k].nom,prenom:data[k].prenom||'',telephone:data[k].telephone||'',key:k});
+    var seen={};
+
+    // Source 1 : Fiches de renseignement (Firebase)
+    fbDb.ref('fiches').once('value').then(function(snap){
+      var data=snap.val()||{};
+      for(var k in data){
+        if(data[k]&&data[k].nom){
+          var nom=data[k].nom.toUpperCase();
+          var prenom=data[k].prenom||'';
+          var tel=data[k].telephone||'';
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'fiche',key:k});
+          }
+        }
       }
-    }
-  });
+      // Source 2 : Réservations Carpodrome (Google Sheet)
+      loadCarpoContacts(seen);
+    });
+  }
+
+  function loadCarpoContacts(seen){
+    try{
+      fetch(CARPO_SCRIPT+'?action=getContacts').then(function(r){return r.json();}).then(function(contacts){
+        for(var i=0;i<contacts.length;i++){
+          var c=contacts[i];
+          var parts=c.nom.split(' ');
+          var nom=parts[0]?parts[0].toUpperCase():'';
+          var prenom=parts.slice(1).join(' ')||'';
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]&&nom){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:c.tel||'',source:'carpodrome',key:''});
+          }
+        }
+        allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  loadPecheurs();
 
   $('inp-search-pecheur').addEventListener('input',function(){
     var q=this.value.trim().toLowerCase();
@@ -1796,7 +1833,8 @@ try{(function(){
     for(var i=0;i<allPecheurs.length;i++){
       var p=allPecheurs[i];
       var full=(p.nom+' '+p.prenom).toLowerCase();
-      if(full.indexOf(q)!==-1||p.prenom.toLowerCase().indexOf(q)!==-1){
+      var telSearch=(p.telephone||'').replace(/\s/g,'');
+      if(full.indexOf(q)!==-1||p.prenom.toLowerCase().indexOf(q)!==-1||telSearch.indexOf(q.replace(/\s/g,''))!==-1){
         matches.push(p);
       }
       if(matches.length>=8)break;
@@ -1812,6 +1850,8 @@ try{(function(){
       html+='<div class="sr-item" data-idx="'+j+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;">';
       html+='<b>'+m.nom+' '+m.prenom+'</b>';
       if(m.telephone)html+='<span style="float:right;color:#1565c0;">'+m.telephone+'</span>';
+      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
+      html+=srcLbl;
       html+='</div>';
     }
     res.innerHTML=html;
