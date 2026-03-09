@@ -1813,6 +1813,8 @@ try{(function(){
   function loadCarpoContacts(seen){
     fbCarpoDb.ref('reservations').once('value').then(function(snap){
       var dates=snap.val()||{};
+      var count=0;
+      console.log('📋 Carpodrome Firebase data:',Object.keys(dates).length,'dates trouvées');
       for(var dateKey in dates){
         var postes=dates[dateKey];
         for(var poste in postes){
@@ -1826,11 +1828,13 @@ try{(function(){
           if(!seen[key]){
             seen[key]=true;
             allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'carpodrome',key:''});
+            count++;
           }
         }
       }
+      console.log('📋 Carpodrome: '+count+' contacts ajoutés (total pêcheurs: '+allPecheurs.length+')');
       allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
-    }).catch(function(e){console.error('Carpo contacts error:',e);});
+    }).catch(function(e){console.error('❌ Carpo contacts error:',e);console.log('Vérifier les règles Firebase Carpodrome');});
   }
 
   loadPecheurs();
