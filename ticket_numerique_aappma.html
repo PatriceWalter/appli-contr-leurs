@@ -1822,7 +1822,8 @@ try{(function(){
           if(!r||!r.nom)continue;
           var nom=(r.nom||'').toUpperCase();
           var prenom=r.prenom||'';
-          var tel=r.telephone||'';
+          var tel=(r.telephone||'').toString().trim();
+          if(tel&&tel.charAt(0)!=='0'&&tel.charAt(0)!=='+'&&tel.length>=9)tel='0'+tel;
           if(!nom||!tel)continue;
           var key=nom+' '+prenom.toLowerCase();
           if(!seen[key]){
