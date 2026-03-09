@@ -1805,8 +1805,6 @@
         }
 
         function removePosition(){
-            var user=getCurrentUser();
-            if(user)dbCentral.ref('geoloc/'+user.replace(/[.#$\[\]]/g,'_')).remove();
             if(geoWatchId)clearInterval(geoWatchId);
         }
 
@@ -1831,9 +1829,10 @@
                     if(!p.lat||!p.lng)continue;
                     var ts=new Date(p.timestamp);
                     var ago=Math.round((Date.now()-ts.getTime())/60000);
-                    var agoTxt=ago<1?'À l\'instant':ago+' min';
+                    var agoTxt=ago<1?'À l\'instant':ago<60?ago+' min':ago<1440?Math.floor(ago/60)+'h'+('0'+ago%60).slice(-2):'il y a '+Math.floor(ago/1440)+' jour(s)';
                     var isOnline=ago<5;
-                    var color=isOnline?'#2e7d32':'#999';
+                    var color=isOnline?'#2e7d32':ago<60?'#ff9800':'#999';
+                    var statusTxt=isOnline?'🟢 En ligne':ago<60?'🟠 Récent':'⚫ Hors ligne';
                     // Marker
                     var icon=L.divIcon({
                         className:'',
@@ -1841,13 +1840,13 @@
                         iconAnchor:[40,20]
                     });
                     geoMarkers[k]=L.marker([p.lat,p.lng],{icon:icon}).addTo(geoMap)
-                        .bindPopup('<b>'+p.nom+'</b><br>Précision: '+p.accuracy+'m<br>'+agoTxt);
+                        .bindPopup('<b>'+p.nom+'</b><br>'+statusTxt+'<br>'+agoTxt+'<br>Précision: '+p.accuracy+'m');
                     bounds.push([p.lat,p.lng]);
                     // List
                     listHtml+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f8f9fa;border-radius:10px;margin-bottom:6px;border-left:4px solid '+color+';">';
                     listHtml+='<div style="width:10px;height:10px;border-radius:50%;background:'+color+';flex-shrink:0;'+(isOnline?'box-shadow:0 0 6px rgba(46,125,50,0.5);':'')+'"></div>';
                     listHtml+='<div style="flex:1;"><div style="font-weight:700;font-size:14px;">'+p.nom+'</div>';
-                    listHtml+='<div style="font-size:11px;color:#888;">'+agoTxt+(p.accuracy?' • ±'+p.accuracy+'m':'')+'</div></div></div>';
+                    listHtml+='<div style="font-size:11px;color:#888;">'+statusTxt+' • '+agoTxt+(p.accuracy?' • ±'+p.accuracy+'m':'')+'</div></div></div>';
                 }
                 document.getElementById('geoloc-list').innerHTML=listHtml||'<div style="text-align:center;color:#999;padding:15px;">Aucun contrôleur localisé</div>';
                 if(bounds.length>0)geoMap.fitBounds(bounds,{padding:[30,30],maxZoom:15});
