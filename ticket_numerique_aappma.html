@@ -2030,12 +2030,12 @@ try{(function(){
     var prenom=$('new-pech-prenom').value.trim();
     var tel=$('new-pech-tel').value.trim();
     if(!nom||!prenom){alert('Nom et prénom obligatoires');return;}
-    // Vérifier doublon
+    // Vérifier doublon uniquement dans les contacts tickets
     var key=nom+' '+prenom.toLowerCase();
     for(var i=0;i<allPecheurs.length;i++){
       var p=allPecheurs[i];
-      if((p.nom+' '+p.prenom.toLowerCase())===key){
-        alert('⚠️ '+nom+' '+prenom+' existe déjà dans la base !\n\nUtilisez la recherche pour le trouver.');
+      if(p.source==='ticket'&&(p.nom+' '+p.prenom.toLowerCase())===key){
+        alert('⚠️ '+nom+' '+prenom+' existe déjà dans les contacts tickets !\n\nUtilisez la recherche pour le trouver.');
         return;
       }
     }
@@ -2102,12 +2102,12 @@ try{(function(){
     var prenom=prompt('Prénom :');
     if(prenom===null)return;
     nom=nom.toUpperCase().trim();prenom=prenom.trim();
-    // Vérifier doublon
+    // Vérifier doublon uniquement dans les contacts tickets
     var key=nom+' '+prenom.toLowerCase();
     for(var i=0;i<allPecheurs.length;i++){
       var p=allPecheurs[i];
-      if((p.nom+' '+p.prenom.toLowerCase())===key){
-        alert('⚠️ '+nom+' '+prenom+' existe déjà dans la base !');
+      if(p.source==='ticket'&&(p.nom+' '+p.prenom.toLowerCase())===key){
+        alert('⚠️ '+nom+' '+prenom+' existe déjà dans les contacts tickets !');
         return;
       }
     }
