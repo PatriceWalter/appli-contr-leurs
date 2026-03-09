@@ -1776,15 +1776,21 @@ try{(function(){
   $('btn-sms').addEventListener('click',openSMS);
   $('btn-new').addEventListener('click',resetVente);
 
-  // ===== RECHERCHE PÊCHEURS (FIREBASE + CARPODROME) =====
+  // ===== RECHERCHE PÊCHEURS (FIREBASE + FIREBASE CARPODROME) =====
   var allPecheurs=[];
-  var CARPO_SCRIPT='https://script.google.com/macros/s/AKfycbyAQDfPFUMrEQGxgY8JRufTTjYT1HknQ31WXOaid0w6Qfy9UBsSP-_UVW3t3az-F_ZZGg/exec';
+
+  // Firebase Carpodrome (réservations avec numéros de téléphone)
+  var fbCarpoApp=firebase.initializeApp({
+    apiKey:"AIzaSyBdTsLvTO5n0JNpx_pZypY3LjqlEE-YBSQ",
+    databaseURL:"https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app"
+  },'carpoContacts');
+  var fbCarpoDb=firebase.database(fbCarpoApp);
 
   function loadPecheurs(){
     allPecheurs=[];
     var seen={};
 
-    // Source 1 : Fiches de renseignement (Firebase)
+    // Source 1 : Fiches de renseignement (Firebase contrôleur)
     fbDb.ref('fiches').once('value').then(function(snap){
       var data=snap.val()||{};
       for(var k in data){
@@ -1799,37 +1805,32 @@ try{(function(){
           }
         }
       }
-      // Source 2 : Réservations Carpodrome (Google Sheet)
+      // Source 2 : Réservations Carpodrome (Firebase Carpodrome)
       loadCarpoContacts(seen);
     });
   }
 
   function loadCarpoContacts(seen){
-    // Utiliser l'API existante du Carpodrome (déjà déployée, pas de modif nécessaire)
-    window._carpoCallback=function(response){
-      try{
-        if(response&&response.reservations){
-          var resv=response.reservations;
-          for(var i=0;i<resv.length;i++){
-            var r=resv[i];
-            var nom=(r.nom||'').toUpperCase();
-            var prenom=r.prenom||'';
-            var tel=r.telephone||'';
-            if(!nom||!tel)continue;
-            var key=nom+' '+prenom.toLowerCase();
-            if(!seen[key]){
-              seen[key]=true;
-              allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'carpodrome',key:''});
-            }
+    fbCarpoDb.ref('reservations').once('value').then(function(snap){
+      var dates=snap.val()||{};
+      for(var dateKey in dates){
+        var postes=dates[dateKey];
+        for(var poste in postes){
+          var r=postes[poste];
+          if(!r||!r.nom)continue;
+          var nom=(r.nom||'').toUpperCase();
+          var prenom=r.prenom||'';
+          var tel=r.telephone||'';
+          if(!nom||!tel)continue;
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'carpodrome',key:''});
           }
-          allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
         }
-      }catch(e){console.error('Carpo contacts error:',e);}
-    };
-    var s=document.createElement('script');
-    s.src=CARPO_SCRIPT+'?callback=_carpoCallback';
-    s.onerror=function(){console.log('Carpo contacts: chargement échoué');};
-    document.body.appendChild(s);
+      }
+      allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
+    }).catch(function(e){console.error('Carpo contacts error:',e);});
   }
 
   loadPecheurs();
