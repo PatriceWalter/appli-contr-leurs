@@ -1805,8 +1805,9 @@ try{(function(){
   }
 
   function loadCarpoContacts(seen){
-    try{
-      fetch(CARPO_SCRIPT+'?action=getContacts').then(function(r){return r.json();}).then(function(contacts){
+    // Chargement via JSONP (fiable avec Google Apps Script)
+    window._handleCarpoContacts=function(contacts){
+      try{
         for(var i=0;i<contacts.length;i++){
           var c=contacts[i];
           var parts=c.nom.split(' ');
@@ -1819,8 +1820,12 @@ try{(function(){
           }
         }
         allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
-      }).catch(function(){});
-    }catch(e){}
+      }catch(e){console.error('Carpo contacts error:',e);}
+    };
+    var s=document.createElement('script');
+    s.src=CARPO_SCRIPT+'?action=getContacts&callback=_handleCarpoContacts';
+    s.onerror=function(){console.log('Carpo contacts: chargement échoué');};
+    document.body.appendChild(s);
   }
 
   loadPecheurs();
