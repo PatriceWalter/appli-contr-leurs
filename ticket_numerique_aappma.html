@@ -243,8 +243,27 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   </div>
   <div class="card hidden" id="step-tel">
     <div class="card-t">📱 Coordonnées pêcheur</div>
-    <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX" autocomplete="tel"></label>
-    <button type="button" id="btn-contacts" style="width:100%;padding:10px;background:#e3f2fd;border:1px solid #1565c0;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:#1565c0;">📇 Choisir dans mes contacts</button>
+    <div style="position:relative;">
+      <input type="text" id="inp-search-pecheur" placeholder="🔍 Chercher un pêcheur (nom ou prénom)" autocomplete="off" style="width:100%;padding:12px 15px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:15px;font-family:inherit;box-sizing:border-box;">
+      <div id="search-results" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:2px solid var(--accent);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+    </div>
+    <div id="selected-pecheur" style="display:none;margin-top:8px;background:#e8f5e9;border-radius:10px;padding:10px 14px;display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div><span style="font-weight:700;color:#1a472a;" id="sel-pecheur-name"></span><br><span style="font-size:13px;color:#666;" id="sel-pecheur-tel2"></span></div>
+        <button type="button" id="btn-clear-pecheur" style="background:#ffebee;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX" autocomplete="tel"></label>
+    </div>
+    <button type="button" id="btn-add-pecheur" style="width:100%;padding:10px;background:#fff3e0;border:2px solid #ff9800;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:#e65100;margin-top:4px;">➕ Ajouter un nouveau pêcheur à la base</button>
+    <div id="add-pecheur-form" style="display:none;margin-top:8px;background:#fff8e1;border-radius:10px;padding:14px;">
+      <div style="font-size:13px;font-weight:700;color:#e65100;margin-bottom:8px;">➕ Nouveau pêcheur</div>
+      <input type="text" id="new-pech-nom" placeholder="NOM" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;text-transform:uppercase;margin-bottom:6px;box-sizing:border-box;">
+      <input type="text" id="new-pech-prenom" placeholder="Prénom" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;margin-bottom:6px;box-sizing:border-box;">
+      <input type="tel" id="new-pech-tel" placeholder="06 XX XX XX XX" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;margin-bottom:8px;box-sizing:border-box;">
+      <button type="button" id="btn-save-pecheur" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;">✅ Enregistrer et utiliser</button>
+    </div>
   </div>
   <div id="step-recap" class="hidden">
     <div class="card" style="border:2px solid #2d5a3d;"><div class="card-t">📝 Récapitulatif</div><div id="recap-txt" style="font-size:14px;line-height:1.6;"></div></div>
@@ -587,7 +606,7 @@ try{(function(){
     clearOn($('g-lieu'));
     hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
     show($('step-lieu'));
-    $('inp-tel').value='';$('inp-poste').value='';selSejourOffert=false;$('btn-sej-offert').style.background='#fff3e0';$('btn-sej-offert').style.color='#e65100';$('btn-sej-offert').textContent='🎁 Créditer des créneaux offerts';
+    $('inp-tel').value='';$('inp-poste').value='';$('inp-search-pecheur').value='';$('search-results').style.display='none';$('selected-pecheur').style.display='none';$('add-pecheur-form').style.display='none';selSejourOffert=false;$('btn-sej-offert').style.background='#fff3e0';$('btn-sej-offert').style.color='#e65100';$('btn-sej-offert').textContent='🎁 Créditer des créneaux offerts';
     $('offert-details').style.display='none';$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
     $('emit-ok-ticket').style.display='none';$('btn-preview-tk').textContent='👁️ Voir le ticket généré';$('btn-preview-tk').style.background='#f5f5f5';$('btn-preview-tk').style.color='#666';$('btn-preview-tk').style.borderColor='#ddd';
     updateVenteStats();
@@ -1757,24 +1776,96 @@ try{(function(){
   $('btn-sms').addEventListener('click',openSMS);
   $('btn-new').addEventListener('click',resetVente);
 
-  // Bouton contacts
-  $('btn-contacts').addEventListener('click',function(){
-    if(window.location.protocol!=='https:'){
-      alert('📇 Pour accéder à vos contacts, publiez l\'application sur GitHub Pages (HTTPS obligatoire).');
+  // ===== RECHERCHE PÊCHEURS (FIREBASE) =====
+  var allPecheurs=[];
+  fbDb.ref('fiches').once('value').then(function(snap){
+    var data=snap.val()||{};
+    allPecheurs=[];
+    for(var k in data){
+      if(data[k]&&data[k].nom){
+        allPecheurs.push({nom:data[k].nom,prenom:data[k].prenom||'',telephone:data[k].telephone||'',key:k});
+      }
+    }
+  });
+
+  $('inp-search-pecheur').addEventListener('input',function(){
+    var q=this.value.trim().toLowerCase();
+    var res=$('search-results');
+    if(q.length<2){res.style.display='none';return;}
+    var matches=[];
+    for(var i=0;i<allPecheurs.length;i++){
+      var p=allPecheurs[i];
+      var full=(p.nom+' '+p.prenom).toLowerCase();
+      if(full.indexOf(q)!==-1||p.prenom.toLowerCase().indexOf(q)!==-1){
+        matches.push(p);
+      }
+      if(matches.length>=8)break;
+    }
+    if(matches.length===0){
+      res.innerHTML='<div style="padding:12px;color:#999;font-size:13px;text-align:center;">Aucun pêcheur trouvé</div>';
+      res.style.display='block';
       return;
     }
-    if(navigator.contacts&&navigator.contacts.select){
-      // Chrome : accès direct aux contacts
-      navigator.contacts.select(['tel'],{multiple:false}).then(function(c){
-        if(c&&c.length>0&&c[0].tel&&c[0].tel.length>0){
-          $('inp-tel').value=c[0].tel[0].replace(/[^0-9+]/g,'');
-        }
-      }).catch(function(){});
-    } else {
-      // Firefox ou autre : ouvrir Chrome directement sans demander
-      var chromeIntent='intent://'+window.location.host+window.location.pathname+window.location.search+'#Intent;scheme=https;package=com.android.chrome;end';
-      window.location.href=chromeIntent;
+    var html='';
+    for(var j=0;j<matches.length;j++){
+      var m=matches[j];
+      html+='<div class="sr-item" data-idx="'+j+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;">';
+      html+='<b>'+m.nom+' '+m.prenom+'</b>';
+      if(m.telephone)html+='<span style="float:right;color:#1565c0;">'+m.telephone+'</span>';
+      html+='</div>';
     }
+    res.innerHTML=html;
+    res.style.display='block';
+    res.querySelectorAll('.sr-item').forEach(function(el){
+      el.addEventListener('click',function(){
+        var idx=parseInt(this.dataset.idx);
+        var p=matches[idx];
+        selectPecheur(p.nom+' '+p.prenom,p.telephone);
+      });
+    });
+  });
+
+  // Fermer résultats si clic ailleurs
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#step-tel'))$('search-results').style.display='none';
+  });
+
+  function selectPecheur(name,tel){
+    $('search-results').style.display='none';
+    $('inp-search-pecheur').value='';
+    $('sel-pecheur-name').textContent=name;
+    $('sel-pecheur-tel2').textContent=tel||'Pas de numéro';
+    $('selected-pecheur').style.display='block';
+    if(tel)$('inp-tel').value=tel;
+  }
+
+  $('btn-clear-pecheur').addEventListener('click',function(){
+    $('selected-pecheur').style.display='none';
+    $('inp-tel').value='';
+    $('sel-pecheur-name').textContent='';
+    $('sel-pecheur-tel2').textContent='';
+  });
+
+  // Ajouter nouveau pêcheur
+  $('btn-add-pecheur').addEventListener('click',function(){
+    var form=$('add-pecheur-form');
+    form.style.display=form.style.display==='none'?'block':'none';
+  });
+
+  $('btn-save-pecheur').addEventListener('click',function(){
+    var nom=$('new-pech-nom').value.trim().toUpperCase();
+    var prenom=$('new-pech-prenom').value.trim();
+    var tel=$('new-pech-tel').value.trim();
+    if(!nom||!prenom){alert('Nom et prénom obligatoires');return;}
+    var newFiche={nom:nom,prenom:prenom,telephone:tel,adresse:'',codePostal:'',ville:'',urgence:{nom:'',prenom:'',telephone:''}};
+    fbDb.ref('fiches').push(newFiche).then(function(ref){
+      allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,key:ref.key});
+      selectPecheur(nom+' '+prenom,tel);
+      $('add-pecheur-form').style.display='none';
+      $('new-pech-nom').value='';$('new-pech-prenom').value='';$('new-pech-tel').value='';
+    }).catch(function(e){
+      alert('Erreur: '+e.message);
+    });
   });
 
   $('btn-preview-tk').addEventListener('click',function(){
