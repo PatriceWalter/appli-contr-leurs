@@ -244,6 +244,7 @@ body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #1a472a 
   <div class="card hidden" id="step-tel">
     <div class="card-t">📱 Coordonnées pêcheur</div>
     <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX"></label>
+    <button type="button" id="btn-contacts" style="width:100%;padding:10px;background:#e3f2fd;border:1px solid #1565c0;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:#1565c0;">📇 Choisir dans mes contacts</button>
   </div>
   <div id="step-recap" class="hidden">
     <div class="card" style="border:2px solid #2d5a3d;"><div class="card-t">📝 Récapitulatif</div><div id="recap-txt" style="font-size:14px;line-height:1.6;"></div></div>
@@ -447,7 +448,14 @@ try{(function(){
 
   var currentVendeur='';
   var ADMIN_NAME='patrice';
+  var viewAllUsers=[];
   function isAdmin(){return currentVendeur.toLowerCase()===ADMIN_NAME;}
+  function canViewAll(){
+    if(isAdmin())return true;
+    var u=currentVendeur.toLowerCase();
+    for(var i=0;i<viewAllUsers.length;i++){if(viewAllUsers[i].toLowerCase()===u)return true;}
+    return false;
+  }
   var selLieu=null,selCarte=null,selType=null,selPrix=null,selPoste='';
   var lastTicket=null;
   var delTarget=null;
@@ -488,6 +496,12 @@ try{(function(){
   var fbDb=firebase.database(fbApp);
   var fbTickets=fbDb.ref('ticketsVente');
   var fbEnc=fbDb.ref('ticketsEncaisse');
+
+  // Charger liste utilisateurs avec accès historique complet
+  fbDb.ref('ticketViewAllUsers').once('value').then(function(snap){
+    var data=snap.val();
+    if(data){viewAllUsers=Array.isArray(data)?data:Object.values(data);}
+  }).catch(function(){});
 
   // ===== STORAGE (Firebase + cache local) =====
   var _tickets=[];
@@ -1357,7 +1371,7 @@ try{(function(){
   function refreshHisto(){
     var a=dbGet();
     var filteredA=a;
-    if(!isAdmin()){
+    if(!canViewAll()){
       filteredA=[];
       for(var i=0;i<a.length;i++){
         if((a[i].vendeur||'Inconnu').toLowerCase()===currentVendeur.toLowerCase())filteredA.push(a[i]);
@@ -1384,7 +1398,7 @@ try{(function(){
     var vendeurs={};
     for(var i=0;i<a.length;i++){
       var v=a[i].vendeur||'Inconnu';
-      if(!isAdmin()&&v.toLowerCase()!==currentVendeur.toLowerCase())continue;
+      if(!canViewAll()&&v.toLowerCase()!==currentVendeur.toLowerCase())continue;
       if(!vendeurs[v])vendeurs[v]=[];
       vendeurs[v].push(a[i]);
     }
@@ -1435,9 +1449,11 @@ try{(function(){
     $('hd-vendu').textContent=vNonEnc+'€';
     $('hd-trans').textContent=vEnc+'€';
 
-    // Action button
-    if(vNonEnc>0){
+    // Action button (admin only)
+    if(isAdmin()&&vNonEnc>0){
       $('hd-actions').innerHTML='<button class="btn btn-orange" style="width:100%;margin:12px 0;" onclick="window._openEnc(\''+vName.replace(/'/g,"\\'")+'\')" >💰 Transmettre '+vNonEnc+'€ au trésorier</button>';
+    } else if(vNonEnc>0&&!isAdmin()){
+      $('hd-actions').innerHTML='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:600;">💰 '+vNonEnc+'€ à transmettre au trésorier</div>';
     } else {
       $('hd-actions').innerHTML='<div style="text-align:center;padding:8px;color:var(--green);font-weight:600;">✅ Tout transmis au trésorier</div>';
     }
@@ -1477,7 +1493,7 @@ try{(function(){
       html+='<div class="hinfo">'+(LIEUX[t.lieu]||t.lieu)+' • '+typeLbl+' • '+t.prix+'€ • '+d.toLocaleDateString('fr-FR')+'</div>';
       html+='</div>';
       html+='<div class="hright">'+badge;
-      html+='<button class="hdel" onclick="window._openDel(\''+t.id+'\')">🗑️</button>';
+      if(isAdmin())html+='<button class="hdel" onclick="window._openDel(\''+t.id+'\')">🗑️</button>';
       html+='</div></div>';
       html+='<div class="hitem-actions">';
       if(t.tel)html+='<button class="hact hact-sms" onclick="window._resendSMS(\''+t.id+'\')">📱 Renvoyer SMS</button>';
@@ -1740,6 +1756,22 @@ try{(function(){
   $('btn-emit').addEventListener('click',emitTicket);
   $('btn-sms').addEventListener('click',openSMS);
   $('btn-new').addEventListener('click',resetVente);
+
+  // Contact Picker API
+  function pickContact(){
+    if(!('contacts' in navigator)||!('ContactsManager' in window)){
+      alert('Non disponible sur cet appareil.\nSaisissez le numéro manuellement.');
+      return;
+    }
+    navigator.contacts.select(['tel'],{multiple:false}).then(function(contacts){
+      if(contacts&&contacts.length>0&&contacts[0].tel&&contacts[0].tel.length>0){
+        $('inp-tel').value=contacts[0].tel[0];
+      }
+    }).catch(function(e){
+      if(e.name!=='TypeError')console.error('Contact picker error:',e);
+    });
+  }
+  $('btn-contacts').addEventListener('click',pickContact);
   $('btn-preview-tk').addEventListener('click',function(){
     var tk=$('emit-ok-ticket');
     var btn=$('btn-preview-tk');

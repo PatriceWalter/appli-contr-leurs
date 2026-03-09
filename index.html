@@ -426,6 +426,10 @@
                 <div id="adminTabTickets" class="admin-tab-content">
                     <p style="color:#666;margin-bottom:15px;">Cochez les contrôleurs autorisés à utiliser le module de vente de tickets numériques.</p>
                     <div id="ticketModuleUsersList" class="tk-user-list"></div>
+                    <div style="margin-top:20px;padding-top:15px;border-top:2px dashed #ddd;">
+                        <p style="color:#666;margin-bottom:15px;">👁️ Cochez les contrôleurs autorisés à voir <b>l'historique de ventes de tout le monde</b> (lecture seule, pas de suppression).</p>
+                        <div id="ticketViewAllList" class="tk-user-list"></div>
+                    </div>
                 </div>
             </div></div>
         </div>
@@ -855,7 +859,7 @@
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
         let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
         let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [];
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
 
         // BLOCAGE BOUTON RETOUR ANDROID
@@ -1037,7 +1041,7 @@
 
         function loadAdminFiches() { const container = document.getElementById('adminFichesList'); const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + item.fiche.nom + ' ' + item.fiche.prenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>').join(''); }
 
-        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); } }
+        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); renderTicketViewAllSettings(); } }
 
         async function loadCartesValides() { 
             const container = document.getElementById('cartesValidesList'); 
@@ -1147,6 +1151,7 @@
             loadReglementsFromFirebase();
             updateHistoriqueCounts();
             await loadTicketModuleUsers(); 
+            await loadTicketViewAllUsers();
         }
         
         async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
@@ -1688,6 +1693,58 @@
             await saveTicketModuleUsers();
             renderTicketModuleSettings();
             showAlert(enabled ? '✅ Module tickets activé pour ' + nom : '❌ Module tickets désactivé pour ' + nom, enabled ? 'success' : 'warning');
+        }
+
+        // ===== ACCÈS HISTORIQUE COMPLET TICKETS =====
+        async function loadTicketViewAllUsers() {
+            try {
+                const snap = await dbCentral.ref('ticketViewAllUsers').once('value');
+                if (snap.val()) {
+                    ticketViewAllUsers = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val());
+                } else {
+                    ticketViewAllUsers = ['Patrice'];
+                    await dbCentral.ref('ticketViewAllUsers').set(ticketViewAllUsers);
+                }
+            } catch(e) {
+                ticketViewAllUsers = ['Patrice'];
+            }
+        }
+
+        async function saveTicketViewAllUsers() {
+            await dbCentral.ref('ticketViewAllUsers').set(ticketViewAllUsers);
+        }
+
+        function renderTicketViewAllSettings() {
+            const container = document.getElementById('ticketViewAllList');
+            if (allControleurs.length === 0) {
+                container.innerHTML = '<div class="no-results">Aucun contrôleur configuré</div>';
+                return;
+            }
+            container.innerHTML = allControleurs.map(function(nom, idx) {
+                var checked = ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
+                var cls = checked ? ' enabled' : '';
+                var safeId = 'tkview_' + idx;
+                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + '><label for="' + safeId + '">👁️ ' + nom + '</label></div>';
+            }).join('');
+            container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+                cb.addEventListener('change', function() {
+                    var nom = allControleurs[parseInt(this.dataset.idx)];
+                    toggleTicketViewAll(nom, this.checked);
+                });
+            });
+        }
+
+        async function toggleTicketViewAll(nom, enabled) {
+            if (enabled) {
+                if (!ticketViewAllUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
+                    ticketViewAllUsers.push(nom);
+                }
+            } else {
+                ticketViewAllUsers = ticketViewAllUsers.filter(u => u.toLowerCase() !== nom.toLowerCase());
+            }
+            await saveTicketViewAllUsers();
+            renderTicketViewAllSettings();
+            showAlert(enabled ? '👁️ Historique complet activé pour ' + nom : '❌ Historique complet désactivé pour ' + nom, enabled ? 'success' : 'warning');
         }
 
         // Ouverture du module tickets
