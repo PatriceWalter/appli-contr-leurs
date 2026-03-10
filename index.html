@@ -287,17 +287,37 @@
                 <div id="onlineUsers" style="margin-top:8px; font-size:12px; opacity:0.85; background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:8px; display:none;"></div>
             </div>
             <div class="menu-cards">
-                <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="menuRenseignement"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Renseignement</div><div class="menu-card-desc">Fiches et recherche de pêcheurs</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="infractions"><div class="menu-card-icon">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
+                <div class="menu-card" data-page="menuInfractions"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Infractions</div><div class="menu-card-desc">Avertissements, exclusions et historique</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card menu-card-ticket" id="ticketMenuCard"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);">🎫</div><div class="menu-card-content"><div class="menu-card-title">Vente de Tickets</div><div class="menu-card-desc">Module de vente de tickets numériques</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="travail"><div class="menu-card-icon" style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);">🛠️</div><div class="menu-card-content"><div class="menu-card-title">Journées de Travail</div><div class="menu-card-desc">Listing des pêcheurs bénévoles</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
         
+        <!-- PAGE SOUS-MENU RENSEIGNEMENT -->
+        <div class="page" id="pageMenuRenseignement">
+            <div class="page-content">
+                <h1 class="page-title">📋 Renseignement</h1>
+                <div class="menu-cards">
+                    <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📝</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
+                    <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE SOUS-MENU INFRACTIONS -->
+        <div class="page" id="pageMenuInfractions">
+            <div class="page-content">
+                <h1 class="page-title">⚠️ Infractions</h1>
+                <div class="menu-cards">
+                    <div class="menu-card" data-page="infractions"><div class="menu-card-icon">➕</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
+                    <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
+                </div>
+            </div>
+        </div>
+
         <div class="page" id="pageFiche">
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">📋 Fiche de Renseignement</h1>
