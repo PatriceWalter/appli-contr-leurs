@@ -236,8 +236,6 @@
         .menu-card-ticket { display: none; }
         .menu-card-ticket.visible { display: flex; }
     </style>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="alert" id="alert"></div>
@@ -296,7 +294,6 @@
                 <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card menu-card-ticket" id="ticketMenuCard"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);">🎫</div><div class="menu-card-content"><div class="menu-card-title">Vente de Tickets</div><div class="menu-card-desc">Module de vente de tickets numériques</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card" data-page="travail"><div class="menu-card-icon" style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);">🛠️</div><div class="menu-card-content"><div class="menu-card-title">Journées de Travail</div><div class="menu-card-desc">Listing des pêcheurs bénévoles</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="geoloc" id="geolocMenuCard" style="display:none;"><div class="menu-card-icon" style="background: linear-gradient(135deg, #00838f 0%, #26c6da 100%);">📍</div><div class="menu-card-content"><div class="menu-card-title">Localisation</div><div class="menu-card-desc">Position des contrôleurs en temps réel</div></div><div class="menu-card-arrow">›</div></div>
                 <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
             </div>
         </div>
@@ -510,14 +507,7 @@
         </div>
     </div>
 
-    <!-- PAGE GÉOLOCALISATION -->
-    <div class="page" id="pageGeoloc">
-        <div class="page-content"><div class="page-card">
-            <h1 class="page-title">📍 Localisation Contrôleurs</h1>
-            <div id="geoloc-map" style="width:100%;height:450px;border-radius:15px;overflow:hidden;border:2px solid #e0e0e0;"></div>
-            <div id="geoloc-list" style="margin-top:15px;"></div>
-        </div></div>
-    </div>
+        </div>
     
     <div class="modal-overlay" id="breitmattModal">
         <div class="modal-content" style="max-width:400px;">
@@ -895,14 +885,13 @@
             if (id === 'recherche') renderPecheursAlphabetique();
             if (id === 'historique') renderHistorique();
             if (id === 'travail') renderTravail();
-            if (id === 'geoloc') { setTimeout(function(){loadGeolocMap();},400); }
         }
         
         document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
         document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
 
-        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); initGeoloc(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
@@ -924,7 +913,7 @@
                 document.getElementById('currentUserDisplay').textContent = '👤 ' + selectedUser;
                 setUserPresence(selectedUser);
                 listenOnlineUsers();
-                loadAllData(); initGeoloc();
+                loadAllData();
             } else { 
                 document.getElementById('loginCode').classList.add('error'); 
                 document.getElementById('loginError').textContent = '❌ Code incorrect';
@@ -933,7 +922,7 @@
             } 
         }
         
-        document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); removePosition(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
         
         // ===== SYSTÈME DE PRÉSENCE =====
         let pendingUserChange = null;
@@ -1764,94 +1753,6 @@
         document.getElementById('ticketMenuCard').addEventListener('click', function() {
             window.location.href = 'ticket_numerique_aappma.html';
         });
-
-        // ===== GÉOLOCALISATION CONTRÔLEURS =====
-        var geoMap=null;var geoMarkers={};var geoWatchId=null;
-
-        function initGeoloc(){
-            // Afficher le menu uniquement pour Patrice
-            var user=getCurrentUser().toLowerCase();
-            if(user.indexOf('patrice')!==-1){
-                document.getElementById('geolocMenuCard').style.display='';
-            }
-            // Tous les contrôleurs partagent leur position
-            startGeoTracking();
-        }
-
-        function startGeoTracking(){
-            if(!navigator.geolocation)return;
-            var user=getCurrentUser();
-            if(!user)return;
-            // Envoi immédiat
-            navigator.geolocation.getCurrentPosition(function(pos){
-                sendPosition(user,pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy);
-            },function(){},{ enableHighAccuracy:true,timeout:10000 });
-            // Mise à jour toutes les 2 minutes
-            geoWatchId=setInterval(function(){
-                navigator.geolocation.getCurrentPosition(function(pos){
-                    sendPosition(user,pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy);
-                },function(){},{ enableHighAccuracy:true,timeout:10000 });
-            },120000);
-        }
-
-        function sendPosition(user,lat,lng,accuracy){
-            dbCentral.ref('geoloc/'+user.replace(/[.#$\[\]]/g,'_')).set({
-                nom:user,
-                lat:lat,
-                lng:lng,
-                accuracy:Math.round(accuracy),
-                timestamp:new Date().toISOString()
-            });
-        }
-
-        function removePosition(){
-            if(geoWatchId)clearInterval(geoWatchId);
-        }
-
-        function loadGeolocMap(){
-            if(!geoMap){
-                geoMap=L.map('geoloc-map').setView([48.88,7.65],13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-                    attribution:'© OpenStreetMap',
-                    maxZoom:18
-                }).addTo(geoMap);
-                setTimeout(function(){geoMap.invalidateSize();},300);
-            }
-            // Écouter les positions en temps réel
-            dbCentral.ref('geoloc').on('value',function(snap){
-                var data=snap.val()||{};
-                // Clear old markers
-                for(var mk in geoMarkers){geoMap.removeLayer(geoMarkers[mk]);delete geoMarkers[mk];}
-                var listHtml='';
-                var bounds=[];
-                for(var k in data){
-                    var p=data[k];
-                    if(!p.lat||!p.lng)continue;
-                    var ts=new Date(p.timestamp);
-                    var ago=Math.round((Date.now()-ts.getTime())/60000);
-                    var agoTxt=ago<1?'À l\'instant':ago<60?ago+' min':ago<1440?Math.floor(ago/60)+'h'+('0'+ago%60).slice(-2):'il y a '+Math.floor(ago/1440)+' jour(s)';
-                    var isOnline=ago<5;
-                    var color=isOnline?'#2e7d32':ago<60?'#ff9800':'#999';
-                    var statusTxt=isOnline?'🟢 En ligne':ago<60?'🟠 Récent':'⚫ Hors ligne';
-                    // Marker
-                    var icon=L.divIcon({
-                        className:'',
-                        html:'<div style="background:'+color+';color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);border:2px solid #fff;">'+p.nom+'</div>',
-                        iconAnchor:[40,20]
-                    });
-                    geoMarkers[k]=L.marker([p.lat,p.lng],{icon:icon}).addTo(geoMap)
-                        .bindPopup('<b>'+p.nom+'</b><br>'+statusTxt+'<br>'+agoTxt+'<br>Précision: '+p.accuracy+'m');
-                    bounds.push([p.lat,p.lng]);
-                    // List
-                    listHtml+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f8f9fa;border-radius:10px;margin-bottom:6px;border-left:4px solid '+color+';">';
-                    listHtml+='<div style="width:10px;height:10px;border-radius:50%;background:'+color+';flex-shrink:0;'+(isOnline?'box-shadow:0 0 6px rgba(46,125,50,0.5);':'')+'"></div>';
-                    listHtml+='<div style="flex:1;"><div style="font-weight:700;font-size:14px;">'+p.nom+'</div>';
-                    listHtml+='<div style="font-size:11px;color:#888;">'+statusTxt+' • '+agoTxt+(p.accuracy?' • ±'+p.accuracy+'m':'')+'</div></div></div>';
-                }
-                document.getElementById('geoloc-list').innerHTML=listHtml||'<div style="text-align:center;color:#999;padding:15px;">Aucun contrôleur localisé</div>';
-                if(bounds.length>0)geoMap.fitBounds(bounds,{padding:[30,30],maxZoom:15});
-            });
-        }
 
         // ===== JOURNÉES DE TRAVAIL =====
         let travMoisCourant = new Date();

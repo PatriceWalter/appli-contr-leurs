@@ -1891,6 +1891,7 @@ try{(function(){
         }
       }
       var added=0;
+      // Migration source 1 : Fiches de renseignement
       for(var k in fichesData){
         var f=fichesData[k];
         if(!f||!f.nom)continue;
@@ -1904,7 +1905,29 @@ try{(function(){
           added++;
         }
       }
-      if(added>0)console.log('📋 Migration: '+added+' contacts copiés vers contactsTickets');
+      // Migration source 2 : Réservations Carpodrome
+      fbCarpoDb.ref('reservations').once('value').then(function(cSnap){
+        var dates=cSnap.val()||{};
+        for(var dateKey in dates){
+          var postes=dates[dateKey];
+          for(var poste in postes){
+            var r=postes[poste];
+            if(!r||!r.nom)continue;
+            var nom=(r.nom||'').toUpperCase();
+            var prenom=r.prenom||'';
+            var tel=(r.telephone||'').toString().trim();
+            if(tel&&tel.charAt(0)!=='0'&&tel.charAt(0)!=='+'&&tel.length>=9)tel='0'+tel;
+            if(!nom||!tel)continue;
+            var key=nom+' '+prenom.toLowerCase();
+            if(!existingKeys[key]){
+              existingKeys[key]=true;
+              fbDb.ref('contactsTickets').push({nom:nom,prenom:prenom,telephone:tel});
+              added++;
+            }
+          }
+        }
+        if(added>0)console.log('📋 Migration: '+added+' contacts copiés vers contactsTickets');
+      }).catch(function(){});
     });
   }
 
