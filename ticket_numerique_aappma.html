@@ -487,6 +487,7 @@ try{(function(){
     return false;
   }
   var selLieu=null,selCarte=null,selType=null,selPrix=null,selPoste='';
+  var selPecheurNom='',selPecheurPrenom='';
   var lastTicket=null;
   var delTarget=null;
   var encTarget=null;
@@ -613,6 +614,7 @@ try{(function(){
 
   function resetVente(){
     selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;selPoste='';
+    selPecheurNom='';selPecheurPrenom='';
     selSejour=false;selSejourOffert=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
     clearOn($('g-lieu'));
     hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
@@ -815,8 +817,8 @@ try{(function(){
     if(selSejourFinType==='soir')totalJ++;
     else if(selSejourFinType==='demi')totalD++;
 
-    // Mise à jour max offerts avec cohérence
-    // Règle : offJ + ceil(offD/2) <= totalJ (demi et journées puisent dans le même stock)
+    // Mise à jour max offerts
+    // Chaque type est indépendant : max offert = total de ce type dans le séjour
     if(tit){
       $('inp-off-journee').parentElement.style.display='none';
       $('inp-off-demi').parentElement.style.display='none';
@@ -826,16 +828,8 @@ try{(function(){
       $('inp-off-journee').parentElement.style.display='';
       $('inp-off-demi').parentElement.style.display='';
       $('inp-off-nuit').parentElement.style.display='';
-      // Lire valeurs actuelles
-      var curJ=parseInt($('inp-off-journee').value)||0;
-      var curD=parseInt($('inp-off-demi').value)||0;
-      // Max journées = totalJ - journées déjà prises par les demi (2 demi = 1 journée)
-      var joursParDemi=Math.ceil(curD/2);
-      var maxJ=Math.max(0,totalJ-joursParDemi);
-      // Max demi = (totalJ - journées offertes) × 2
-      var maxD=Math.max(0,(totalJ-curJ)*2);
-      $('inp-off-journee').max=maxJ;$('lbl-max-j').textContent='max '+maxJ;
-      $('inp-off-demi').max=maxD;$('lbl-max-d').textContent='max '+maxD;
+      $('inp-off-journee').max=totalJ;$('lbl-max-j').textContent='max '+totalJ;
+      $('inp-off-demi').max=totalD;$('lbl-max-d').textContent='max '+totalD;
     }
     $('inp-off-nuit').max=totalN;$('lbl-max-n').textContent='max '+totalN;
     clampOffert($('inp-off-journee'));clampOffert($('inp-off-demi'));clampOffert($('inp-off-nuit'));
@@ -958,6 +952,8 @@ try{(function(){
       prix:selPrix,
       carte:selCarte||'na',
       poste:poste,
+      nom:selPecheurNom,
+      prenom:selPecheurPrenom,
       date:now.toISOString(),
       dateDebut:selDate,
       dateFin:selSejour?selDateFin:selDate,
@@ -1288,13 +1284,37 @@ try{(function(){
   }
 
   function checkTicketDate(stored){
-    var today=new Date();
-    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    var now=new Date();
+    var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    var isNuit=stored.type&&(stored.type.indexOf('nuit')!==-1);
+    var heure=now.getHours();
+
+    // Pour les tickets de nuit : si on est entre minuit et 8h, la veille est aussi valable
+    var hierStr='';
+    if(isNuit&&heure<8){
+      var hier=new Date(now);
+      hier.setDate(hier.getDate()-1);
+      hierStr=hier.getFullYear()+'-'+String(hier.getMonth()+1).padStart(2,'0')+'-'+String(hier.getDate()).padStart(2,'0');
+    }
+
     if(stored.dateDebut&&stored.dateFin&&stored.dateDebut!==stored.dateFin){
+      // Multi-jours
+      var finEffective=stored.dateFin;
+      if(isNuit&&heure<8){
+        // Ajouter 1 jour à la fin pour couvrir la dernière nuit
+        var dFinPlus=new Date(stored.dateFin);
+        dFinPlus.setDate(dFinPlus.getDate()+1);
+        finEffective=dFinPlus.getFullYear()+'-'+String(dFinPlus.getMonth()+1).padStart(2,'0')+'-'+String(dFinPlus.getDate()).padStart(2,'0');
+      }
       if(todayStr<stored.dateDebut)return{ok:false,msg:'Ticket pas encore valide (début : '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+')'};
-      if(todayStr>stored.dateFin)return{ok:false,msg:'Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')'};
+      if(todayStr>finEffective)return{ok:false,msg:'Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')'};
     } else if(stored.dateDebut){
-      if(todayStr!==stored.dateDebut)return{ok:false,msg:'Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement'};
+      // Ticket 1 jour
+      var dateOk=(todayStr===stored.dateDebut);
+      if(!dateOk&&isNuit&&hierStr){
+        dateOk=(hierStr===stored.dateDebut);
+      }
+      if(!dateOk)return{ok:false,msg:'Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement'+(isNuit?' (nuit valable jusqu\'à 8h le lendemain)':'')};
     }
     return{ok:true};
   }
@@ -1340,6 +1360,53 @@ try{(function(){
     var tk=dbFind(tkId);
     if(!tk)return;
 
+    // Vérification nom vs réservation avant de valider
+    if(valid&&tk.poste&&tk.dateDebut&&(tk.lieu==='carpodrome'||tk.lieu==='hardt')){
+      var fbRef=tk.lieu==='carpodrome'?fbCarpoDb:fbHardtDb;
+      var dateKey=tk.dateDebut;
+      var posteNum=tk.poste.toString();
+      fbRef.ref('reservations/'+dateKey+'/'+posteNum).once('value').then(function(snap){
+        var resa=snap.val();
+        if(resa&&resa.nom){
+          var nomResa=resa.nom.toUpperCase();
+          var prenomResa=resa.prenom||'';
+          var nomTicket=(tk.nom||'').toUpperCase();
+          if(nomTicket&&nomResa!==nomTicket){
+            // Nom différent → demander si binôme
+            hide($('scan-btns'));
+            var binomeDiv=document.createElement('div');
+            binomeDiv.style.cssText='text-align:center;padding:14px;background:#fff3e0;border-radius:10px;margin-top:10px;';
+            binomeDiv.innerHTML='<div style="font-size:15px;font-weight:700;color:#e65100;margin-bottom:10px;">⚠️ Le ticket est au nom de <b>'+nomTicket+'</b></div>'+
+              '<div style="font-size:14px;margin-bottom:14px;">La réservation poste '+posteNum+' est au nom de <b>'+nomResa+' '+prenomResa+'</b></div>'+
+              '<div style="font-size:16px;font-weight:700;margin-bottom:12px;">Binôme de '+nomResa+' '+prenomResa+' ?</div>'+
+              '<div style="display:flex;gap:10px;justify-content:center;">'+
+                '<button id="btn-binome-oui" style="padding:12px 30px;background:#2e7d32;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">✅ Oui</button>'+
+                '<button id="btn-binome-non" style="padding:12px 30px;background:#c62828;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">❌ Non</button>'+
+              '</div>';
+            rbox.parentElement.appendChild(binomeDiv);
+            document.getElementById('btn-binome-oui').addEventListener('click',function(){
+              binomeDiv.remove();
+              doValidateCtrl(tk,tkId,valid,nomResa+' '+prenomResa);
+            });
+            document.getElementById('btn-binome-non').addEventListener('click',function(){
+              binomeDiv.innerHTML='<div style="font-size:15px;font-weight:700;color:#c62828;">🚫 CONTRÔLE BLOQUÉ<br><br>Le pêcheur n\'est pas le titulaire de la réservation ni son binôme.</div>';
+            });
+          } else {
+            doValidateCtrl(tk,tkId,valid,null);
+          }
+        } else {
+          doValidateCtrl(tk,tkId,valid,null);
+        }
+      }).catch(function(){
+        doValidateCtrl(tk,tkId,valid,null);
+      });
+    } else {
+      doValidateCtrl(tk,tkId,valid,null);
+    }
+  }
+
+  function doValidateCtrl(tk,tkId,valid,binomeDe){
+    var rbox=$('scan-rbox');
     var now=new Date();
     var h=now.getHours();
     var creneau=(h>=18||h<8)?'nuit':'jour';
@@ -1367,7 +1434,8 @@ try{(function(){
     var color=valid?'var(--green)':'var(--red)';
     var creneauLbl=creneau==='nuit'?'🌙 Créneau nuit':'☀️ Créneau journée';
     var text=valid?'✅ Contrôle VALIDÉ ('+creneauLbl+')':'❌ Contrôle NON VALIDÉ ('+creneauLbl+')';
-    rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>';
+    var binomeInfo=binomeDe?'<div style="text-align:center;padding:8px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:8px;margin-top:6px;">👥 Binôme de '+binomeDe+'</div>':'';
+    rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>'+binomeInfo;
 
     // Notification Telegram
     if(valid){
@@ -1387,13 +1455,69 @@ try{(function(){
       if(tk.offNuits>0)offParts.push(tk.offNuits+' nuit'+(tk.offNuits>1?'s':''));
       var offertTg=(tk.type&&tk.type.indexOf('_off')!==-1)?'\n🎁 TICKET OFFERT (Journée de travail)':offParts.length>0?'\n🎁 Offert : '+offParts.join(', '):'';
       var prixTg=tk.prix===0?'Gratuit':tk.prix+'€';
+      var binomeTg=binomeDe?'\n👥 Binôme de '+binomeDe:'';
       var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*'+multiInfo+'\n'+
         '📅 '+dateFr+' à '+heure+'\n'+
         '📍 '+(LIEUX[tk.lieu]||tk.lieu)+posteTg+'\n'+
-        '🎟️ '+tk.id+offertTg+'\n'+
+        '🎟️ '+tk.id+offertTg+binomeTg+'\n'+
         '⏱️ '+(typeLbl||'Multi-jours')+' — '+prixTg+validite+'\n'+
         '👮 Contrôleur : '+(currentVendeur||'Inconnu');
       envoyerTelegram(msgTg);
+
+      // Synchro automatique avec Firebase Carpodrome
+      if(tk.lieu==='carpodrome'&&tk.poste&&tk.dateDebut){
+        try{
+          var dateKey=tk.dateDebut;
+          var posteNum=tk.poste.toString();
+          fbCarpoDb.ref('reservations/'+dateKey+'/'+posteNum).once('value').then(function(snap){
+            var resa=snap.val();
+            if(resa){
+              fbCarpoDb.ref('reservations/'+dateKey+'/'+posteNum).update({
+                controle:'Oui',
+                heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+                controleur:currentVendeur||'Inconnu'
+              });
+              console.log('✅ Carpodrome synchro: contrôle marqué pour poste '+posteNum+' le '+dateKey);
+            }
+          });
+        }catch(e){console.error('Carpo sync error:',e);}
+      }
+
+      // Synchro automatique avec Firebase Hardt
+      if(tk.lieu==='hardt'&&tk.poste&&tk.dateDebut){
+        try{
+          var dateKeyH=tk.dateDebut;
+          var posteNumH=tk.poste.toString();
+          fbHardtDb.ref('reservations/'+dateKeyH+'/'+posteNumH).once('value').then(function(snap){
+            var resa=snap.val();
+            if(resa){
+              fbHardtDb.ref('reservations/'+dateKeyH+'/'+posteNumH).update({
+                controlled:true,
+                heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+                controleur:currentVendeur||'Inconnu'
+              });
+              console.log('✅ Hardt synchro: contrôle marqué pour poste '+posteNumH+' le '+dateKeyH);
+            }
+          });
+        }catch(e){console.error('Hardt sync error:',e);}
+      }
+
+      // 2ème contrôle par un autre contrôleur
+      if(tk.controleur&&tk.controleur!==(currentVendeur||'Inconnu')&&tk.controlResult===true){
+        var heure2=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        var dateFr2=now.toLocaleDateString('fr-FR');
+        var typeLbl2='';
+        for(var j=0;j<TARIFS_FLAT.length;j++){if(TARIFS_FLAT[j][0]===tk.type)typeLbl2=TARIFS_FLAT[j][1];}
+        var posteTg2=tk.poste?'\n📍 Poste n°'+tk.poste:'';
+        var msgTg2='🔄 *2ème CONTRÔLE TICKET*\n'+
+          '📅 '+dateFr2+' à '+heure2+'\n'+
+          '📍 '+(LIEUX[tk.lieu]||tk.lieu)+posteTg2+'\n'+
+          '🎟️ '+tk.id+'\n'+
+          '⏱️ '+(typeLbl2||'Multi-jours')+' — '+(tk.prix===0?'Gratuit':tk.prix+'€')+'\n'+
+          '👮 1er contrôle : '+tk.controleur+'\n'+
+          '👮 2ème contrôle : '+(currentVendeur||'Inconnu');
+        envoyerTelegram(msgTg2);
+      }
     }
   }
 
@@ -1790,6 +1914,10 @@ try{(function(){
   // Admin: gear visibility
   if(!isAdmin()){hide($('btn-gear'));}
 
+  // Auto-navigation depuis appli contrôleur
+  var urlPage=new URLSearchParams(window.location.search).get('page');
+  if(urlPage==='scan'){goPage('pg-scan');}
+
   // Bloquer touche retour navigateur
   history.pushState({page:'tickets'},'','');
   window.addEventListener('popstate',function(e){
@@ -1854,6 +1982,12 @@ try{(function(){
     databaseURL:"https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app"
   },'carpoContacts');
   var fbCarpoDb=firebase.database(fbCarpoApp);
+
+  var fbHardtApp=firebase.initializeApp({
+    apiKey:"AIzaSyADXcfDOBLHC7pdlGedDW-4wAHKyPHW19I",
+    databaseURL:"https://resahardt-default-rtdb.europe-west1.firebasedatabase.app"
+  },'hardtContacts');
+  var fbHardtDb=firebase.database(fbHardtApp);
 
   function loadPecheurs(){
     allPecheurs=[];
@@ -1955,7 +2089,6 @@ try{(function(){
     fbCarpoDb.ref('reservations').once('value').then(function(snap){
       var dates=snap.val()||{};
       var count=0;
-      console.log('📋 Carpodrome Firebase data:',Object.keys(dates).length,'dates trouvées');
       for(var dateKey in dates){
         var postes=dates[dateKey];
         for(var poste in postes){
@@ -1974,9 +2107,35 @@ try{(function(){
           }
         }
       }
-      console.log('📋 Carpodrome: '+count+' contacts ajoutés (total pêcheurs: '+allPecheurs.length+')');
+      console.log('📋 Carpodrome: '+count+' contacts ajoutés');
+      // Source 4 : Réservations Hardt
+      loadHardtContacts(seen);
+    }).catch(function(e){console.error('❌ Carpo contacts error:',e);loadHardtContacts(seen);});
+  }
+
+  function loadHardtContacts(seen){
+    fbHardtDb.ref('reservations').once('value').then(function(snap){
+      var dates=snap.val()||{};
+      var count=0;
+      for(var dateKey in dates){
+        var postes=dates[dateKey];
+        for(var poste in postes){
+          var r=postes[poste];
+          if(!r||!r.nom)continue;
+          var nom=(r.nom||'').toUpperCase();
+          var prenom=r.prenom||'';
+          if(!nom)continue;
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:'',source:'hardt',key:''});
+            count++;
+          }
+        }
+      }
+      console.log('📋 Hardt: '+count+' contacts ajoutés (total: '+allPecheurs.length+')');
       allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
-    }).catch(function(e){console.error('❌ Carpo contacts error:',e);console.log('Vérifier les règles Firebase Carpodrome');});
+    }).catch(function(e){console.error('❌ Hardt contacts error:',e);allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});});
   }
 
   loadPecheurs();
@@ -2006,7 +2165,7 @@ try{(function(){
       html+='<div class="sr-item" data-idx="'+j+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;">';
       html+='<b>'+m.nom+' '+m.prenom+'</b>';
       if(m.telephone)html+='<span style="float:right;color:#1565c0;">'+m.telephone+'</span>';
-      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':m.source==='ticket'?'<div style="font-size:10px;color:#888;">📋 Contact tickets</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
+      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':m.source==='hardt'?'<div style="font-size:10px;color:#888;">📋 Réservation Hardt</div>':m.source==='ticket'?'<div style="font-size:10px;color:#888;">📋 Contact tickets</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
       html+=srcLbl;
       html+='</div>';
     }
@@ -2033,6 +2192,9 @@ try{(function(){
     $('sel-pecheur-tel2').textContent=tel||'Pas de numéro';
     $('selected-pecheur').style.display='block';
     if(tel)$('inp-tel').value=tel;
+    var parts=name.split(' ');
+    selPecheurNom=parts[0]||'';
+    selPecheurPrenom=parts.slice(1).join(' ')||'';
   }
 
   $('btn-clear-pecheur').addEventListener('click',function(){
@@ -2040,6 +2202,7 @@ try{(function(){
     $('inp-tel').value='';
     $('sel-pecheur-name').textContent='';
     $('sel-pecheur-tel2').textContent='';
+    selPecheurNom='';selPecheurPrenom='';
   });
 
   // Ajouter nouveau pêcheur
