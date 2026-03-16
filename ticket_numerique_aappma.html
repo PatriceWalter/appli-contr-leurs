@@ -1987,8 +1987,17 @@ try{(function(){
   $('go-histo').addEventListener('click',function(){goPage('pg-histo');});
 
   // Bottom nav bar
-  $('tkNavMenu').addEventListener('click',function(){tkPageHistory=[];goPage('pg-menu');});
+  $('tkNavMenu').addEventListener('click',function(){
+    if(fromControleur){window.location.href=document.referrer||'index.html';return;}
+    tkPageHistory=[];goPage('pg-menu');
+  });
   $('tkNavBack').addEventListener('click',function(){
+    var curPg=document.querySelector('.pg.on');
+    if(curPg&&curPg.id==='pg-scan'&&fromControleur){
+      stopScanner();
+      window.location.href=document.referrer||'index.html';
+      return;
+    }
     var prev=tkPageHistory.pop();
     if(prev){
       var pages=document.querySelectorAll('.pg');
