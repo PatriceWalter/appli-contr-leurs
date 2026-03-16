@@ -7,32 +7,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%); min-height: 100vh; color: #333; }
-        .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .login-container { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; width: 100%; }
-        .login-logo { width: 150px; height: 150px; margin: 0 auto 20px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 70px; }
+        body { font-family: 'Roboto', sans-serif; background: #f0f2e9; min-height: 100vh; color: #333; }
+        .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #f0f2e9; }
+        .login-container { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 2px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; border: 1px solid #d5d8ce; }
+        .login-logo { width: 120px; height: 120px; margin: 0 auto 20px; background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
         .login-title { color: #1a472a; font-size: 24px; margin-bottom: 10px; font-weight: 700; }
         .login-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
-        .login-input { width: 100%; padding: 15px 20px; font-size: 24px; text-align: center; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 20px; letter-spacing: 10px; font-weight: bold; }
+        .login-input { width: 100%; padding: 15px 20px; font-size: 24px; text-align: center; border: 2px solid #d5d8ce; border-radius: 10px; margin-bottom: 20px; letter-spacing: 10px; font-weight: bold; background: #fff; }
         .login-input::placeholder { font-size: 14px; letter-spacing: normal; font-weight: normal; color: #999; }
-        .login-input:focus { outline: none; border-color: #2d5a3d; }
+        .login-input:focus { outline: none; border-color: #1565c0; }
         .login-input.error { border-color: #e74c3c; animation: shake 0.5s; }
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
         .login-error { color: #e74c3c; margin-top: 15px; display: none; font-weight: 500; }
         .app-container { display: none; min-height: 100vh; }
-        .nav-buttons { display: none; position: fixed; top: 15px; left: 15px; z-index: 1000; gap: 10px; }
+        .nav-buttons { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 10px 16px 20px; justify-content: center; gap: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
         .nav-buttons.visible { display: flex; }
-        .nav-btn { background: white; border: none; padding: 10px 16px; border-radius: 25px; font-size: 16px; font-weight: 600; color: #1a472a; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 6px; }
+        .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        .page { display: none; min-height: 100vh; padding: 20px; padding-top: 80px; }
+        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 80px; background: #f0f2e9; }
         .page.active { display: block; }
-        .menu-page { padding-top: 20px; }
-        .menu-header { text-align: center; color: white; margin-bottom: 30px; padding: 20px; }
-        .menu-logo { width: 120px; height: 120px; margin: 0 auto 15px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
-        .menu-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .menu-subtitle { font-size: 14px; opacity: 0.9; }
-        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
+        .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+        .page-topbar-icon { font-size: 20px; }
+        .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+        .sub-menu-page { padding: 0 !important; padding-bottom: 80px !important; }
+        .menu-page { padding-top: 0 !important; background: #f0f2e9 !important; }
+        .menu-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+        .menu-topbar-left { display: flex; align-items: center; gap: 10px; }
+        .menu-topbar-logo { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .menu-topbar-title { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+        .menu-topbar-sub { font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 600; letter-spacing: 1px; }
+        .menu-sync { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border-radius: 20px; padding: 4px 10px; }
+        .menu-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.6); }
+        .menu-sync-text { font-size: 11px; font-weight: 600; color: #81c784; }
+        .menu-welcome { margin: 16px 16px 0; background: #e8a838; border-radius: 16px; padding: 22px 20px; position: relative; overflow: hidden; }
+        .menu-welcome-bg1 { position: absolute; top: -25px; right: -25px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+        .menu-welcome-bg2 { position: absolute; bottom: -15px; left: 50px; width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+        .menu-welcome-name { font-size: 22px; font-weight: 800; color: #1a472a; position: relative; }
+        .menu-welcome-date { font-size: 14px; color: #2d5a3d; margin-top: 6px; font-weight: 500; position: relative; }
+        .menu-welcome-season { margin-top: 10px; font-size: 12px; color: #1a472a; font-weight: 600; opacity: 0.7; position: relative; }
+        .menu-online { margin-top: 8px; font-size: 12px; color: #2d5a3d; background: rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 8px; position: relative; }
+        .menu-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 16px 0; }
+        .menu-stat { background: #fff; border-radius: 12px; padding: 10px 6px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .menu-stat-label { font-size: 10px; color: #888; font-weight: 700; margin-bottom: 3px; letter-spacing: 0.5px; }
+        .menu-stat-value { font-size: 20px; font-weight: 800; }
+        .menu-section-title { margin: 22px 16px 10px; display: flex; align-items: center; gap: 8px; }
+        .menu-section-bar { width: 4px; height: 18px; border-radius: 2px; background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); }
+        .menu-section-title span { font-size: 15px; font-weight: 700; color: #1a472a; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 16px 0; }
+        .menu-grid-card { background: #fff; border: 2px solid #d5d8ce; border-radius: 14px; padding: 18px 12px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .menu-grid-card:active { border-color: #e8a838; box-shadow: 0 4px 12px rgba(232,168,56,0.2); }
+        .menu-grid-icon { width: 44px; height: 44px; border-radius: 12px; background: #f0f2e9; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 10px; }
+        .menu-grid-title { font-size: 14px; font-weight: 700; color: #1a472a; margin-bottom: 3px; }
+        .menu-grid-desc { font-size: 11px; color: #888; line-height: 1.4; }
+        .menu-bottom-btn { margin: 10px 16px 0; background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(26,71,42,0.2); }
+        .menu-bottom-btn span { font-size: 15px; font-weight: 700; color: #fff; }
+        .menu-bottom-btn.logout { background: #fff; border: 2px solid #e0e0e0; box-shadow: none; }
+        .menu-bottom-btn.logout span { color: #999; }
+        .menu-header { display: none; }
+        #pageMenu > .menu-cards { display: none; }
         .menu-card { background: white; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 20px; }
         .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .menu-card-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
@@ -40,14 +73,14 @@
         .menu-card-title { font-size: 18px; font-weight: 700; color: #1a472a; margin-bottom: 5px; }
         .menu-card-desc { font-size: 13px; color: #666; }
         .menu-card-arrow { font-size: 24px; color: #ccc; }
-        .logout-card { margin-top: 30px; background: #f8f9fa; border: 2px dashed #ddd; }
-        .logout-card .menu-card-icon { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
-        .page-content { max-width: 800px; margin: 0 auto; }
-        .page-card { background: white; border-radius: 15px; padding: 25px; }
-        .page-title { font-size: 22px; color: #1a472a; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; }
+        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
+        .page-content { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .page-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #d5d8ce; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .page-title { display: none; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #d5d8ce; border-radius: 10px; font-size: 16px; background: #fff; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #1565c0; outline: none; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2d5a3d; }
         .form-group.required label::after { content: " *"; color: #e74c3c; }
         .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
@@ -64,8 +97,8 @@
         .reglement-read-btn:disabled { background: #ccc; cursor: not-allowed; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.visible { display: flex; }
-        .modal-content { background: white; border-radius: 15px; max-width: 900px; max-height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; }
-        .modal-header { background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-content { background: white; border-radius: 14px; max-width: 900px; max-height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #d5d8ce; }
+        .modal-header { background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { font-size: 18px; }
         .modal-close { background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
         .modal-body { padding: 25px; overflow-y: auto; flex: 1; font-size: 15px; line-height: 1.9; }
@@ -129,7 +162,7 @@
         .infraction-motif { color: #555; font-size: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ddd; }
         .no-results { text-align: center; color: #666; padding: 40px; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn-primary { background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
@@ -190,14 +223,14 @@
         .envoyer-status.success { display: block; background: #e8f5e9; color: #2e7d32; border: 2px solid #4caf50; }
         .envoyer-status.error { display: block; background: #ffebee; color: #c62828; border: 2px solid #f44336; }
         .envoyer-status.loading { display: block; background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
-        .controle-buttons { display: flex; flex-direction: column; gap: 20px; }
-        .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 30px; border: none; border-radius: 16px; cursor: pointer; transition: all 0.3s; }
-        .controle-big-btn.hardt { background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%); color: white; }
-        .controle-big-btn.carpodrome { background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white; }
-        .controle-big-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-        .controle-big-icon { font-size: 50px; margin-bottom: 10px; }
-        .controle-big-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
-        .controle-big-desc { font-size: 14px; opacity: 0.9; }
+        .controle-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border: 2px solid #d5d8ce; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; min-height: 120px; justify-content: center; }
+        .controle-big-btn.hardt { border-color: #d5d8ce; background: #fff; color: #333; }
+        .controle-big-btn.carpodrome { border-color: #d5d8ce; background: #fff; color: #333; }
+        .controle-big-btn:active { border-color: #e8a838; box-shadow: 0 4px 12px rgba(232,168,56,0.2); }
+        .controle-big-icon { font-size: 36px; margin-bottom: 8px; }
+        .controle-big-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1a472a; }
+        .controle-big-desc { font-size: 12px; color: #888; }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .admin-tab { flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
         .admin-tab:hover { border-color: #2d5a3d; }
@@ -233,8 +266,8 @@
         .tk-user-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
         .tk-user-item label { flex: 1; font-weight: 600; color: #333; cursor: pointer; }
         .tk-user-item.enabled label { color: #1a472a; }
-        .menu-card-ticket { display: none; }
-        .menu-card-ticket.visible { display: flex; }
+        .menu-card-ticket { display: none !important; }
+        .menu-card-ticket.visible { display: flex !important; }
     </style>
 </head>
 <body>
@@ -276,49 +309,80 @@
             <button class="nav-btn" id="homeBtn">🏠 Accueil</button>
             <button class="nav-btn" id="backBtn">← Retour</button>
         </div>
-        <button class="admin-btn" id="adminBtn">⚙️</button>
+        <button class="admin-btn" id="adminBtn" style="display:none;">⚙️</button>
         
         <div class="page menu-page active" id="pageMenu">
-            <div class="menu-header">
-                <div class="menu-logo">👮</div>
-                <h1 class="menu-title">Contrôleur / Garde de Pêche</h1>
-                <p class="menu-subtitle">AAPPMA Gundershoffen</p>
-                <p id="currentUserDisplay" style="margin-top:10px; font-size:13px; opacity:0.9; cursor:pointer;" onclick="promptChangeUser()"></p>
-                <div id="onlineUsers" style="margin-top:8px; font-size:12px; opacity:0.85; background:rgba(255,255,255,0.15); padding:8px 12px; border-radius:8px; display:none;"></div>
+            <!-- Top Bar -->
+            <div class="menu-topbar">
+                <div class="menu-topbar-left">
+                    <div class="menu-topbar-logo">🐟</div>
+                    <div>
+                        <div class="menu-topbar-title">CONTRÔLEUR / GARDE PÊCHE</div>
+                        <div class="menu-topbar-sub">AAPPMA GUNDERSHOFFEN</div>
+                    </div>
+                </div>
+                <div class="menu-sync"><div class="menu-sync-dot"></div><span class="menu-sync-text">Synchronisé</span></div>
             </div>
-            <div class="menu-cards">
-                <div class="menu-card" data-page="menuRenseignement"><div class="menu-card-icon">📋</div><div class="menu-card-content"><div class="menu-card-title">Renseignement</div><div class="menu-card-desc">Fiches et recherche de pêcheurs</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="menuControle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle</div><div class="menu-card-desc">Vérification tickets et contrôle du jour</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="menuInfractions"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">⚠️</div><div class="menu-card-content"><div class="menu-card-title">Infractions</div><div class="menu-card-desc">Avertissements, exclusions et historique</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card menu-card-ticket" id="ticketMenuCard"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #2196f3 100%);">🎫</div><div class="menu-card-content"><div class="menu-card-title">Vente de Tickets</div><div class="menu-card-desc">Module de vente de tickets numériques</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card" data-page="travail"><div class="menu-card-icon" style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);">🛠️</div><div class="menu-card-content"><div class="menu-card-title">Journées de Travail</div><div class="menu-card-desc">Listing des pêcheurs bénévoles</div></div><div class="menu-card-arrow">›</div></div>
-                <div class="menu-card logout-card" id="logoutBtn"><div class="menu-card-icon">🔒</div><div class="menu-card-content"><div class="menu-card-title">Déconnexion</div><div class="menu-card-desc">Quitter l'application</div></div><div class="menu-card-arrow">›</div></div>
+            <!-- Welcome Card -->
+            <div class="menu-welcome">
+                <div class="menu-welcome-bg1"></div>
+                <div class="menu-welcome-bg2"></div>
+                <div class="menu-welcome-name" id="menuWelcomeName">Bienvenue</div>
+                <div class="menu-welcome-date" id="menuWelcomeDate"></div>
+                <div class="menu-welcome-season">Saison 2026</div>
+                <div id="onlineUsers" class="menu-online" style="display:none;"></div>
             </div>
+            <p id="currentUserDisplay" style="display:none;" onclick="promptChangeUser()"></p>
+            <!-- Stats Row -->
+            <div class="menu-stats">
+                <div class="menu-stat"><div class="menu-stat-label">🎫 TICKETS</div><div class="menu-stat-value" id="statTickets" style="color:#e8a838;">0</div></div>
+                <div class="menu-stat"><div class="menu-stat-label">👥 EN LIGNE</div><div class="menu-stat-value" id="statOnline" style="color:#2e7d32;">0</div></div>
+                <div class="menu-stat"><div class="menu-stat-label">📋 FICHES</div><div class="menu-stat-value" id="statFiches" style="color:#1565c0;">0</div></div>
+                <div class="menu-stat"><div class="menu-stat-label">⚠️ ALERTES</div><div class="menu-stat-value" id="statAlertes" style="color:#c62828;">0</div></div>
+            </div>
+            <!-- Section Title -->
+            <div class="menu-section-title"><div class="menu-section-bar"></div><span>Modules</span></div>
+            <!-- Modules Grid -->
+            <div class="menu-grid">
+                <div class="menu-grid-card" data-page="menuRenseignement"><div class="menu-grid-icon">📋</div><div class="menu-grid-title">Renseignement</div><div class="menu-grid-desc">Fiches et recherche pêcheurs</div></div>
+                <div class="menu-grid-card" data-page="menuControle"><div class="menu-grid-icon">🎯</div><div class="menu-grid-title">Contrôle</div><div class="menu-grid-desc">Vérification QR et contrôle du jour</div></div>
+                <div class="menu-grid-card" data-page="menuInfractions"><div class="menu-grid-icon">⚠️</div><div class="menu-grid-title">Infractions</div><div class="menu-grid-desc">Avertissements et exclusions</div></div>
+                <div class="menu-grid-card menu-card-ticket" id="ticketMenuCard"><div class="menu-grid-icon">🎫</div><div class="menu-grid-title">Tickets</div><div class="menu-grid-desc">Vente de tickets numériques</div></div>
+            </div>
+            <!-- Bottom Buttons -->
+            <div class="menu-bottom-btn" id="btnMenuTravail" data-page="travail"><span>🛠️ Journées de Travail</span></div>
+            <div class="menu-bottom-btn" id="btnMenuAdmin" style="display:none;background:#e8a838;"><span style="color:#1a472a;">⚙️ Administration</span></div>
+            <div class="menu-bottom-btn logout" id="logoutBtn"><span>🔒 Déconnexion</span></div>
         </div>
         
         <!-- PAGE SOUS-MENU RENSEIGNEMENT -->
-        <div class="page" id="pageMenuRenseignement">
-            <div class="page-content">
-                <h1 class="page-title">📋 Renseignement</h1>
-                <div class="menu-cards">
-                    <div class="menu-card" data-page="fiche"><div class="menu-card-icon">📝</div><div class="menu-card-content"><div class="menu-card-title">Fiche de Renseignement</div><div class="menu-card-desc">Enregistrer un nouveau pêcheur</div></div><div class="menu-card-arrow">›</div></div>
-                    <div class="menu-card" data-page="recherche"><div class="menu-card-icon">🔍</div><div class="menu-card-content"><div class="menu-card-title">Rechercher un Pêcheur</div><div class="menu-card-desc">Consulter les fiches et infractions</div></div><div class="menu-card-arrow">›</div></div>
+        <div class="page sub-menu-page" id="pageMenuRenseignement">
+            <div class="menu-topbar">
+                <div class="menu-topbar-left"><div class="menu-topbar-logo">📋</div><div><div class="menu-topbar-title">RENSEIGNEMENT</div><div class="menu-topbar-sub">FICHES ET RECHERCHE</div></div></div>
+            </div>
+            <div style="padding:16px;background:#f0f2e9;min-height:calc(100vh - 52px);">
+                <div class="menu-grid" style="margin:0;">
+                    <div class="menu-grid-card" data-page="fiche"><div class="menu-grid-icon">📝</div><div class="menu-grid-title">Fiche</div><div class="menu-grid-desc">Enregistrer un nouveau pêcheur</div></div>
+                    <div class="menu-grid-card" data-page="recherche"><div class="menu-grid-icon">🔍</div><div class="menu-grid-title">Rechercher</div><div class="menu-grid-desc">Consulter fiches et infractions</div></div>
                 </div>
             </div>
         </div>
 
         <!-- PAGE SOUS-MENU INFRACTIONS -->
-        <div class="page" id="pageMenuInfractions">
-            <div class="page-content">
-                <h1 class="page-title">⚠️ Infractions</h1>
-                <div class="menu-cards">
-                    <div class="menu-card" data-page="infractions"><div class="menu-card-icon">➕</div><div class="menu-card-content"><div class="menu-card-title">Ajouter une Infraction</div><div class="menu-card-desc">Avertissement ou exclusion</div></div><div class="menu-card-arrow">›</div></div>
-                    <div class="menu-card" data-page="historique"><div class="menu-card-icon" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">📜</div><div class="menu-card-content"><div class="menu-card-title">Historique Infractions</div><div class="menu-card-desc">Avertissements et exclusions</div></div><div class="menu-card-arrow">›</div></div>
+        <div class="page sub-menu-page" id="pageMenuInfractions">
+            <div class="menu-topbar">
+                <div class="menu-topbar-left"><div class="menu-topbar-logo">⚠️</div><div><div class="menu-topbar-title">INFRACTIONS</div><div class="menu-topbar-sub">AVERTISSEMENTS ET EXCLUSIONS</div></div></div>
+            </div>
+            <div style="padding:16px;background:#f0f2e9;min-height:calc(100vh - 52px);">
+                <div class="menu-grid" style="margin:0;">
+                    <div class="menu-grid-card" data-page="infractions"><div class="menu-grid-icon">➕</div><div class="menu-grid-title">Ajouter</div><div class="menu-grid-desc">Avertissement ou exclusion</div></div>
+                    <div class="menu-grid-card" data-page="historique"><div class="menu-grid-icon">📜</div><div class="menu-grid-title">Historique</div><div class="menu-grid-desc">Avertissements et exclusions</div></div>
                 </div>
             </div>
         </div>
 
         <div class="page" id="pageFiche">
+            <div class="page-topbar"><span class="page-topbar-icon">📋</span><span class="page-topbar-title">FICHE DE RENSEIGNEMENT</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">📋 Fiche de Renseignement</h1>
                 <div class="fiche-tabs">
@@ -388,6 +452,7 @@
         </div>
         
         <div class="page" id="pageRecherche">
+            <div class="page-topbar"><span class="page-topbar-icon">🔍</span><span class="page-topbar-title">RECHERCHER UN PÊCHEUR</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">🔍 Rechercher un Pêcheur</h1>
                 <div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="Tapez un nom ou prénom..."><span class="search-icon">🔍</span></div>
@@ -397,6 +462,7 @@
         </div>
         
         <div class="page" id="pageDetail">
+            <div class="page-topbar"><span class="page-topbar-icon">👤</span><span class="page-topbar-title">DÉTAIL PÊCHEUR</span></div>
             <div class="page-content"><div class="page-card">
                 <div class="detail-header"><div class="detail-name" id="detailName"></div><span class="detail-status" id="detailStatus"></span></div>
                 <div class="detail-info" id="detailInfo"></div>
@@ -405,6 +471,7 @@
         </div>
         
         <div class="page" id="pageInfractions">
+            <div class="page-topbar"><span class="page-topbar-icon">⚠️</span><span class="page-topbar-title">AJOUTER UNE INFRACTION</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">⚠️ Ajouter une Infraction</h1>
                 <div class="reglement-info">
@@ -424,6 +491,7 @@
         </div>
         
         <div class="page" id="pageAdmin">
+            <div class="page-topbar"><span class="page-topbar-icon">⚙️</span><span class="page-topbar-title">ADMINISTRATION</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">⚙️ Administration</h1>
                 <div class="admin-tabs">
@@ -455,6 +523,7 @@
         </div>
         
         <div class="page" id="pageEditFiche">
+            <div class="page-topbar"><span class="page-topbar-icon">✏️</span><span class="page-topbar-title">MODIFIER LA FICHE</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">✏️ Modifier la Fiche</h1>
                 <form id="editFicheForm">
@@ -475,6 +544,7 @@
         </div>
         
         <div class="page" id="pageHistorique">
+            <div class="page-topbar"><span class="page-topbar-icon">📜</span><span class="page-topbar-title">HISTORIQUE INFRACTIONS</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">📜 Historique des Infractions</h1>
                 <div class="tabs-container">
@@ -487,17 +557,20 @@
         </div>
         
         <!-- PAGE SOUS-MENU CONTRÔLE -->
-        <div class="page" id="pageMenuControle">
-            <div class="page-content">
-                <h1 class="page-title">🎯 Contrôle</h1>
-                <div class="menu-cards">
-                    <div class="menu-card" id="goVerifQR"><div class="menu-card-icon" style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);">🔍</div><div class="menu-card-content"><div class="menu-card-title">Vérification QR Code</div><div class="menu-card-desc">Scanner ou saisir un ticket numérique</div></div><div class="menu-card-arrow">›</div></div>
-                    <div class="menu-card" data-page="controle"><div class="menu-card-icon" style="background: linear-gradient(135deg, #1565c0 0%, #7b1fa2 100%);">🎯</div><div class="menu-card-content"><div class="menu-card-title">Contrôle du Jour</div><div class="menu-card-desc">Réservations et infractions Hardt / Carpodrome</div></div><div class="menu-card-arrow">›</div></div>
+        <div class="page sub-menu-page" id="pageMenuControle">
+            <div class="menu-topbar">
+                <div class="menu-topbar-left"><div class="menu-topbar-logo">🎯</div><div><div class="menu-topbar-title">CONTRÔLE</div><div class="menu-topbar-sub">VÉRIFICATION ET CONTRÔLE DU JOUR</div></div></div>
+            </div>
+            <div style="padding:16px;background:#f0f2e9;min-height:calc(100vh - 52px);">
+                <div class="menu-grid" style="margin:0;">
+                    <div class="menu-grid-card" id="goVerifQR"><div class="menu-grid-icon">🔍</div><div class="menu-grid-title">Vérification QR</div><div class="menu-grid-desc">Scanner ou saisir un ticket numérique</div></div>
+                    <div class="menu-grid-card" data-page="controle"><div class="menu-grid-icon">🎯</div><div class="menu-grid-title">Contrôle du Jour</div><div class="menu-grid-desc">Réservations Hardt / Carpodrome</div></div>
                 </div>
             </div>
         </div>
 
         <div class="page" id="pageControle">
+            <div class="page-topbar"><span class="page-topbar-icon">🎯</span><span class="page-topbar-title">CONTRÔLE DU JOUR</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">🎯 Contrôle du Jour</h1>
                 <div class="controle-buttons">
@@ -506,7 +579,7 @@
                 </div>
                 <div style="margin-top:25px; padding-top:20px; border-top:2px dashed #ddd;">
                     <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                        <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐠</span><span class="controle-big-title" style="color:white;">Breitmatt</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
+                        <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="flex:1; min-width:200px;"><span class="controle-big-icon">🐠</span><span class="controle-big-title">Breitmatt</span><span class="controle-big-desc">Signaler un contrôle</span></button>
                         <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
                     </div>
                 </div>
@@ -514,12 +587,13 @@
         </div>
 
         <div class="page" id="pageTravail">
+            <div class="page-topbar"><span class="page-topbar-icon">🛠️</span><span class="page-topbar-title">JOURNÉES DE TRAVAIL</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">🛠️ Journées de Travail</h1>
                 <div id="travail-mois-nav" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">
-                    <button class="btn-nav-mois" id="travPrev" style="background:#1a472a;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">‹</button>
+                    <button class="btn-nav-mois" id="travPrev" style="background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">‹</button>
                     <span id="travMoisLabel" style="font-size:16px;font-weight:700;color:#1a472a;min-width:160px;text-align:center;"></span>
-                    <button class="btn-nav-mois" id="travNext" style="background:#1a472a;color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">›</button>
+                    <button class="btn-nav-mois" id="travNext" style="background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;">›</button>
                 </div>
                 <div id="travail-add-zone" style="display:none;margin-bottom:20px;">
                     <div style="background:#f1f8e9;border-radius:12px;padding:16px;">
@@ -920,9 +994,11 @@
         
         document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
-        document.querySelectorAll('.menu-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
+        document.querySelectorAll('.menu-card[data-page], .menu-grid-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
+        document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
+        document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
-        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { document.getElementById('currentUserDisplay').textContent = '👤 ' + savedUser; setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { updateMenuUser(savedUser); setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
@@ -941,7 +1017,7 @@
                 document.getElementById('appContainer').style.display = 'block'; 
                 sessionStorage.setItem('logged', 'true'); 
                 setupBackButtonBlock(); 
-                document.getElementById('currentUserDisplay').textContent = '👤 ' + selectedUser;
+                updateMenuUser(selectedUser);
                 setUserPresence(selectedUser);
                 listenOnlineUsers();
                 loadAllData();
@@ -986,7 +1062,7 @@
                 document.getElementById('loginUser').value = pendingUserChange;
                 if (sessionStorage.getItem('logged') === 'true') {
                     setUserPresence(pendingUserChange);
-                    document.getElementById('currentUserDisplay').textContent = '👤 ' + pendingUserChange;
+                    updateMenuUser(pendingUserChange);
                 }
                 pendingUserChange = null;
             }
@@ -1004,7 +1080,7 @@
                     removeUserPresence();
                     localStorage.setItem('controleurUser', newUser);
                     setUserPresence(newUser);
-                    document.getElementById('currentUserDisplay').textContent = '👤 ' + newUser;
+                    updateMenuUser(newUser);
                     showAlert('✅ Utilisateur changé: ' + newUser, 'success');
                 }
             } else if (newUser && !allControleurs.includes(newUser)) {
@@ -1036,6 +1112,7 @@
                 const currentUser = localStorage.getItem('controleurUser');
                 if (!data) { container.style.display = 'none'; return; }
                 const users = Object.keys(data).filter(u => data[u] && data[u].online);
+                var so = document.getElementById('statOnline'); if (so) so.textContent = users.length;
                 const otherUsers = users.filter(u => u !== currentUser);
                 if (otherUsers.length > 0) {
                     container.innerHTML = '👥 Également connecté(s): ' + otherUsers.map(u => '<strong>' + u + '</strong>').join(', ');
@@ -1047,6 +1124,32 @@
         }
         
         function getCurrentUser() { return localStorage.getItem('controleurUser') || ''; }
+        function updateMenuUser(userName) {
+            document.getElementById('currentUserDisplay').textContent = '👤 ' + userName;
+            var el = document.getElementById('menuWelcomeName');
+            if (el) el.textContent = 'Bienvenue ' + userName;
+            var dateEl = document.getElementById('menuWelcomeDate');
+            if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            var adminBtn = document.getElementById('btnMenuAdmin');
+            if (adminBtn) adminBtn.style.display = (userName.toLowerCase().indexOf('patrice') !== -1) ? '' : 'none';
+        }
+        function updateMenuStats() {
+            try {
+                var sf = document.getElementById('statFiches');
+                if (sf) sf.textContent = allFiches ? allFiches.length : '0';
+                var sa = document.getElementById('statAlertes');
+                if (sa) {
+                    var nbAvert = (allInfractions && allInfractions.avertissements) ? allInfractions.avertissements.length : 0;
+                    var nbBannis = (allInfractions && allInfractions.bannis) ? allInfractions.bannis.length : 0;
+                    sa.textContent = nbAvert + nbBannis;
+                }
+                dbCentral.ref('ticketsVente').once('value').then(function(snap){
+                    var d = snap.val()||{};
+                    var st = document.getElementById('statTickets');
+                    if(st) st.textContent = Object.keys(d).length;
+                });
+            } catch(e) {}
+        }
         
         function openHardt() {
             const user = getCurrentUser();
@@ -1185,6 +1288,7 @@
             updateHistoriqueCounts();
             await loadTicketModuleUsers(); 
             await loadTicketViewAllUsers();
+            updateMenuStats();
         }
         
         async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
