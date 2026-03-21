@@ -1022,6 +1022,44 @@ try{(function(){
     dbAdd(tk);
     lastTicket=tk;
 
+    // === AUTO-SYNCHRO RÉSERVATION À LA VENTE ===
+    if(tk.poste&&tk.dateDebut&&(tk.lieu==='carpodrome'||tk.lieu==='hardt')){
+      var syncRef=tk.lieu==='carpodrome'?fbCarpoDb:fbHardtDb;
+      var syncDate=tk.dateDebut;
+      var syncPoste=tk.poste.toString();
+      var syncNom=(tk.nom||'').toUpperCase();
+      syncRef.ref('reservations/'+syncDate+'/'+syncPoste).once('value').then(function(snap){
+        var resa=snap.val();
+        if(resa&&resa.nom){
+          var resaNom=resa.nom.toUpperCase();
+          if(resaNom===syncNom||!syncNom){
+            // Match pêcheur+poste+date → auto-contrôle
+            var nowSync=new Date();
+            syncRef.ref('reservations/'+syncDate+'/'+syncPoste).update({
+              controlled:true,
+              heure:nowSync.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+              controleur:currentVendeur||'Inconnu'
+            });
+            console.log('✅ Auto-synchro vente: contrôle marqué pour '+tk.lieu+' poste '+syncPoste+' le '+syncDate);
+            // Telegram notification
+            var hSync=nowSync.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+            var dSync=nowSync.toLocaleDateString('fr-FR');
+            var lieuSync=LIEUX[tk.lieu]||tk.lieu;
+            var typSync='';for(var t2=0;t2<TARIFS_FLAT.length;t2++){if(TARIFS_FLAT[t2][0]===tk.type)typSync=TARIFS_FLAT[t2][1];}
+            var msgSync='🎫 *TICKET NUMÉRIQUE VENDU*\n'+
+              '📅 '+dSync+' à '+hSync+'\n'+
+              '📍 '+lieuSync+' — Poste n°'+syncPoste+'\n'+
+              '🎟️ '+tk.id+'\n'+
+              '👤 '+syncNom+' '+(tk.prenom||'')+'\n'+
+              '⏱️ '+(typSync||'Ticket')+' — '+(tk.prix===0?'Gratuit':tk.prix+'€')+'\n'+
+              '✅ Contrôle auto depuis réservation\n'+
+              '👮 Vendeur : '+(currentVendeur||'Inconnu');
+            envoyerTelegram(msgSync);
+          }
+        }
+      }).catch(function(e){console.error('Synchro vente error:',e);});
+    }
+
     $('emit-ok-id').textContent='Ticket '+tk.id;
     renderTicket(tk,'emit-ok-ticket');
     hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
@@ -1517,7 +1555,7 @@ try{(function(){
             var resa=snap.val();
             if(resa){
               fbCarpoDb.ref('reservations/'+dateKey+'/'+posteNum).update({
-                controle:'Oui',
+                controlled:true,
                 heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
                 controleur:currentVendeur||'Inconnu'
               });
@@ -1979,7 +2017,7 @@ try{(function(){
 
   // Bottom nav bar
   $('tkNavMenu').addEventListener('click',function(){
-    tkPageHistory=[];goPage('pg-menu');
+    window.location.href='index.html';
   });
   $('tkNavBack').addEventListener('click',function(){
     var curPg=document.querySelector('.pg.on');
@@ -1988,12 +2026,8 @@ try{(function(){
       window.location.href=document.referrer||'index.html';
       return;
     }
-    // Si on est sur le scan et vient du contrôleur, retour contrôleur
-    if(curPg&&curPg.id==='pg-scan'&&fromControleur){
-      stopScanner();
-      window.location.href=document.referrer||'index.html';
-      return;
-    }
+    // Si scan, stopper le scanner
+    if(curPg&&curPg.id==='pg-scan'){stopScanner();}
     var prev=tkPageHistory.pop();
     if(prev){
       var pages=document.querySelectorAll('.pg');
