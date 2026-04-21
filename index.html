@@ -618,7 +618,7 @@
                         <div class="form-group required"><label>Téléphone</label><input type="text" id="hardtTel"></div>
                     </div>
                     
-                    <button class="btn btn-primary" id="btnEnvoyerHardtControle" style="margin-top: 15px; background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); border: none;">✅ Contrôler</button>
+                    <button class="btn btn-primary" id="btnEnvoyerHardtControle" style="margin-top: 15px; margin-bottom: 50px; background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); border: none;">✅ Contrôler</button>
                 </div>
             </div></div>
         </div>
@@ -1210,6 +1210,7 @@
             const poste = document.getElementById('hardtSelectedPosteNum').textContent;
             const nom = document.getElementById('hardtNom').value.trim().toUpperCase();
             const prenom = document.getElementById('hardtPrenom').value.trim();
+            const tel = document.getElementById('hardtTel').value.trim();
             
             if (!nom || !prenom) {
                 showAlert('❌ Veuillez renseigner le nom et le prénom du pêcheur', 'error');
@@ -1220,7 +1221,8 @@
             const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             
-            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n🎣 Poste n°' + poste + '\n👤 Pêcheur : ' + nom + ' ' + prenom + '\n👮 Contrôleur : ' + controleur + '\n🕐 Heure : ' + heure;
+            const telStr = tel ? '\n📞 Tél : ' + tel : '';
+            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n🎣 Poste n°' + poste + '\n👤 Pêcheur : ' + nom + ' ' + prenom + telStr + '\n👮 Contrôleur : ' + controleur + '\n🕐 Heure : ' + heure;
             
             showAlert('⏳ Envoi en cours...', 'info');
             this.disabled = true;
