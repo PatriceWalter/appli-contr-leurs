@@ -259,6 +259,12 @@
         .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
         @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
+        /* --- Module Contrôle Hardt Postes --- */
+        .hardt-postes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .hardt-poste-btn { background: #fff; border: 2px solid #d5d8ce; border-radius: 10px; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; color: #1a472a; cursor: pointer; transition: all 0.2s; }
+        .hardt-poste-btn:active, .hardt-poste-btn.selected { border-color: #7b1fa2; background: #f3e5f5; color: #7b1fa2; box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2); }
+        @media (max-width: 500px) { .hardt-postes-grid { grid-template-columns: repeat(3, 1fr); } }
+
         /* --- Module Tickets (ajout) --- */
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
@@ -287,7 +293,6 @@
         </div>
     </div>
     
-    <!-- Modal changement utilisateur -->
     <div class="modal-overlay" id="changeUserModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background:#ff9800;"><h2>👤 Changement d'utilisateur</h2><button class="modal-close" onclick="cancelChangeUser()">&times;</button></div>
@@ -312,7 +317,6 @@
         <button class="admin-btn" id="adminBtn" style="display:none;">⚙️</button>
         
         <div class="page menu-page active" id="pageMenu">
-            <!-- Top Bar -->
             <div class="menu-topbar">
                 <div class="menu-topbar-left">
                     <div class="menu-topbar-logo">🐟</div>
@@ -323,7 +327,6 @@
                 </div>
                 <div class="menu-sync"><div class="menu-sync-dot"></div><span class="menu-sync-text">Synchronisé</span></div>
             </div>
-            <!-- Welcome Card -->
             <div class="menu-welcome">
                 <div class="menu-welcome-bg1"></div>
                 <div class="menu-welcome-bg2"></div>
@@ -333,29 +336,24 @@
                 <div id="onlineUsers" class="menu-online" style="display:none;"></div>
             </div>
             <p id="currentUserDisplay" style="display:none;" onclick="promptChangeUser()"></p>
-            <!-- Stats Row -->
             <div class="menu-stats">
                 <div class="menu-stat"><div class="menu-stat-label">🎫 TICKETS</div><div class="menu-stat-value" id="statTickets" style="color:#e8a838;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">👥 EN LIGNE</div><div class="menu-stat-value" id="statOnline" style="color:#2e7d32;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">📋 FICHES</div><div class="menu-stat-value" id="statFiches" style="color:#1565c0;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">⚠️ ALERTES</div><div class="menu-stat-value" id="statAlertes" style="color:#c62828;">0</div></div>
             </div>
-            <!-- Section Title -->
             <div class="menu-section-title"><div class="menu-section-bar"></div><span>Modules</span></div>
-            <!-- Modules Grid -->
             <div class="menu-grid">
                 <div class="menu-grid-card" data-page="menuRenseignement"><div class="menu-grid-icon">📋</div><div class="menu-grid-title">Renseignement</div><div class="menu-grid-desc">Fiches et recherche pêcheurs</div></div>
                 <div class="menu-grid-card" data-page="menuControle"><div class="menu-grid-icon">🎯</div><div class="menu-grid-title">Contrôle</div><div class="menu-grid-desc">Vérification QR et contrôle du jour</div></div>
                 <div class="menu-grid-card" data-page="menuInfractions"><div class="menu-grid-icon">⚠️</div><div class="menu-grid-title">Infractions</div><div class="menu-grid-desc">Avertissements et exclusions</div></div>
                 <div class="menu-grid-card menu-card-ticket" id="ticketMenuCard"><div class="menu-grid-icon">🎫</div><div class="menu-grid-title">Tickets</div><div class="menu-grid-desc">Vente de tickets numériques</div></div>
             </div>
-            <!-- Bottom Buttons -->
             <div class="menu-bottom-btn" id="btnMenuTravail" data-page="travail"><span>🛠️ Journées de Travail</span></div>
             <div class="menu-bottom-btn" id="btnMenuAdmin" style="display:none;background:#e8a838;"><span style="color:#1a472a;">⚙️ Administration</span></div>
             <div class="menu-bottom-btn logout" id="logoutBtn"><span>🔒 Déconnexion</span></div>
         </div>
         
-        <!-- PAGE SOUS-MENU RENSEIGNEMENT -->
         <div class="page sub-menu-page" id="pageMenuRenseignement">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">📋</div><div><div class="menu-topbar-title">RENSEIGNEMENT</div><div class="menu-topbar-sub">FICHES ET RECHERCHE</div></div></div>
@@ -368,7 +366,6 @@
             </div>
         </div>
 
-        <!-- PAGE SOUS-MENU INFRACTIONS -->
         <div class="page sub-menu-page" id="pageMenuInfractions">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">⚠️</div><div><div class="menu-topbar-title">INFRACTIONS</div><div class="menu-topbar-sub">AVERTISSEMENTS ET EXCLUSIONS</div></div></div>
@@ -425,12 +422,10 @@
                         <button type="button" class="btn btn-primary" id="btnEnvoyerFormulaire" onclick="envoyerFormulaire()">✉️ Envoyer le formulaire</button>
                         <div id="envoyerStatus" class="envoyer-status"></div>
                         
-                        <!-- Séparateur -->
                         <div style="margin: 30px 0; border-top: 2px dashed #ccc; position: relative;">
                             <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #f5f5f5; padding: 0 15px; color: #666;">OU</span>
                         </div>
                         
-                        <!-- Envoi par SMS -->
                         <div class="envoyer-icon">📱</div>
                         <h3 class="envoyer-title">Envoyer le formulaire par SMS</h3>
                         <p class="envoyer-desc">Entrez les informations du pêcheur. Votre application SMS s'ouvrira avec le message prêt à envoyer.</p>
@@ -556,7 +551,6 @@
             </div></div>
         </div>
         
-        <!-- PAGE SOUS-MENU CONTRÔLE -->
         <div class="page sub-menu-page" id="pageMenuControle">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">🎯</div><div><div class="menu-topbar-title">CONTRÔLE</div><div class="menu-topbar-sub">VÉRIFICATION ET CONTRÔLE DU JOUR</div></div></div>
@@ -582,6 +576,49 @@
                         <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="flex:1; min-width:200px;"><span class="controle-big-icon">🐠</span><span class="controle-big-title">Breitmatt</span><span class="controle-big-desc">Signaler un contrôle</span></button>
                         <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
                     </div>
+                </div>
+            </div></div>
+        </div>
+
+        <div class="page" id="pageHardtPostes">
+            <div class="page-topbar"><span class="page-topbar-icon">🐟</span><span class="page-topbar-title">CONTRÔLE HARDT JOURNÉE</span></div>
+            <div class="page-content"><div class="page-card">
+                <h1 class="page-title">🐟 Contrôle Hardt Journée</h1>
+                <p style="margin-bottom:15px; color:#666; font-weight: 500;">Sélectionnez le numéro du poste :</p>
+                
+                <div class="hardt-postes-grid" id="hardtPostesGrid">
+                    <div class="hardt-poste-btn" data-poste="1">1</div>
+                    <div class="hardt-poste-btn" data-poste="2">2</div>
+                    <div class="hardt-poste-btn" data-poste="3">3</div>
+                    <div class="hardt-poste-btn" data-poste="4">4</div>
+                    <div class="hardt-poste-btn" data-poste="5">5</div>
+                    <div class="hardt-poste-btn" data-poste="6">6</div>
+                    <div class="hardt-poste-btn" data-poste="7">7</div>
+                    <div class="hardt-poste-btn" data-poste="8">8</div>
+                    <div class="hardt-poste-btn" data-poste="9">9</div>
+                    <div class="hardt-poste-btn" data-poste="10">10</div>
+                    <div class="hardt-poste-btn" data-poste="11">11</div>
+                    <div class="hardt-poste-btn" data-poste="12">12</div>
+                </div>
+
+                <div id="hardtPosteDetails" style="display:none; margin-top: 25px; padding-top: 20px; border-top: 2px dashed #ddd;">
+                    <h3 style="color:#7b1fa2; margin-bottom: 15px; display:flex; align-items:center; gap:8px;">
+                        🎣 <span style="background:#f3e5f5; padding:4px 12px; border-radius:8px;">Poste <span id="hardtSelectedPosteNum"></span></span>
+                    </h3>
+                    
+                    <div class="search-container" style="margin-bottom: 10px;">
+                        <input type="text" class="search-input" id="hardtSearchInput" placeholder="Rechercher un pêcheur (min. 2 lettres)..." autocomplete="off">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="search-results" id="hardtSearchResults" style="max-height: 200px; overflow-y: auto; margin-top:0;"></div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="form-group required"><label>Nom</label><input type="text" id="hardtNom" required></div>
+                        <div class="form-group required"><label>Prénom</label><input type="text" id="hardtPrenom" required></div>
+                        <div class="form-group required"><label>Téléphone</label><input type="text" id="hardtTel"></div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="btnEnvoyerHardtControle" style="margin-top: 15px; background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); border: none;">✅ Contrôler</button>
                 </div>
             </div></div>
         </div>
@@ -612,8 +649,6 @@
         </div>
     </div>
 
-        </div>
-    
     <div class="modal-overlay" id="breitmattModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);"><h2>🐠 Contrôle Breitmatt</h2><button class="modal-close" onclick="fermerModalBreitmatt()">&times;</button></div>
@@ -627,25 +662,6 @@
                 <div style="display:flex; gap:10px;">
                     <button class="btn" onclick="fermerModalBreitmatt()" style="flex:1; background:#eee; color:#333;">Annuler</button>
                     <button class="btn btn-primary" onclick="envoyerControleBreitmatt()" style="flex:1; background:linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);">✅ Confirmer</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal Hardt journée -->
-    <div class="modal-overlay" id="hardtJourneeModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);"><h2>🐟 Contrôle Hardt journée</h2><button class="modal-close" onclick="fermerModalHardtJournee()">&times;</button></div>
-            <div class="modal-body" style="text-align:center;">
-                <div style="font-size:60px; margin-bottom:15px;">🐟</div>
-                <p style="font-size:16px; margin-bottom:20px;">Confirmer le contrôle de l'étang de la <strong>Hardt</strong> (journée) ?</p>
-                <p style="background:#f3e5f5; padding:15px; border-radius:10px; margin-bottom:20px;">
-                    <strong>👮 Contrôleur :</strong> <span id="hardtJourneeControleur"></span><br>
-                    <strong>🕐 Heure :</strong> <span id="hardtJourneeHeure"></span>
-                </p>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" onclick="fermerModalHardtJournee()" style="flex:1; background:#eee; color:#333;">Annuler</button>
-                    <button class="btn btn-primary" onclick="envoyerControleHardtJournee()" style="flex:1; background:linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);">✅ Confirmer</button>
                 </div>
             </div>
         </div>
@@ -673,7 +689,6 @@
         </div>
     </div>
     
-    <!-- Modal Exclusion -->
     <div class="modal-overlay" id="exclusionModal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header" style="background: #dc3545;"><h2>🚫 Exclusion obligatoire</h2><button class="modal-close" onclick="document.getElementById('exclusionModal').classList.remove('visible')">&times;</button></div>
@@ -764,33 +779,6 @@
             await envoyerNotificationTelegram(message);
             
             showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
-        }
-        
-        // ===== CONTRÔLE HARDT JOURNÉE =====
-        function ouvrirModalHardtJournee() {
-            const controleur = getCurrentUser();
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('hardtJourneeControleur').textContent = controleur;
-            document.getElementById('hardtJourneeHeure').textContent = heure;
-            document.getElementById('hardtJourneeModal').classList.add('visible');
-        }
-        
-        function fermerModalHardtJournee() {
-            document.getElementById('hardtJourneeModal').classList.remove('visible');
-        }
-        
-        async function envoyerControleHardtJournee() {
-            const controleur = getCurrentUser();
-            const date = new Date().toLocaleDateString('fr-FR');
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
-            
-            fermerModalHardtJournee();
-            showAlert('⏳ Envoi en cours...', 'info');
-            
-            await envoyerNotificationTelegram(message);
-            
-            showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
         // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
@@ -1151,11 +1139,102 @@
             } catch(e) {}
         }
         
+        // Comportement d'origine pour "Hardt (Réservations et infractions)"
         function openHardt() {
             const user = getCurrentUser();
             const url = 'https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
             window.open(url, '_blank');
         }
+
+        // --- Logique du nouvel écran de contrôle Hardt Journée ---
+        function ouvrirModalHardtJournee() {
+            showPage('hardtPostes');
+            document.getElementById('hardtPosteDetails').style.display = 'none';
+            document.querySelectorAll('.hardt-poste-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('hardtSearchInput').value = '';
+            document.getElementById('hardtSearchResults').innerHTML = '';
+            document.getElementById('hardtNom').value = '';
+            document.getElementById('hardtPrenom').value = '';
+            document.getElementById('hardtTel').value = '';
+        }
+        
+        // Sélection d'un poste
+        document.querySelectorAll('.hardt-poste-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.hardt-poste-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('hardtSelectedPosteNum').textContent = this.dataset.poste;
+                document.getElementById('hardtPosteDetails').style.display = 'block';
+                // Focus automatique sur la barre de recherche
+                setTimeout(() => document.getElementById('hardtSearchInput').focus(), 100);
+            });
+        });
+
+        // Recherche intelligente (dès 2 lettres)
+        document.getElementById('hardtSearchInput').addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            const container = document.getElementById('hardtSearchResults');
+            if (q.length < 2) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const sorted = allFiches.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q));
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="no-results" style="padding:10px;">Aucun pêcheur trouvé en base</div>';
+                return;
+            }
+            
+            container.innerHTML = sorted.map(f => {
+                const safeNom = (f.nom || '').replace(/'/g, "\\'");
+                const safePrenom = (f.prenom || '').replace(/'/g, "\\'");
+                const safeTel = (f.telephone || '').replace(/'/g, "\\'");
+                return '<div class="search-result-item" style="cursor:pointer;" onclick="selectHardtPecheur(\'' + safeNom + '\', \'' + safePrenom + '\', \'' + safeTel + '\')">' +
+                    '<div class="search-result-name">' + (f.nom || '') + ' ' + (f.prenom || '') + '</div>' +
+                    '<div class="search-result-address">📞 ' + (f.telephone || 'Non renseigné') + '</div>' +
+                '</div>';
+            }).join('');
+        });
+
+        // Remplissage automatique
+        window.selectHardtPecheur = function(nom, prenom, tel) {
+            document.getElementById('hardtNom').value = nom;
+            document.getElementById('hardtPrenom').value = prenom;
+            document.getElementById('hardtTel').value = tel;
+            document.getElementById('hardtSearchResults').innerHTML = '';
+            document.getElementById('hardtSearchInput').value = '';
+        };
+
+        // Bouton final "Contrôler" (Envoi Telegram)
+        document.getElementById('btnEnvoyerHardtControle').addEventListener('click', async function() {
+            const poste = document.getElementById('hardtSelectedPosteNum').textContent;
+            const nom = document.getElementById('hardtNom').value.trim().toUpperCase();
+            const prenom = document.getElementById('hardtPrenom').value.trim();
+            
+            if (!nom || !prenom) {
+                showAlert('❌ Veuillez renseigner le nom et le prénom du pêcheur', 'error');
+                return;
+            }
+            
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            
+            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n🎣 Poste n°' + poste + '\n👤 Pêcheur : ' + nom + ' ' + prenom + '\n👮 Contrôleur : ' + controleur + '\n🕐 Heure : ' + heure;
+            
+            showAlert('⏳ Envoi en cours...', 'info');
+            this.disabled = true;
+            
+            await envoyerNotificationTelegram(message);
+            
+            this.disabled = false;
+            showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
+            
+            // Retour propre à la page de contrôle
+            pageHistory.pop();
+            showPage('controle');
+        });
+
         
         function openCarpodrome() {
             const user = getCurrentUser();
