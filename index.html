@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎣 Contrôleur / Garde de Pêche - AAPPMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; background: #f0f2e9; min-height: 100vh; color: #333; }
         
-        /* OPTIMISATION MOBILE : Rend les clics instantanés et supprime le flash bleu iOS */
-        a, button, .menu-grid-card, .fiche-tab, .admin-tab, .tab-btn, .controle-big-btn, .reglement-item, .search-result-item, .hist-infraction-item, .carte-item, .tk-user-item, input[type="checkbox"], .menu-bottom-btn {
+        /* OPTIMISATION MOBILE */
+        a, button, .menu-grid-card, .fiche-tab, .admin-tab, .tab-btn, .controle-big-btn, .reglement-item, .search-result-item, .hist-infraction-item, .carte-item, .tk-user-item, input[type="checkbox"], .menu-bottom-btn, .exclusion-type-option {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
@@ -32,11 +32,8 @@
         .nav-buttons.visible { display: flex; }
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        
-        /* Correction : forçage de l'affichage avec !important pour éviter les conflits CSS */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 80px; background: #f0f2e9; }
         .page.active { display: block !important; }
-        
         .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
         .page-topbar-icon { font-size: 20px; }
         .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
@@ -259,13 +256,14 @@
         .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
         .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
         .reglement-info strong { color: #1565c0; }
-        .exclusion-type-choice { display: flex; gap: 15px; margin: 20px 0; }
-        .exclusion-type-option { flex: 1; padding: 20px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        
+        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
+        .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
         .exclusion-type-option:hover { border-color: #dc3545; }
         .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
-        .exclusion-type-option .icon { font-size: 32px; margin-bottom: 10px; }
-        .exclusion-type-option .title { font-weight: 700; color: #333; }
-        .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
+        .exclusion-type-option .title { font-weight: 700; color: #333; font-size:15px; }
+
         @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
         /* --- Module Tickets --- */
@@ -475,7 +473,7 @@
                 <div class="reglement-info">
                     <strong>📜 Selon le règlement 2026 :</strong><br>
                     • 1ère infraction → Avertissement<br>
-                    • 2ème infraction → Exclusion (temporaire 1 mois ou définitive)
+                    • 2ème infraction → Exclusion (temporaire 1 à 3 mois ou définitive)
                 </div>
                 <form id="infractionForm">
                     <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
@@ -672,17 +670,23 @@
             <div class="modal-header" style="background: #dc3545;"><h2>🚫 Exclusion obligatoire</h2><button class="modal-close" onclick="document.getElementById('exclusionModal').classList.remove('visible')">&times;</button></div>
             <div class="modal-body">
                 <div id="exclusionInfo" style="background:#fff3cd; padding:15px; border-radius:10px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
-                <p style="font-weight:600; margin-bottom:15px;">Choisissez le type d'exclusion :</p>
+                <p style="font-weight:600; margin-bottom:15px;">Choisissez la durée de l'exclusion :</p>
                 <div class="exclusion-type-choice">
-                    <div class="exclusion-type-option" onclick="selectExclusionType('temporaire')">
-                        <div class="icon">⏱️</div>
-                        <div class="title">Temporaire</div>
-                        <div class="desc">1 mois</div>
+                    <div class="exclusion-type-option" id="opt-excl-temp1" onclick="selectExclusionType('temp_1')">
+                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
+                        <div class="title">1 Mois</div>
                     </div>
-                    <div class="exclusion-type-option" onclick="selectExclusionType('definitive')">
-                        <div class="icon">🚫</div>
+                    <div class="exclusion-type-option" id="opt-excl-temp2" onclick="selectExclusionType('temp_2')">
+                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
+                        <div class="title">2 Mois</div>
+                    </div>
+                    <div class="exclusion-type-option" id="opt-excl-temp3" onclick="selectExclusionType('temp_3')">
+                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
+                        <div class="title">3 Mois</div>
+                    </div>
+                    <div class="exclusion-type-option" id="opt-excl-def" onclick="selectExclusionType('definitive')">
+                        <div class="icon" style="font-size:24px; margin-bottom:5px;">🚫</div>
                         <div class="title">Définitive</div>
-                        <div class="desc">Sans limite</div>
                     </div>
                 </div>
                 <div style="display:flex;gap:10px;margin-top:20px;">
@@ -697,6 +701,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
+        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
+        let currentHistTab = 'avertissements';
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
+        let pendingExclusion = null, selectedExclusionType = null;
+        let infractionsListenerSetup = false;
+
         // BASE CENTRALE UNIQUE pour toutes les infractions
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
@@ -786,7 +798,6 @@
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // DEFAULT_REGLEMENTS
         const DEFAULT_REGLEMENTS = {
             carpodrome: {
                 horaires: "Sur réservation uniquement et 24h à l'avance\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés\n- Du 5 mai au 30 octobre : tous les jours\n- Pêche de 8h à 19h (début mars à fin avril et début septembre à fin octobre)\n- Pêche de 8h à 20h (début mai à fin août)\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté (manque d'eau, cyanobactéries, etc...)",
@@ -939,13 +950,6 @@
             
             return { title: titles[name], content: html };
         }
-
-        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
-        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
-        let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
-        let pendingExclusion = null, selectedExclusionType = null;
 
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
@@ -1250,7 +1254,6 @@
             
             try { 
                 await dbCentral.ref('fiches/' + item.fiche.id).set(updatedData); 
-                // Si l'ancienne fiche était enregistrée sous l'index de l'array, on la supprime pour éviter les doublons
                 if (index !== item.fiche.id) {
                     await dbCentral.ref('fiches/' + index).remove();
                 }
@@ -1284,7 +1287,6 @@
 
         function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
         
-        // CORRECTION MAJEURE: UTILISATION DE DATA.ID POUR ÉVITER LES ÉCRASEMENTS
         document.getElementById('ficheForm').addEventListener('submit', async e => { 
             e.preventDefault(); 
             const nom = document.getElementById('nom').value; 
@@ -1329,14 +1331,45 @@
             } 
         });
 
-        let infractionsListenerSetup = false;
-        
+        // ==========================================
+        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
+        // ==========================================
         async function loadAllData() { 
             await loadFiches(); 
+            
+            // 1. Avant d'écouter les infractions, on effectue la migration des anciennes si besoin
             if (!infractionsListenerSetup) {
+                try {
+                    const banSnap = await dbCentral.ref('infractions/bannis').once('value');
+                    const dataBannis = banSnap.val();
+                    if (dataBannis) {
+                        let bannisArr = Array.isArray(dataBannis) ? dataBannis : Object.values(dataBannis);
+                        let needsUpdate = false;
+                        
+                        bannisArr.forEach(b => {
+                            if (b && b.nom && b.typeExclusion === 'temporaire' && !b.dureeMois) {
+                                b.dureeMois = 3;
+                                if (b.dateFin) {
+                                    let d = new Date(b.dateFin);
+                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
+                                    b.dateFin = d.toISOString();
+                                }
+                                needsUpdate = true;
+                            }
+                        });
+                        
+                        if (needsUpdate) {
+                            await dbCentral.ref('infractions/bannis').set(bannisArr);
+                            console.log('🔄 Migration automatique : anciens bannissements mis à 3 mois.');
+                        }
+                    }
+                } catch(e) { console.error("Erreur lors de la migration:", e); }
+
+                // 2. Ensuite on lance l'écouteur en temps réel
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
             }
+            
             await loadMailsSent();
             await loadSmsSent();
             await loadControleurs();
@@ -1348,36 +1381,6 @@
         }
         
         async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
-        
-        async function loadInfractions() { 
-            allInfractions = { avertissements: [], bannis: [], archives: [] }; 
-            try { 
-                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value'); 
-                if (avertSnap.val()) { 
-                    Object.entries(avertSnap.val()).forEach(([key, v]) => { 
-                        if (v && v.nom && !v.archived) { 
-                            allInfractions.avertissements.push({ key, ...v }); 
-                        } 
-                    }); 
-                } 
-                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
-                if (banSnap.val()) { 
-                    Object.entries(banSnap.val()).forEach(([key, v]) => { 
-                        if (v && v.nom) { 
-                            allInfractions.bannis.push({ key, ...v }); 
-                        } 
-                    }); 
-                } 
-                const archSnap = await dbCentral.ref('infractions/archives').once('value'); 
-                if (archSnap.val()) { 
-                    Object.entries(archSnap.val()).forEach(([key, v]) => { 
-                        if (v && v.nom) { 
-                            allInfractions.archives.push({ key, ...v }); 
-                        } 
-                    }); 
-                } 
-            } catch(e) { console.error(e); } 
-        }
         
         function setupInfractionsListener() {
             dbCentral.ref('infractions').on('value', (snapshot) => {
@@ -1452,7 +1455,8 @@
                     st.textContent = '✅ Exclusion expirée'; 
                     st.className = 'detail-status badge-expired'; 
                 } else { 
-                    st.textContent = inf.exclusion.typeExclusion === 'temporaire' ? '⏱️ EXCLU TEMP.' : '🚫 EXCLU DÉFINITIF'; 
+                    let dureeText = inf.exclusion.dureeMois ? inf.exclusion.dureeMois + ' mois' : '3 mois';
+                    st.textContent = inf.exclusion.typeExclusion === 'temporaire' ? '⏱️ EXCLU TEMP. (' + dureeText + ')' : '🚫 EXCLU DÉFINITIF'; 
                     st.className = 'detail-status badge-banned'; 
                 } 
                 is.style.display = 'block'; 
@@ -1465,7 +1469,8 @@
                 if (inf.exclusion.typeExclusion === 'temporaire' && inf.exclusion.dateFin) { 
                     finInfo = '<p style="color:#ff9800;font-weight:bold;">📅 Fin de l\'exclusion : ' + new Date(inf.exclusion.dateFin).toLocaleDateString('fr-FR') + '</p>'; 
                 } 
-                is.innerHTML = '<div class="infractions-header">🚫 EXCLU' + (inf.exclusion.typeExclusion === 'temporaire' ? ' TEMPORAIREMENT' : ' DÉFINITIVEMENT') + '</div>' + finInfo + (inf.exclusion.controleurSanction ? '<p>👮 Sanctionné par : <strong>' + inf.exclusion.controleurSanction + '</strong></p>' : '') + motifsHtml; 
+                let dureeText2 = inf.exclusion.dureeMois ? inf.exclusion.dureeMois + ' mois' : '3 mois';
+                is.innerHTML = '<div class="infractions-header">🚫 EXCLU' + (inf.exclusion.typeExclusion === 'temporaire' ? ' TEMPORAIREMENT (' + dureeText2 + ')' : ' DÉFINITIVEMENT') + '</div>' + finInfo + (inf.exclusion.controleurSanction ? '<p>👮 Sanctionné par : <strong>' + inf.exclusion.controleurSanction + '</strong></p>' : '') + motifsHtml; 
             } else if (inf.avertissement) { 
                 st.textContent = '⚠️ Avertissement'; 
                 st.className = 'detail-status badge-warning'; 
@@ -1479,84 +1484,20 @@
             } 
         }
 
-        // CORRECTION MAJEURE: UTILISATION DE DATA.ID POUR L'ENREGISTREMENT DES INFRACTIONS
-        document.getElementById('infractionForm').addEventListener('submit', async e => { 
-            e.preventDefault(); 
-            const nom = document.getElementById('infNom').value.toUpperCase().trim(); 
-            const prenom = document.getElementById('infPrenom').value.trim(); 
-            const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
-            const motif = document.getElementById('infMotif').value.trim(); 
-            const lieu = document.getElementById('infLieu').value; 
-            const controleurSanction = getCurrentUser() || document.getElementById('infControleur').value; 
-            
-            if (!controleurSanction) { 
-                showAlert('❌ Sélectionnez un contrôleur', 'error'); 
-                return; 
-            } 
-            
-            try {
-                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value');
-                let currentAvert = [];
-                if (avertSnap.val()) {
-                    Object.entries(avertSnap.val()).forEach(([key, v]) => {
-                        if (v && v.nom) currentAvert.push({ key, ...v });
-                    });
-                }
-                
-                const existingAvert = currentAvert.find(a => 
-                    (a.nom || '').toUpperCase() === nom && 
-                    (a.prenom || '').toLowerCase() === prenomF.toLowerCase()
-                ); 
-                
-                if (existingAvert) { 
-                    pendingExclusion = { 
-                        nom, 
-                        prenom: prenomF, 
-                        motif, 
-                        lieu, 
-                        controleurSanction, 
-                        existingAvert 
-                    }; 
-                    selectedExclusionType = null; 
-                    document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
-                    document.getElementById('btnConfirmExclusion').disabled = true; 
-                    document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
-                    document.getElementById('exclusionModal').classList.add('visible'); 
-                } else { 
-                    const data = { 
-                        nom, 
-                        prenom: prenomF, 
-                        motif, 
-                        lieu, 
-                        controleurSanction, 
-                        date: new Date().toLocaleString('fr-FR'), 
-                        id: Date.now().toString() 
-                    }; 
-                    
-                    await dbCentral.ref('infractions/avertissements/' + data.id).set(data); 
-                    
-                    const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                    const dateTelegram = new Date().toLocaleDateString('fr-FR');
-                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n📅 ' + dateTelegram + '\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
-                    await envoyerNotificationTelegram(msgTelegram);
-                    
-                    showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
-                    document.getElementById('infractionForm').reset(); 
-                    await loadAllData(); 
-                    showPage('menu'); 
-                } 
-            } catch(e) { 
-                showAlert('❌ Erreur: ' + e.message, 'error'); 
-            } 
-        });
-        
+        // ===== SELECTION TYPE D'EXCLUSION =====
         function selectExclusionType(type) { 
             selectedExclusionType = type; 
             document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
-            document.querySelector('.exclusion-type-option:' + (type === 'temporaire' ? 'first-child' : 'last-child')).classList.add('selected'); 
+            
+            let id = 'opt-excl-def';
+            if (type === 'temp_1') id = 'opt-excl-temp1';
+            if (type === 'temp_2') id = 'opt-excl-temp2';
+            if (type === 'temp_3') id = 'opt-excl-temp3';
+            
+            document.getElementById(id).classList.add('selected'); 
             document.getElementById('btnConfirmExclusion').disabled = false; 
         }
-        
+
         async function confirmerExclusion() { 
             if (!pendingExclusion || !selectedExclusionType) return; 
             
@@ -1566,10 +1507,17 @@
                 { motif: pendingExclusion.motif, date: dateNow, controleurSanction: pendingExclusion.controleurSanction } 
             ]; 
             
+            let dureeMois = null;
+            let finalType = selectedExclusionType;
+            if (selectedExclusionType.startsWith('temp_')) {
+                dureeMois = parseInt(selectedExclusionType.split('_')[1]);
+                finalType = 'temporaire';
+            }
+
             let dateFin = null; 
-            if (selectedExclusionType === 'temporaire') { 
+            if (finalType === 'temporaire') { 
                 dateFin = new Date(); 
-                dateFin.setMonth(dateFin.getMonth() + 1); 
+                dateFin.setMonth(dateFin.getMonth() + dureeMois); 
                 dateFin = dateFin.toISOString(); 
             } 
             
@@ -1581,13 +1529,19 @@
                 lieu: pendingExclusion.lieu, 
                 controleurSanction: pendingExclusion.controleurSanction, 
                 date: dateNow, 
-                typeExclusion: selectedExclusionType, 
+                typeExclusion: finalType, 
+                dureeMois: dureeMois,
                 dateFin, 
                 id: Date.now().toString() 
             }; 
             
             try { 
-                await dbCentral.ref('infractions/bannis/' + exclusionData.id).set(exclusionData); 
+                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
+                let currentBannis = banSnap.val() || [];
+                if (!Array.isArray(currentBannis)) currentBannis = Object.values(currentBannis);
+                
+                currentBannis.push(exclusionData);
+                await dbCentral.ref('infractions/bannis').set(currentBannis);
                 
                 const archiveData = {
                     ...pendingExclusion.existingAvert,
@@ -1599,18 +1553,18 @@
                 await dbCentral.ref('infractions/archives').push(archiveData);
                 await dbCentral.ref('infractions/avertissements/' + pendingExclusion.existingAvert.key).remove(); 
                 
-                const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
-                const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
+                const typeText = finalType === 'temporaire' ? `TEMPORAIRE (${dureeMois} mois)` : 'DÉFINITIVE'; 
+                const finText = finalType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
                 
                 const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                 const dateTelegram = new Date().toLocaleDateString('fr-FR');
-                const typeExclTelegram = selectedExclusionType === 'temporaire' ? '⏱️ Temporaire (1 mois)' : '🚫 Définitive';
-                const finTelegram = selectedExclusionType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
+                const typeExclTelegram = finalType === 'temporaire' ? `⏱️ Temporaire (${dureeMois} mois)` : '🚫 Définitive';
+                const finTelegram = finalType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
                 const msgTelegram = '🚫 *EXCLUSION*\n📅 ' + dateTelegram + '\n👤 ' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + '\n' + typeExclTelegram + finTelegram + '\n📍 ' + pendingExclusion.lieu + '\n💬 ' + pendingExclusion.motif + '\n👮 ' + pendingExclusion.controleurSanction + '\n🕐 ' + heure;
                 await envoyerNotificationTelegram(msgTelegram);
                 
                 document.getElementById('exclusionModal').classList.remove('visible'); 
-                showAlert('🚫 EXCLUSION ' + typeText + '<br>' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + finText + '<br>👮 Par: ' + pendingExclusion.controleurSanction, 'error'); 
+                showAlert(`🚫 <strong>EXCLUSION ${typeText}</strong><br><br>${pendingExclusion.nom} ${pendingExclusion.prenom} est maintenant exclu(e).${finText}<br><br>👮 Par: ${pendingExclusion.controleurSanction}`, 'error'); 
                 document.getElementById('infractionForm').reset(); 
                 pendingExclusion = null; 
                 selectedExclusionType = null; 
@@ -1644,7 +1598,8 @@
                 container.innerHTML = list.map(item => '<div class="hist-infraction-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '') + '</div>' + (item.lieu ? '<div style="font-size:11px;color:#666;">📍 ' + item.lieu + '</div>' : '') + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="archiverInfraction(\'' + item.key + '\', \'avertissements\')">📦 Archiver</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); 
             } else if (currentHistTab === 'bannis') { 
                 container.innerHTML = list.map(item => { 
-                    let typeLabel = item.typeExclusion === 'temporaire' ? '<span class="badge badge-temp">⏱️ Temporaire</span>' : '<span class="badge badge-banned">🚫 Définitive</span>'; 
+                    let dureeText = item.dureeMois ? item.dureeMois + ' mois' : '3 mois';
+                    let typeLabel = item.typeExclusion === 'temporaire' ? `<span class="badge badge-temp">⏱️ Temporaire (${dureeText})</span>` : `<span class="badge badge-banned">🚫 Définitive</span>`; 
                     let finInfo = ''; 
                     let itemClass = 'hist-infraction-item banned'; 
                     if (item.typeExclusion === 'temporaire' && item.dateFin) { 
@@ -1810,6 +1765,7 @@
             document.getElementById('smsNumero').value = '';
         }
 
+        // ===== MODULE TICKETS - GESTION ACCÈS =====
         async function loadTicketModuleUsers() {
             try {
                 const snap = await dbCentral.ref('ticketModuleUsers').once('value');
@@ -1872,6 +1828,7 @@
             showAlert(enabled ? '✅ Module tickets activé pour ' + nom : '❌ Module tickets désactivé pour ' + nom, enabled ? 'success' : 'warning');
         }
 
+        // ===== ACCÈS HISTORIQUE COMPLET TICKETS =====
         async function loadTicketViewAllUsers() {
             try {
                 const snap = await dbCentral.ref('ticketViewAllUsers').once('value');
@@ -1930,6 +1887,7 @@
             window.location.href = 'ticket_numerique_aappma.html?page=scan';
         });
 
+        // ===== JOURNÉES DE TRAVAIL =====
         let travMoisCourant = new Date();
         const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
