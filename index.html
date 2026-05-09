@@ -2,12 +2,19 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎣 Contrôleur / Garde de Pêche - AAPPMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; background: #f0f2e9; min-height: 100vh; color: #333; }
+        
+        /* OPTIMISATION MOBILE : Rend les clics instantanés et supprime le flash bleu iOS */
+        a, button, .menu-grid-card, .fiche-tab, .admin-tab, .tab-btn, .controle-big-btn, .reglement-item, .search-result-item, .hist-infraction-item, .carte-item, .tk-user-item, input[type="checkbox"], .menu-bottom-btn {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #f0f2e9; }
         .login-container { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 2px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; border: 1px solid #d5d8ce; }
         .login-logo { width: 120px; height: 120px; margin: 0 auto 20px; background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
@@ -25,8 +32,11 @@
         .nav-buttons.visible { display: flex; }
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+        
+        /* Correction : forçage de l'affichage avec !important pour éviter les conflits CSS */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 80px; background: #f0f2e9; }
-        .page.active { display: block; }
+        .page.active { display: block !important; }
+        
         .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
         .page-topbar-icon { font-size: 20px; }
         .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
@@ -80,7 +90,6 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #d5d8ce; border-radius: 10px; font-size: 16px; background: #fff; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #1565c0; outline: none; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2d5a3d; }
         .form-group.required label::after { content: " *"; color: #e74c3c; }
         .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
@@ -125,7 +134,7 @@
         .search-input:focus { outline: none; border-color: #2d5a3d; }
         .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #666; }
         .search-results { margin-top: 15px; max-height: 500px; overflow-y: auto; }
-        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
+        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; cursor: pointer; }
         .search-result-item:hover { background: #e8f5e9; }
         .search-result-name { font-weight: 700; color: #1a472a; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
@@ -259,7 +268,7 @@
         .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
         @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
-        /* --- Module Tickets (ajout) --- */
+        /* --- Module Tickets --- */
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
         .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
@@ -287,7 +296,6 @@
         </div>
     </div>
     
-    <!-- Modal changement utilisateur -->
     <div class="modal-overlay" id="changeUserModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background:#ff9800;"><h2>👤 Changement d'utilisateur</h2><button class="modal-close" onclick="cancelChangeUser()">&times;</button></div>
@@ -312,7 +320,6 @@
         <button class="admin-btn" id="adminBtn" style="display:none;">⚙️</button>
         
         <div class="page menu-page active" id="pageMenu">
-            <!-- Top Bar -->
             <div class="menu-topbar">
                 <div class="menu-topbar-left">
                     <div class="menu-topbar-logo">🐟</div>
@@ -323,7 +330,6 @@
                 </div>
                 <div class="menu-sync"><div class="menu-sync-dot"></div><span class="menu-sync-text">Synchronisé</span></div>
             </div>
-            <!-- Welcome Card -->
             <div class="menu-welcome">
                 <div class="menu-welcome-bg1"></div>
                 <div class="menu-welcome-bg2"></div>
@@ -333,29 +339,24 @@
                 <div id="onlineUsers" class="menu-online" style="display:none;"></div>
             </div>
             <p id="currentUserDisplay" style="display:none;" onclick="promptChangeUser()"></p>
-            <!-- Stats Row -->
             <div class="menu-stats">
                 <div class="menu-stat"><div class="menu-stat-label">🎫 TICKETS</div><div class="menu-stat-value" id="statTickets" style="color:#e8a838;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">👥 EN LIGNE</div><div class="menu-stat-value" id="statOnline" style="color:#2e7d32;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">📋 FICHES</div><div class="menu-stat-value" id="statFiches" style="color:#1565c0;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">⚠️ ALERTES</div><div class="menu-stat-value" id="statAlertes" style="color:#c62828;">0</div></div>
             </div>
-            <!-- Section Title -->
             <div class="menu-section-title"><div class="menu-section-bar"></div><span>Modules</span></div>
-            <!-- Modules Grid -->
             <div class="menu-grid">
                 <div class="menu-grid-card" data-page="menuRenseignement"><div class="menu-grid-icon">📋</div><div class="menu-grid-title">Renseignement</div><div class="menu-grid-desc">Fiches et recherche pêcheurs</div></div>
                 <div class="menu-grid-card" data-page="menuControle"><div class="menu-grid-icon">🎯</div><div class="menu-grid-title">Contrôle</div><div class="menu-grid-desc">Vérification QR et contrôle du jour</div></div>
                 <div class="menu-grid-card" data-page="menuInfractions"><div class="menu-grid-icon">⚠️</div><div class="menu-grid-title">Infractions</div><div class="menu-grid-desc">Avertissements et exclusions</div></div>
                 <div class="menu-grid-card menu-card-ticket" id="ticketMenuCard"><div class="menu-grid-icon">🎫</div><div class="menu-grid-title">Tickets</div><div class="menu-grid-desc">Vente de tickets numériques</div></div>
             </div>
-            <!-- Bottom Buttons -->
             <div class="menu-bottom-btn" id="btnMenuTravail" data-page="travail"><span>🛠️ Journées de Travail</span></div>
             <div class="menu-bottom-btn" id="btnMenuAdmin" style="display:none;background:#e8a838;"><span style="color:#1a472a;">⚙️ Administration</span></div>
             <div class="menu-bottom-btn logout" id="logoutBtn"><span>🔒 Déconnexion</span></div>
         </div>
         
-        <!-- PAGE SOUS-MENU RENSEIGNEMENT -->
         <div class="page sub-menu-page" id="pageMenuRenseignement">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">📋</div><div><div class="menu-topbar-title">RENSEIGNEMENT</div><div class="menu-topbar-sub">FICHES ET RECHERCHE</div></div></div>
@@ -368,7 +369,6 @@
             </div>
         </div>
 
-        <!-- PAGE SOUS-MENU INFRACTIONS -->
         <div class="page sub-menu-page" id="pageMenuInfractions">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">⚠️</div><div><div class="menu-topbar-title">INFRACTIONS</div><div class="menu-topbar-sub">AVERTISSEMENTS ET EXCLUSIONS</div></div></div>
@@ -425,12 +425,10 @@
                         <button type="button" class="btn btn-primary" id="btnEnvoyerFormulaire" onclick="envoyerFormulaire()">✉️ Envoyer le formulaire</button>
                         <div id="envoyerStatus" class="envoyer-status"></div>
                         
-                        <!-- Séparateur -->
                         <div style="margin: 30px 0; border-top: 2px dashed #ccc; position: relative;">
                             <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #f5f5f5; padding: 0 15px; color: #666;">OU</span>
                         </div>
                         
-                        <!-- Envoi par SMS -->
                         <div class="envoyer-icon">📱</div>
                         <h3 class="envoyer-title">Envoyer le formulaire par SMS</h3>
                         <p class="envoyer-desc">Entrez les informations du pêcheur. Votre application SMS s'ouvrira avec le message prêt à envoyer.</p>
@@ -556,7 +554,6 @@
             </div></div>
         </div>
         
-        <!-- PAGE SOUS-MENU CONTRÔLE -->
         <div class="page sub-menu-page" id="pageMenuControle">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">🎯</div><div><div class="menu-topbar-title">CONTRÔLE</div><div class="menu-topbar-sub">VÉRIFICATION ET CONTRÔLE DU JOUR</div></div></div>
@@ -611,8 +608,6 @@
             </div></div>
         </div>
     </div>
-
-        </div>
     
     <div class="modal-overlay" id="breitmattModal">
         <div class="modal-content" style="max-width:400px;">
@@ -632,7 +627,6 @@
         </div>
     </div>
     
-    <!-- Modal Hardt journée -->
     <div class="modal-overlay" id="hardtJourneeModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);"><h2>🐟 Contrôle Hardt journée</h2><button class="modal-close" onclick="fermerModalHardtJournee()">&times;</button></div>
@@ -673,7 +667,6 @@
         </div>
     </div>
     
-    <!-- Modal Exclusion -->
     <div class="modal-overlay" id="exclusionModal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header" style="background: #dc3545;"><h2>🚫 Exclusion obligatoire</h2><button class="modal-close" onclick="document.getElementById('exclusionModal').classList.remove('visible')">&times;</button></div>
@@ -793,7 +786,7 @@
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
+        // DEFAULT_REGLEMENTS
         const DEFAULT_REGLEMENTS = {
             carpodrome: {
                 horaires: "Sur réservation uniquement et 24h à l'avance\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés\n- Du 5 mai au 30 octobre : tous les jours\n- Pêche de 8h à 19h (début mars à fin avril et début septembre à fin octobre)\n- Pêche de 8h à 20h (début mai à fin août)\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté (manque d'eau, cyanobactéries, etc...)",
@@ -830,10 +823,8 @@
             }
         };
         
-        // Règlements chargés depuis Firebase (synchronisés avec formulaire de renseignement)
         let reglementsData = null;
         
-        // Charger les règlements depuis Firebase
         function loadReglementsFromFirebase() {
             dbCentral.ref('reglements_formulaire').on('value', (snapshot) => {
                 reglementsData = snapshot.exists() ? snapshot.val() : null;
@@ -841,29 +832,23 @@
             });
         }
         
-        // Obtenir un règlement (Firebase ou défaut)
         function getReglement(name) {
             if (reglementsData && reglementsData[name]) {
                 const fbData = reglementsData[name];
-                // Si Firebase contient le format par sections (horaires, tarifs, etc.), on l'utilise directement
                 if (fbData.horaires || fbData.tarifs || fbData.modalites) {
                     return fbData;
                 }
-                // Si Firebase contient un format "contenu" unique (nouveau format fiche de renseignement)
                 if (fbData.contenu) {
                     return { _contenuBrut: fbData.contenu };
                 }
-                // Si c'est une string directement
                 if (typeof fbData === 'string') {
                     return { _contenuBrut: fbData };
                 }
-                // Sinon on retourne tel quel
                 return fbData;
             }
             return DEFAULT_REGLEMENTS[name];
         }
         
-        // Formatter une section de règlement
         function formatReglementSection(text, isInterdit = false) {
             if (!text) return '';
             let html = '', inList = false;
@@ -883,11 +868,9 @@
             return inList ? html + '</ul>' : html;
         }
         
-        // Formatter du contenu brut (nouveau format Firebase avec un seul champ "contenu")
         function formatContenuBrut(text) {
             if (!text) return '';
             let html = '';
-            // Séparer les sections par double saut de ligne ou par titres en majuscules
             const lines = text.split('\n');
             let inList = false;
             
@@ -897,7 +880,6 @@
                     if (inList) { html += '</ul>'; inList = false; }
                     return;
                 }
-                // Détection des titres de sections (tout en majuscules ou avec emoji au début)
                 if (/^[A-ZÉÈÊËÀÂÙÛÎÏÔÖ\s\-:\/]{6,}$/.test(t) || /^(#{1,3})\s/.test(t)) {
                     if (inList) { html += '</ul>'; inList = false; }
                     const cleanTitle = t.replace(/^#{1,3}\s*/, '');
@@ -918,19 +900,16 @@
             return html;
         }
         
-        // Générer le HTML complet d'un règlement
         function generateReglementHTML(name) {
             const reg = getReglement(name);
             const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
             let html = '';
             
-            // Si c'est du contenu brut (nouveau format Firebase), on le formate directement
             if (reg._contenuBrut) {
                 html = formatContenuBrut(reg._contenuBrut);
                 return { title: titles[name], content: html };
             }
             
-            // Format classique par sections
             if (reg.horaires) html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
             if (reg.tarifs) html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
             if (reg.modalites) html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
@@ -942,7 +921,6 @@
             if (reg.dechets) html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
             if (reg.contacts) html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
             
-            // Si aucune section n'a été trouvée, afficher les données par défaut
             if (!html) {
                 const defReg = DEFAULT_REGLEMENTS[name];
                 if (defReg) {
@@ -969,7 +947,6 @@
         let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
 
-        // BLOCAGE BOUTON RETOUR ANDROID
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
             window.addEventListener('popstate', function(e) {
@@ -1031,7 +1008,6 @@
         
         document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
         
-        // ===== SYSTÈME DE PRÉSENCE =====
         let pendingUserChange = null;
         
         function initLoginUserSelect() {
@@ -1250,7 +1226,43 @@
         async function saveControleurs() { await dbCentral.ref('controleurs').set(allControleurs); }
 
         function editFiche(index) { const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const f = item.fiche; document.getElementById('editFicheId').value = f.id || ''; document.getElementById('editFicheIndex').value = index; document.getElementById('editNom').value = f.nom || ''; document.getElementById('editPrenom').value = f.prenom || ''; document.getElementById('editAdresse').value = f.adresse || ''; document.getElementById('editCodePostal').value = f.codePostal || ''; document.getElementById('editVille').value = f.ville || ''; document.getElementById('editTelephone').value = f.telephone || ''; document.getElementById('editUrgenceNom').value = f.urgence?.nom || ''; document.getElementById('editUrgencePrenom').value = f.urgence?.prenom || ''; document.getElementById('editUrgenceTel').value = f.urgence?.telephone || ''; showPage('editFiche'); }
-        document.getElementById('editFicheForm').addEventListener('submit', async e => { e.preventDefault(); const index = document.getElementById('editFicheIndex').value; const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const updatedData = { ...item.fiche, nom: document.getElementById('editNom').value.toUpperCase().trim(), prenom: document.getElementById('editPrenom').value.trim(), adresse: document.getElementById('editAdresse').value.trim(), codePostal: document.getElementById('editCodePostal').value.trim(), ville: document.getElementById('editVille').value.trim(), telephone: document.getElementById('editTelephone').value.trim(), urgence: { nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('editUrgencePrenom').value.trim(), telephone: document.getElementById('editUrgenceTel').value.trim() } }; try { await dbCentral.ref('fiches/' + index).set(updatedData); showAlert('✅ Modifié !', 'success'); await loadAllData(); loadAdminFiches(); pageHistory.pop(); showPage('admin'); } catch(e) { showAlert('❌ Erreur', 'error'); } });
+        
+        document.getElementById('editFicheForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const index = document.getElementById('editFicheIndex').value; 
+            const item = allFichesWithIndex.find(x => x.index === index); 
+            if (!item) return; 
+            
+            const updatedData = { 
+                ...item.fiche, 
+                nom: document.getElementById('editNom').value.toUpperCase().trim(), 
+                prenom: document.getElementById('editPrenom').value.trim(), 
+                adresse: document.getElementById('editAdresse').value.trim(), 
+                codePostal: document.getElementById('editCodePostal').value.trim(), 
+                ville: document.getElementById('editVille').value.trim(), 
+                telephone: document.getElementById('editTelephone').value.trim(), 
+                urgence: { 
+                    nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), 
+                    prenom: document.getElementById('editUrgencePrenom').value.trim(), 
+                    telephone: document.getElementById('editUrgenceTel').value.trim() 
+                } 
+            }; 
+            
+            try { 
+                await dbCentral.ref('fiches/' + item.fiche.id).set(updatedData); 
+                // Si l'ancienne fiche était enregistrée sous l'index de l'array, on la supprime pour éviter les doublons
+                if (index !== item.fiche.id) {
+                    await dbCentral.ref('fiches/' + index).remove();
+                }
+                showAlert('✅ Modifié !', 'success'); 
+                await loadAllData(); 
+                loadAdminFiches(); 
+                pageHistory.pop(); 
+                showPage('admin'); 
+            } catch(e) { 
+                showAlert('❌ Erreur', 'error'); 
+            } 
+        });
 
         function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
         document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
@@ -1271,7 +1283,51 @@
         document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
 
         function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
-        document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbCentral.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbCentral.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
+        
+        // CORRECTION MAJEURE: UTILISATION DE DATA.ID POUR ÉVITER LES ÉCRASEMENTS
+        document.getElementById('ficheForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const nom = document.getElementById('nom').value; 
+            const prenom = document.getElementById('prenom').value; 
+            
+            if (checkDuplicate(nom, prenom)) { 
+                showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); 
+                return; 
+            } 
+            
+            const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); 
+            const data = { 
+                nom: nom.toUpperCase().trim(), 
+                prenom: prenom.trim(), 
+                adresse: document.getElementById('adresse').value.trim(), 
+                codePostal: document.getElementById('codePostal').value.trim(), 
+                ville: document.getElementById('ville').value, 
+                telephone: document.getElementById('telephone').value.trim(), 
+                urgence: { 
+                    nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), 
+                    prenom: document.getElementById('urgencePrenom').value.trim(), 
+                    telephone: document.getElementById('urgenceTel').value.trim() 
+                }, 
+                reglements: checkedReglements, 
+                date: new Date().toLocaleString('fr-FR'), 
+                id: Date.now().toString() 
+            }; 
+            
+            try { 
+                await dbCentral.ref('fiches/' + data.id).set(data); 
+                showAlert('✅ Fiche enregistrée !', 'success'); 
+                document.getElementById('ficheForm').reset(); 
+                document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); 
+                document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); 
+                reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; 
+                document.getElementById('validateBtn').disabled = true; 
+                document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; 
+                document.getElementById('ville').disabled = true; 
+                loadAllData(); 
+            } catch(e) { 
+                showAlert('❌ Erreur: ' + e.message, 'error'); 
+            } 
+        });
 
         let infractionsListenerSetup = false;
         
@@ -1423,7 +1479,7 @@
             } 
         }
 
-        // FORMULAIRE INFRACTION - NOUVEAU SYSTÈME
+        // CORRECTION MAJEURE: UTILISATION DE DATA.ID POUR L'ENREGISTREMENT DES INFRACTIONS
         document.getElementById('infractionForm').addEventListener('submit', async e => { 
             e.preventDefault(); 
             const nom = document.getElementById('infNom').value.toUpperCase().trim(); 
@@ -1439,7 +1495,6 @@
             } 
             
             try {
-                // Récupérer les données ACTUELLES depuis Firebase
                 const avertSnap = await dbCentral.ref('infractions/avertissements').once('value');
                 let currentAvert = [];
                 if (avertSnap.val()) {
@@ -1448,14 +1503,12 @@
                     });
                 }
                 
-                // Vérifier si la personne a déjà un avertissement
                 const existingAvert = currentAvert.find(a => 
                     (a.nom || '').toUpperCase() === nom && 
                     (a.prenom || '').toLowerCase() === prenomF.toLowerCase()
                 ); 
                 
                 if (existingAvert) { 
-                    // 2ème infraction → Ouvrir le modal d'exclusion
                     pendingExclusion = { 
                         nom, 
                         prenom: prenomF, 
@@ -1470,7 +1523,6 @@
                     document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
                     document.getElementById('exclusionModal').classList.add('visible'); 
                 } else { 
-                    // 1ère infraction → Avertissement
                     const data = { 
                         nom, 
                         prenom: prenomF, 
@@ -1481,10 +1533,8 @@
                         id: Date.now().toString() 
                     }; 
                     
-                    const idx = currentAvert.length; 
-                    await dbCentral.ref('infractions/avertissements/' + idx).set(data); 
+                    await dbCentral.ref('infractions/avertissements/' + data.id).set(data); 
                     
-                    // Notification Telegram
                     const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                     const dateTelegram = new Date().toLocaleDateString('fr-FR');
                     const msgTelegram = '⚠️ *AVERTISSEMENT*\n📅 ' + dateTelegram + '\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
@@ -1537,12 +1587,8 @@
             }; 
             
             try { 
-                // Ajouter l'exclusion
-                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
-                const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; 
-                await dbCentral.ref('infractions/bannis/' + banIdx).set(exclusionData); 
+                await dbCentral.ref('infractions/bannis/' + exclusionData.id).set(exclusionData); 
                 
-                // Archiver proprement l'avertissement existant
                 const archiveData = {
                     ...pendingExclusion.existingAvert,
                     type: 'avertissement',
@@ -1556,7 +1602,6 @@
                 const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
                 const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
                 
-                // Notification Telegram
                 const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                 const dateTelegram = new Date().toLocaleDateString('fr-FR');
                 const typeExclTelegram = selectedExclusionType === 'temporaire' ? '⏱️ Temporaire (1 mois)' : '🚫 Définitive';
@@ -1745,7 +1790,6 @@
             
             const message = "Bonjour,\n\nMerci de remplir votre fiche de renseignement AAPPMA Gundershoffen :\n" + FORMULAIRE_URL + "\n\nCordialement,\nL'équipe AAPPMA";
             
-            // Sauvegarder dans l'historique
             const smsEntry = {
                 nom: nom,
                 prenom: prenom,
@@ -1756,7 +1800,6 @@
             smsSent.push(smsEntry);
             await saveSmsSent();
             
-            // Ouvrir l'app SMS
             const smsLink = 'sms:' + numero + '?body=' + encodeURIComponent(message);
             window.location.href = smsLink;
             
@@ -1767,15 +1810,12 @@
             document.getElementById('smsNumero').value = '';
         }
 
-
-        // ===== MODULE TICKETS - GESTION ACCÈS =====
         async function loadTicketModuleUsers() {
             try {
                 const snap = await dbCentral.ref('ticketModuleUsers').once('value');
                 if (snap.val()) {
                     ticketModuleUsers = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val());
                 } else {
-                    // Initialisation par défaut : Patrice activé
                     ticketModuleUsers = ['Patrice'];
                     await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
                 }
@@ -1832,7 +1872,6 @@
             showAlert(enabled ? '✅ Module tickets activé pour ' + nom : '❌ Module tickets désactivé pour ' + nom, enabled ? 'success' : 'warning');
         }
 
-        // ===== ACCÈS HISTORIQUE COMPLET TICKETS =====
         async function loadTicketViewAllUsers() {
             try {
                 const snap = await dbCentral.ref('ticketViewAllUsers').once('value');
@@ -1884,7 +1923,6 @@
             showAlert(enabled ? '👁️ Historique complet activé pour ' + nom : '❌ Historique complet désactivé pour ' + nom, enabled ? 'success' : 'warning');
         }
 
-        // Ouverture du module tickets
         document.getElementById('ticketMenuCard').addEventListener('click', function() {
             window.location.href = 'ticket_numerique_aappma.html';
         });
@@ -1892,7 +1930,6 @@
             window.location.href = 'ticket_numerique_aappma.html?page=scan';
         });
 
-        // ===== JOURNÉES DE TRAVAIL =====
         let travMoisCourant = new Date();
         const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
@@ -1911,10 +1948,8 @@
             const label = MOIS_FR[travMoisCourant.getMonth()] + ' ' + annee;
             document.getElementById('travMoisLabel').textContent = label;
 
-            // Show/hide add zone for Patrice only
             document.getElementById('travail-add-zone').style.display = isPatrice() ? 'block' : 'none';
 
-            // Set default date
             const today = new Date();
             const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             document.getElementById('travDate').value = todayStr;
@@ -1924,7 +1959,6 @@
             listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
             statsEl.innerHTML = '';
 
-            // Load current month
             dbCentral.ref('journees_travail/' + moisKey).once('value').then(snapshot => {
                 const data = snapshot.val();
                 const entries = [];
@@ -1935,7 +1969,6 @@
                 }
                 entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
-                // Group by date
                 const grouped = {};
                 entries.forEach(e => {
                     const d = e.date || 'Sans date';
@@ -1946,7 +1979,6 @@
                 const nbJournees = Object.keys(grouped).length;
                 const nbParticipants = entries.length;
 
-                // Stats mois
                 statsEl.innerHTML =
                     '<div style="flex:1;min-width:100px;background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">' +
                     '<div style="font-size:22px;font-weight:700;color:#2e7d32;">' + nbJournees + '</div>' +
@@ -1979,8 +2011,6 @@
                     });
                     listEl.innerHTML = html;
                 }
-
-                // Load annual total
                 loadTravailAnnuel(annee);
             }).catch(err => {
                 listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
