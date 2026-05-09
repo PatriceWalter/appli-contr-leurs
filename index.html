@@ -32,12 +32,15 @@
         .nav-buttons.visible { display: flex; }
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 80px; background: #f0f2e9; }
+        
+        /* Correction Bug Visuel : Plus grand padding-bottom pour éviter que le menu du bas cache les éléments */
+        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px; background: #f0f2e9; }
         .page.active { display: block !important; }
+        
         .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
         .page-topbar-icon { font-size: 20px; }
         .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
-        .sub-menu-page { padding: 0 !important; padding-bottom: 80px !important; }
+        .sub-menu-page { padding: 0 !important; padding-bottom: 100px !important; }
         .menu-page { padding-top: 0 !important; background: #f0f2e9 !important; }
         .menu-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
         .menu-topbar-left { display: flex; align-items: center; gap: 10px; }
@@ -73,14 +76,6 @@
         .menu-bottom-btn.logout span { color: #999; }
         .menu-header { display: none; }
         #pageMenu > .menu-cards { display: none; }
-        .menu-card { background: white; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 20px; }
-        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .menu-card-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
-        .menu-card-content { flex: 1; }
-        .menu-card-title { font-size: 18px; font-weight: 700; color: #1a472a; margin-bottom: 5px; }
-        .menu-card-desc { font-size: 13px; color: #666; }
-        .menu-card-arrow { font-size: 24px; color: #ccc; }
-        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
         .page-content { max-width: 800px; margin: 0 auto; padding: 16px; }
         .page-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #d5d8ce; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
         .page-title { display: none; }
@@ -137,18 +132,12 @@
         .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
         .search-result-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
         .search-result-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .btn-send-form { background: #667eea; color: white; }
-        .btn-view-info { background: #17a2b8; color: white; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
         .badge-ok { background: #e8f5e9; color: #2e7d32; }
         .badge-warning { background: #fff3e0; color: #f57c00; }
         .badge-banned { background: #ffebee; color: #c62828; }
         .badge-temp { background: #fff3e0; color: #ff9800; }
         .badge-expired { background: #e8f5e9; color: #2e7d32; }
-        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
-        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
-        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
         .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
         .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
@@ -163,20 +152,12 @@
         .infraction-item { background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #ff9800; }
         .infraction-item.banned { border-left-color: #c62828; }
         .infraction-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
-        .infraction-date { font-size: 12px; color: #666; }
-        .infraction-type { font-weight: 600; margin-bottom: 5px; }
-        .infraction-motif { color: #555; font-size: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ddd; }
         .no-results { text-align: center; color: #666; padding: 40px; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-primary { background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
-        .infraction-type-btns { display: flex; gap: 10px; margin-bottom: 15px; }
-        .infraction-type-btn { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; }
-        .infraction-type-btn.selected { border-color: #ff9800; background: #fff3e0; }
-        .infraction-type-btn.banned.selected { border-color: #c62828; background: #ffebee; }
         .alert { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; font-weight: 500; z-index: 3000; display: none; max-width: 90%; text-align: center; }
         .alert.visible { display: block; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -185,36 +166,19 @@
         .admin-fiche-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
         .admin-fiche-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .admin-fiche-name { font-weight: 700; color: #1a472a; font-size: 16px; }
-        .admin-fiche-actions { display: flex; gap: 8px; }
-        .admin-fiche-info { font-size: 13px; color: #666; margin-top: 8px; }
         .admin-count { background: #e8f5e9; color: #2e7d32; padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; display: inline-block; }
-        .etang-cards { display: flex; flex-direction: column; gap: 12px; }
-        .etang-card { display: flex; align-items: center; gap: 15px; background: #fff; border: 2px solid #e9ecef; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s; }
-        .etang-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .etang-icon { font-size: 32px; }
-        .etang-info { flex: 1; }
-        .etang-name { font-weight: 700; font-size: 18px; color: #1a472a; }
-        .etang-count { font-size: 13px; color: #666; margin-top: 4px; }
-        .etang-arrow { font-size: 24px; color: #999; }
         .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .tab-btn:hover { border-color: #2d5a3d; }
         .tab-btn.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
-        .tab-btn span { background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 12px; }
         .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
         .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
         .hist-infraction-item.temp-exclusion { border-left-color: #ff9800; background: #fff3e0; }
         .hist-infraction-item.expired-exclusion { border-left-color: #4caf50; background: #e8f5e9; }
         .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
-        .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
-        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
-        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
         .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
-        .hist-infraction-date { font-size: 12px; color: #666; }
-        .hist-infraction-motif { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 14px; color: #555; }
         .hist-delete-btn { background: #c62828; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .no-infractions { text-align: center; color: #666; padding: 40px 20px; }
         .fiche-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .fiche-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .fiche-tab:hover { border-color: #2d5a3d; }
@@ -222,59 +186,22 @@
         .fiche-tab-content { display: none; }
         .fiche-tab-content.active { display: block; }
         .envoyer-container { text-align: center; padding: 20px 0; }
-        .envoyer-icon { font-size: 60px; margin-bottom: 15px; }
-        .envoyer-title { font-size: 20px; color: #1a472a; margin-bottom: 10px; }
-        .envoyer-desc { color: #666; line-height: 1.6; margin-bottom: 20px; font-size: 14px; }
-        .envoyer-status { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
-        .envoyer-status.success { display: block; background: #e8f5e9; color: #2e7d32; border: 2px solid #4caf50; }
-        .envoyer-status.error { display: block; background: #ffebee; color: #c62828; border: 2px solid #f44336; }
-        .envoyer-status.loading { display: block; background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
         .controle-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border: 2px solid #d5d8ce; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; min-height: 120px; justify-content: center; }
         .controle-big-btn.hardt { border-color: #d5d8ce; background: #fff; color: #333; }
         .controle-big-btn.carpodrome { border-color: #d5d8ce; background: #fff; color: #333; }
         .controle-big-btn:active { border-color: #e8a838; box-shadow: 0 4px 12px rgba(232,168,56,0.2); }
-        .controle-big-icon { font-size: 36px; margin-bottom: 8px; }
-        .controle-big-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1a472a; }
-        .controle-big-desc { font-size: 12px; color: #888; }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .admin-tab { flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
-        .admin-tab:hover { border-color: #2d5a3d; }
         .admin-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; }
-        .cartes-header { margin-bottom: 20px; }
-        .add-carte-form { display: flex; gap: 10px; flex-wrap: wrap; }
-        .carte-input { flex: 1; min-width: 120px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
-        .carte-input:focus { outline: none; border-color: #2d5a3d; }
-        .carte-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #4caf50; }
-        .carte-item-name { font-weight: 600; color: #333; }
-        .carte-delete-btn { background: #ffebee; color: #c62828; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .carte-delete-btn:hover { background: #c62828; color: white; }
-        .cartes-count { background: #e8f5e9; color: #2e7d32; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; text-align: center; }
-        .pecheurs-alpha-title { font-size: 16px; color: #1a472a; margin: 20px 0 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
-        .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
-        .reglement-info strong { color: #1565c0; }
         
-        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
         .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
         .exclusion-type-option:hover { border-color: #dc3545; }
         .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
         .exclusion-type-option .title { font-weight: 700; color: #333; font-size:15px; }
-
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
-
-        /* --- Module Tickets --- */
-        .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
-        .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
-        .tk-user-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
-        .tk-user-item label { flex: 1; font-weight: 600; color: #333; cursor: pointer; }
-        .tk-user-item.enabled label { color: #1a472a; }
-        .menu-card-ticket { display: none !important; }
-        .menu-card-ticket.visible { display: flex !important; }
     </style>
 </head>
 <body>
@@ -291,6 +218,18 @@
             <input type="password" class="login-input" id="loginCode" placeholder="Mot de passe" autocomplete="off">
             <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
             <p class="login-error" id="loginError"></p>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="setupPwdModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header" style="background:#f57c00;"><h2>🔐 Nouveau mot de passe</h2></div>
+            <div class="modal-body" style="text-align:center;">
+                <p style="margin-bottom:15px;">C'est votre première connexion (ou votre mot de passe a été réinitialisé).</p>
+                <p style="margin-bottom:20px; font-weight:bold;">Veuillez créer votre mot de passe personnel :</p>
+                <input type="password" id="newPwdInput" class="admin-input" placeholder="Nouveau mot de passe" autocomplete="off">
+                <button class="btn btn-primary" onclick="saveNewPwd()" style="width:100%;">Enregistrer</button>
+            </div>
         </div>
     </div>
     
@@ -578,6 +517,13 @@
                         <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
                     </div>
                 </div>
+                <div style="margin-top:15px;">
+                    <button class="controle-big-btn" onclick="ouvrirModalHardtIndiv()" style="width:100%; background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%); color:white;">
+                        <span class="controle-big-icon">👤</span>
+                        <span class="controle-big-title" style="color:white;">Hardt individuel</span>
+                        <span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle spécifique</span>
+                    </button>
+                </div>
             </div></div>
         </div>
 
@@ -642,6 +588,35 @@
             </div>
         </div>
     </div>
+
+    <div class="modal-overlay" id="hardtIndivModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">
+                <h2>👤 Contrôle Hardt Individuel</h2>
+                <button class="modal-close" onclick="fermerModalHardtIndiv()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:15px;text-align:center;color:#666;">Renseignez les informations du pêcheur contrôlé.</p>
+                <div class="form-group required"><label>Nom</label><input type="text" id="hiNom" placeholder="NOM"></div>
+                <div class="form-group required"><label>Prénom</label><input type="text" id="hiPrenom" placeholder="Prénom"></div>
+                <div class="form-group"><label>Téléphone</label><input type="tel" id="hiTel" placeholder="06 XX XX XX XX"></div>
+                <div class="form-group required">
+                    <label>Poste (1 à 12)</label>
+                    <select id="hiPoste">
+                        <option value="">-- Choisir un poste --</option>
+                        <option value="1">Poste 1</option><option value="2">Poste 2</option><option value="3">Poste 3</option>
+                        <option value="4">Poste 4 (Contrôleur)</option><option value="5">Poste 5</option><option value="6">Poste 6</option>
+                        <option value="7">Poste 7</option><option value="8">Poste 8</option><option value="9">Poste 9</option>
+                        <option value="10">Poste 10</option><option value="11">Poste 11</option><option value="12">Poste 12</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" onclick="fermerModalHardtIndiv()" style="flex:1; background:#eee; color:#333;">Annuler</button>
+                    <button class="btn btn-primary" onclick="envoyerControleHardtIndiv()" style="flex:1; background:linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">✅ Valider</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="modal-overlay" id="reglementModal">
         <div class="modal-content">
@@ -701,15 +676,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
-        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
-        let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
-        let pendingExclusion = null, selectedExclusionType = null;
-        let infractionsListenerSetup = false;
-
-        // BASE CENTRALE UNIQUE pour toutes les infractions
+        // BASE CENTRALE UNIQUE pour toutes les données
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
             authDomain: "appli-controleur-gunder.firebaseapp.com",
@@ -752,22 +719,17 @@
             document.getElementById('breitmattHeure').textContent = heure;
             document.getElementById('breitmattModal').classList.add('visible');
         }
-        
         function fermerModalBreitmatt() {
             document.getElementById('breitmattModal').classList.remove('visible');
         }
-        
         async function envoyerControleBreitmatt() {
             const controleur = getCurrentUser();
             const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             const message = '🐠 *CONTRÔLE BREITMATT*\n📅 ' + date + '\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
-            
             fermerModalBreitmatt();
             showAlert('⏳ Envoi en cours...', 'info');
-            
             await envoyerNotificationTelegram(message);
-            
             showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
         }
         
@@ -779,23 +741,53 @@
             document.getElementById('hardtJourneeHeure').textContent = heure;
             document.getElementById('hardtJourneeModal').classList.add('visible');
         }
-        
         function fermerModalHardtJournee() {
             document.getElementById('hardtJourneeModal').classList.remove('visible');
         }
-        
         async function envoyerControleHardtJournee() {
             const controleur = getCurrentUser();
             const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
-            
             fermerModalHardtJournee();
             showAlert('⏳ Envoi en cours...', 'info');
-            
             await envoyerNotificationTelegram(message);
-            
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
+        }
+
+        // ===== CONTRÔLE HARDT INDIVIDUEL =====
+        function ouvrirModalHardtIndiv() {
+            document.getElementById('hiNom').value = '';
+            document.getElementById('hiPrenom').value = '';
+            document.getElementById('hiTel').value = '';
+            document.getElementById('hiPoste').value = '';
+            document.getElementById('hardtIndivModal').classList.add('visible');
+        }
+        function fermerModalHardtIndiv() {
+            document.getElementById('hardtIndivModal').classList.remove('visible');
+        }
+        async function envoyerControleHardtIndiv() {
+            const nom = document.getElementById('hiNom').value.trim().toUpperCase();
+            const prenom = document.getElementById('hiPrenom').value.trim();
+            const tel = document.getElementById('hiTel').value.trim();
+            const poste = document.getElementById('hiPoste').value;
+            
+            if(!nom || !prenom || !poste) {
+                showAlert('❌ Veuillez remplir le nom, prénom et le poste.', 'error');
+                return;
+            }
+            
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const telText = tel ? `\n📞 ${tel}` : '';
+            
+            const message = `🐟 *CONTRÔLE HARDT INDIVIDUEL*\n📅 ${date}\n🕐 ${heure}\n📍 Étang de la Hardt — Poste ${poste}\n🎣 ${nom} ${prenom}${telText}\n👮 ${controleur}`;
+            
+            fermerModalHardtIndiv();
+            showAlert('⏳ Envoi en cours...', 'info');
+            await envoyerNotificationTelegram(message);
+            showAlert('✅ Contrôle individuel envoyé !', 'success');
         }
 
         const DEFAULT_REGLEMENTS = {
@@ -951,6 +943,14 @@
             return { title: titles[name], content: html };
         }
 
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
+        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
+        let currentHistTab = 'avertissements';
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
+        let pendingExclusion = null, selectedExclusionType = null;
+        let controleursMdp = {};
+
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
             window.addEventListener('popstate', function(e) {
@@ -979,12 +979,31 @@
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
         document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
-        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { updateMenuUser(savedUser); setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
+        function checkSession() { 
+            dbCentral.ref('controleurs_mdp').on('value', snap => {
+                controleursMdp = snap.val() || {};
+            });
+            if (sessionStorage.getItem('logged') === 'true') { 
+                document.getElementById('loginPage').style.display = 'none'; 
+                document.getElementById('appContainer').style.display = 'block'; 
+                setupBackButtonBlock(); 
+                const savedUser = localStorage.getItem('controleurUser'); 
+                if (savedUser) { 
+                    updateMenuUser(savedUser); 
+                    setUserPresence(savedUser); 
+                } 
+                loadAllData(); 
+                listenOnlineUsers(); 
+                const savedPage = sessionStorage.getItem('currentPage'); 
+                if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); 
+            } 
+        }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
-        function login() { 
+        
+        async function login() { 
             const selectedUser = document.getElementById('loginUser').value;
             if (!selectedUser) { 
                 document.getElementById('loginError').textContent = '⚠️ Veuillez choisir votre nom'; 
@@ -992,22 +1011,47 @@
                 setTimeout(() => { document.getElementById('loginError').style.display = 'none'; }, 3000); 
                 return; 
             }
-            if (document.getElementById('loginCode').value === '911') { 
-                localStorage.setItem('controleurUser', selectedUser);
-                document.getElementById('loginPage').style.display = 'none'; 
-                document.getElementById('appContainer').style.display = 'block'; 
-                sessionStorage.setItem('logged', 'true'); 
-                setupBackButtonBlock(); 
-                updateMenuUser(selectedUser);
-                setUserPresence(selectedUser);
-                listenOnlineUsers();
-                loadAllData();
-            } else { 
-                document.getElementById('loginCode').classList.add('error'); 
-                document.getElementById('loginError').textContent = '❌ Code incorrect';
-                document.getElementById('loginError').style.display = 'block'; 
-                setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
-            } 
+            const enteredCode = document.getElementById('loginCode').value;
+            
+            try {
+                const snap = await dbCentral.ref('controleurs_mdp/' + selectedUser).once('value');
+                const expectedCode = snap.val() || '911'; // Code par défaut
+                
+                if (enteredCode === expectedCode) { 
+                    localStorage.setItem('controleurUser', selectedUser);
+                    document.getElementById('loginPage').style.display = 'none'; 
+                    document.getElementById('appContainer').style.display = 'block'; 
+                    sessionStorage.setItem('logged', 'true'); 
+                    setupBackButtonBlock(); 
+                    updateMenuUser(selectedUser);
+                    setUserPresence(selectedUser);
+                    listenOnlineUsers();
+                    loadAllData();
+                    
+                    if (expectedCode === '911') {
+                        document.getElementById('setupPwdModal').classList.add('visible');
+                    }
+                } else { 
+                    document.getElementById('loginCode').classList.add('error'); 
+                    document.getElementById('loginError').textContent = '❌ Mot de passe incorrect';
+                    document.getElementById('loginError').style.display = 'block'; 
+                    setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
+                } 
+            } catch(e) {
+                console.error(e);
+            }
+        }
+        
+        function saveNewPwd() {
+            const pwd = document.getElementById('newPwdInput').value.trim();
+            if (pwd.length < 3) { alert('Le mot de passe doit faire au moins 3 caractères.'); return; }
+            const user = getCurrentUser();
+            dbCentral.ref('controleurs_mdp/' + user).set(pwd).then(() => {
+                document.getElementById('setupPwdModal').classList.remove('visible');
+                showAlert('✅ Mot de passe enregistré !', 'success');
+            }).catch(e => {
+                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
+            });
         }
         
         document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
@@ -1040,11 +1084,10 @@
                 removeUserPresence();
                 localStorage.setItem('controleurUser', pendingUserChange);
                 document.getElementById('loginUser').value = pendingUserChange;
-                if (sessionStorage.getItem('logged') === 'true') {
-                    setUserPresence(pendingUserChange);
-                    updateMenuUser(pendingUserChange);
-                }
-                pendingUserChange = null;
+                
+                // Si on change d'utilisateur, on doit déconnecter et redemander le mot de passe
+                sessionStorage.removeItem('logged');
+                location.reload();
             }
             document.getElementById('changeUserModal').classList.remove('visible');
         }
@@ -1056,12 +1099,11 @@
             if (!current || !allControleurs.length) return;
             const newUser = prompt('Changer d\'utilisateur ?\nActuel: ' + current + '\n\nEntrez le nouveau nom:');
             if (newUser && newUser !== current && allControleurs.includes(newUser)) {
-                if (confirm('Changer de ' + current + ' à ' + newUser + ' ?')) {
+                if (confirm('Changer de ' + current + ' à ' + newUser + ' ? Vous devrez vous reconnecter.')) {
                     removeUserPresence();
                     localStorage.setItem('controleurUser', newUser);
-                    setUserPresence(newUser);
-                    updateMenuUser(newUser);
-                    showAlert('✅ Utilisateur changé: ' + newUser, 'success');
+                    sessionStorage.removeItem('logged');
+                    location.reload();
                 }
             } else if (newUser && !allControleurs.includes(newUser)) {
                 showAlert('❌ Utilisateur non trouvé', 'error');
@@ -1221,7 +1263,28 @@
             }
         }
         
-        function renderControleurs() { const container = document.getElementById('controleursList'); if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + allControleurs.map((nom, i) => '<div class="carte-item" style="border-left-color:#1565c0;"><div class="carte-item-name">👮 ' + nom + '</div><button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button></div>').join(''); }
+        // REINITIALISER MOT DE PASSE
+        window.resetPwdControleur = function(nom) {
+            if (confirm('Réinitialiser le mot de passe de ' + nom + ' à 911 ?')) {
+                dbCentral.ref('controleurs_mdp/' + nom).remove().then(() => {
+                    showAlert('Mot de passe réinitialisé pour ' + nom, 'success');
+                });
+            }
+        }
+
+        function renderControleurs() { 
+            const container = document.getElementById('controleursList'); 
+            if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } 
+            container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + 
+            allControleurs.map((nom, i) => 
+                '<div class="carte-item" style="border-left-color:#1565c0;">' +
+                '<div class="carte-item-name">👮 ' + nom + '</div>' +
+                '<div style="display:flex;gap:5px;">' +
+                '<button class="carte-delete-btn" style="background:#ff9800;color:white;" onclick="resetPwdControleur(\'' + nom + '\')" title="Réinitialiser le mot de passe">🔄 MDP</button>' +
+                '<button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button>' +
+                '</div></div>'
+            ).join(''); 
+        }
         
         async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
         
@@ -1337,7 +1400,6 @@
         async function loadAllData() { 
             await loadFiches(); 
             
-            // 1. Avant d'écouter les infractions, on effectue la migration des anciennes si besoin
             if (!infractionsListenerSetup) {
                 try {
                     const banSnap = await dbCentral.ref('infractions/bannis').once('value');
@@ -1351,7 +1413,7 @@
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
+                                    d.setMonth(d.getMonth() + 2);
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1365,7 +1427,6 @@
                     }
                 } catch(e) { console.error("Erreur lors de la migration:", e); }
 
-                // 2. Ensuite on lance l'écouteur en temps réel
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
             }
