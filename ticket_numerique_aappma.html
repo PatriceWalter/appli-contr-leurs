@@ -16,32 +16,28 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
 body{font-family:'Roboto',sans-serif;background:#f0f2e9;color:var(--text);overflow-x:hidden;min-height:100vh;}
-
-/* OPTIMISATION MOBILE : Clics instantanés */
-a, button, .menu-btn, .tk-nav-btn, .opt, .vcrd, .admin-item, .hact, .hdel {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.pg{display:none;padding:16px;max-width:500px;margin:0 auto;min-height:100vh;padding-top:0;padding-bottom:90px;}
-.pg.on{display:block !important;}
+.pg{display:none;padding:16px;max-width:500px;margin:0 auto;min-height:100vh;padding-top:0;padding-bottom:80px;}
+.pg.on{display:block;}
 .tk-topbar{background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin:-16px -16px 16px;position:sticky;top:0;z-index:50;}
 .tk-topbar-left{display:flex;align-items:center;gap:10px;}
 .tk-topbar-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;}
 .tk-topbar-title{font-size:14px;font-weight:800;color:#fff;letter-spacing:0.5px;}
 .tk-topbar-sub{font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;letter-spacing:1px;}
 .tk-topbar-right{display:flex;align-items:center;gap:8px;}
+.menu-wrap{display:none;}
+.menu-sub{display:none;}
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:500px;margin:0 auto;}
-.menu-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 12px;border-radius:14px;border:2px solid #d5d8ce;background:#fff;color:var(--text);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.04);transition:all 0.2s;text-align:center;min-height:100px;}
+.menu-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 12px;border-radius:14px;border:2px solid #d5d8ce;background:#fff;color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 1px 4px rgba(0,0,0,0.04);transition:all 0.2s;text-align:center;min-height:100px;}
 .menu-btn:active{border-color:#e8a838;box-shadow:0 4px 12px rgba(232,168,56,0.2);}
 .menu-btn .mb-icon{width:44px;height:44px;background:#f0f2e9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .menu-btn-desc{font-size:11px;color:#888;font-weight:400;line-height:1.4;}
 .tk-bottom-btn{margin:10px 0 0;background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);border-radius:14px;padding:16px;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 .tk-bottom-btn span{font-size:15px;font-weight:700;color:#fff;}
 .topbar{background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);padding:14px 16px;display:flex;align-items:center;gap:12px;margin:0 -16px 16px;position:sticky;top:0;z-index:50;}
+.btn-back{display:none !important;}
 .topbar-title{font-size:16px;font-weight:800;color:#fff;letter-spacing:0.5px;}
 .tk-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#1a472a 0%,#1565c0 100%);padding:10px 16px 20px;display:flex;justify-content:center;gap:12px;box-shadow:0 -2px 10px rgba(0,0,0,0.2);}
-.tk-nav-btn{background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);padding:10px 24px;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;flex:1;text-align:center;max-width:200px;}
+.tk-nav-btn{background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);padding:10px 24px;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;flex:1;text-align:center;max-width:200px;font-family:inherit;}
 .card{background:#fff;border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);border:1px solid #e8e8e0;}
 .card-t{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
 .btn{width:100%;padding:15px;border-radius:10px;border:none;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
@@ -50,32 +46,103 @@ a, button, .menu-btn, .tk-nav-btn, .opt, .vcrd, .admin-item, .hact, .hdel {
 .btn-red{background:#c62828;color:#fff;}
 .btn-orange{background:#e8a838;color:#1a472a;}
 .btn-out{background:#fff;border:2px solid var(--border);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.mt8{margin-top:8px;}.mt12{margin-top:12px;}
 .hidden{display:none !important;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
 .opt{padding:14px 10px;border-radius:12px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.2s;}
 .opt.on{border-color:var(--accent);background:#e8f5e9;color:var(--accent);}
 .opt .prix{display:block;font-size:20px;font-weight:700;margin-top:3px;}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
-.stat{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-bottom:3px solid #e8a838;}
+.stat{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);border-bottom:3px solid #e8a838;}
 .stat-v{font-size:20px;font-weight:800;color:var(--accent);}
 .stat-l{font-size:10px;color:var(--text2);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;}
 .field{display:block;margin-bottom:12px;}.field .lbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
 .field input,.field select{width:100%;padding:12px 15px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:16px;font-family:inherit;}
+.field input:focus,.field select:focus{border-color:var(--accent);outline:none;}
 .ticket-card{background:#ffffff;color:#1a1a1a;border-radius:16px;padding:24px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:340px;margin:0 auto;}
 .tc-img-logo{width:80px;height:auto;border-radius:8px;margin-bottom:8px;}
 .tc-title{font-size:16px;font-weight:700;color:#1a472a;margin-bottom:2px;}
+.tc-sub2{font-size:11px;font-weight:600;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;}
 .tc-num{font-size:13px;font-weight:700;color:var(--blue);margin:6px 0;font-family:monospace;}
+.tc-detail{font-size:13px;color:#444;margin:3px 0;line-height:1.5;}
+.tc-detail b{color:#1a1a1a;}
 .tc-qr{margin:12px auto;display:flex;justify-content:center;padding:8px;background:#fff;border-radius:8px;}
 .tc-status{display:inline-block;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;margin-top:8px;}
 .tc-status.valid{background:#e8f5e9;color:#2e7d32;}
 .tc-status.controlled{background:#e3f2fd;color:#1565c0;}
-.vgrp-body{overflow:hidden;transition:max-height 0.3s ease;max-height:15000px;}
+.rbox{border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:12px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+.rbox.ok{border:2px solid var(--green);background:#e8f5e9;}
+.rbox.ko{border:2px solid var(--red);background:#ffebee;}
+.rbox .ri{font-size:48px;margin-bottom:8px;}.rbox .rt{font-size:20px;font-weight:700;margin-bottom:4px;}.rbox .rd{font-size:13px;color:var(--text2);}
+.moment{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:8px;text-align:center;}
+.sep-or{display:flex;align-items:center;gap:12px;margin:12px 0;font-size:13px;color:var(--text2);font-weight:600;}
+.sep-or::before,.sep-or::after{content:'';flex:1;height:1px;background:var(--border);}
+.scan-status{text-align:center;padding:16px;border-radius:10px;margin-top:12px;font-size:14px;font-weight:600;}
+.scan-status.info{background:#e3f2fd;color:var(--blue);}
+.scan-status.err{background:#ffebee;color:var(--red);}
+.hitem{display:flex;flex-direction:column;padding:14px;margin-bottom:10px;border-radius:var(--radius);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-size:13px;gap:8px;}.hitem:last-child{margin-bottom:0;}
+.hitem-top{display:flex;justify-content:space-between;align-items:center;}
+.hitem-actions{display:flex;gap:6px;}
+.hact{padding:6px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
+.hact-sms{background:#e8f5e9;color:var(--green);}
+.hact-qr{background:#e3f2fd;color:var(--blue);}
+.hact:active{transform:scale(0.95);}
+.hid{font-weight:700;color:var(--accent);font-size:12px;}.hinfo{color:var(--text2);font-size:11px;}
+.hbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;}
+.hbadge.actif{background:#e8f5e9;color:var(--green);}
+.hbadge.ctrl{background:#e3f2fd;color:var(--blue);}
+.hbadge.enc{background:#fff3e0;color:var(--orange);}
+.hright{display:flex;align-items:center;gap:6px;}
+.hdel{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:4px 8px;opacity:0.6;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:16px;text-align:center;color:var(--accent);}
+.modal-warn{color:var(--red);font-size:13px;text-align:center;margin-bottom:12px;font-weight:600;}
+.modal input[type=password]{width:100%;padding:12px 15px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:16px;font-family:inherit;margin-bottom:12px;}
+.modal input:focus{border-color:var(--accent);outline:none;}
+.modal-btns{display:flex;gap:8px;}.modal-btns .btn{flex:1;}
+.modal-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;}
+.vgrp{background:#fff;border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.vgrp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.vgrp-name{font-size:16px;font-weight:700;color:var(--accent);}
+.vgrp-stats{display:flex;gap:12px;margin-bottom:12px;}
+.vgrp-stat{font-size:13px;font-weight:600;color:var(--text2);}
+.vgrp-stat b{color:var(--text);font-size:16px;}
+.btn-enc{padding:10px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn-enc:active{transform:scale(0.97);}
+.enc-trace{background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:12px;color:var(--orange);font-weight:600;text-align:center;}
+.vendeur-tag{font-size:11px;color:var(--orange);font-weight:600;}
+.vgrp-toggle-bar{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:10px 0 6px;font-size:13px;font-weight:600;color:var(--accent);border-top:1px solid var(--border);margin-top:8px;}
+.vgrp-toggle-bar .chevron{display:inline-block;transition:transform 0.2s;font-size:12px;}
+.vgrp-toggle-bar.open .chevron{transform:rotate(90deg);}
+#hd-tickets{overflow:hidden;transition:max-height 0.3s ease;max-height:5000px;}
+#hd-tickets.collapsed{max-height:0;}
+.vgrp-body{overflow:hidden;transition:max-height 0.3s ease;max-height:2000px;}
 .vgrp-body.collapsed{max-height:0;}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
-.modal{background:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:380px;}
+.gear-btn{position:absolute;right:12px;top:12px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);width:36px;height:36px;border-radius:10px;font-size:18px;cursor:pointer;box-shadow:none;display:flex;align-items:center;justify-content:center;color:#fff;}
+.gear-btn:active{transform:scale(0.95);}
+.admin-menu{background:#fff;border-radius:var(--radius);padding:16px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+.admin-menu-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;text-align:center;}
+.admin-item{display:flex;align-items:center;gap:10px;padding:14px 12px;border-radius:10px;border:2px solid #ef9a9a;background:#ffebee;cursor:pointer;font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px;width:100%;font-family:inherit;}
+.admin-item:active{transform:scale(0.98);}
+.vcrd{background:#fff;border-radius:var(--radius);padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.06);transition:all 0.3s;}
+.vcrd:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+.vcrd:active{transform:scale(0.98);}
+.vcrd-left{display:flex;flex-direction:column;gap:4px;}
+.vcrd-name{font-size:16px;font-weight:700;color:var(--accent);}
+.vcrd-info{font-size:12px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap;}
+.vcrd-info b{color:var(--text);}
+.vcrd-info .vi-vendu{color:var(--green);}
+.vcrd-info .vi-trans{color:var(--orange);}
+.vcrd-arrow{font-size:24px;color:#ccc;padding-left:12px;}
+.detail-head{text-align:center;margin-bottom:16px;}
+.detail-name{font-size:20px;font-weight:700;color:var(--accent);}
 </style>
 </head>
 <body>
+
+<!-- pg-home supprimé - accès direct depuis appli contrôleur -->
 
 <div id="pg-menu" class="pg on">
   <div class="tk-topbar">
@@ -87,91 +154,410 @@ a, button, .menu-btn, .tk-nav-btn, .opt, .vcrd, .admin-item, .hact, .hdel {
       </div>
     </div>
     <div class="tk-topbar-right">
-      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px;"><div style="width:7px;height:7px;border-radius:50%;background:#4caf50;"></div><span style="font-size:11px;font-weight:600;color:#81c784;">En ligne</span></div>
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px;"><div style="width:7px;height:7px;border-radius:50%;background:#4caf50;box-shadow:0 0 6px rgba(76,175,80,0.6);"></div><span style="font-size:11px;font-weight:600;color:#81c784;">Synchronisé</span></div>
     </div>
   </div>
+  <!-- Welcome Card -->
   <div style="margin:16px 0 0;background:#e8a838;border-radius:16px;padding:22px 20px;position:relative;overflow:hidden;">
-    <div id="menu-vendeur" style="font-size:22px;font-weight:800;color:#1a472a;">Bienvenue</div>
-    <div id="menu-date-tk" style="font-size:14px;color:#2d5a3d;margin-top:6px;font-weight:500;"></div>
+    <div style="position:absolute;top:-25px;right:-25px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.12);"></div>
+    <div style="position:absolute;bottom:-15px;left:50px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+    <div id="menu-vendeur" style="font-size:22px;font-weight:800;color:#1a472a;position:relative;"></div>
+    <div id="menu-date-tk" style="font-size:14px;color:#2d5a3d;margin-top:6px;font-weight:500;position:relative;"></div>
+    <div style="margin-top:10px;font-size:12px;color:#1a472a;font-weight:600;opacity:0.7;position:relative;">Saison 2026</div>
   </div>
+  <!-- Stats -->
   <div class="stats" style="margin-top:14px;">
     <div class="stat"><div class="stat-v" id="sm-jour">0</div><div class="stat-l">Aujourd'hui</div></div>
     <div class="stat"><div class="stat-v" id="sm-total">0</div><div class="stat-l">Total</div></div>
     <div class="stat"><div class="stat-v" id="sm-euro">0€</div><div class="stat-l">Vendu</div></div>
   </div>
-  <div class="menu-grid" style="margin-top:10px;">
-    <button class="menu-btn" id="go-vente"><span class="mb-icon">🎫</span><span>Émettre un ticket</span></button>
-    <button class="menu-btn" id="go-scan"><span class="mb-icon">🔍</span><span>Vérifier un ticket</span></button>
+  <!-- Section Title -->
+  <div style="margin:8px 0 10px;display:flex;align-items:center;gap:8px;"><div style="width:4px;height:18px;border-radius:2px;background:var(--accent);"></div><span style="font-size:15px;font-weight:700;color:var(--accent);">Modules</span></div>
+  <!-- Grid -->
+  <div class="menu-grid">
+    <button class="menu-btn" id="go-vente"><span class="mb-icon">🎫</span><span>Émettre un ticket</span><span class="menu-btn-desc">Vente et émission de tickets</span></button>
+    <button class="menu-btn" id="go-scan"><span class="mb-icon">🔍</span><span>Vérifier un ticket</span><span class="menu-btn-desc">Scanner ou saisir un code</span></button>
   </div>
+  <!-- Bottom Buttons -->
   <div class="tk-bottom-btn" id="go-histo"><span>📋 Historique des ventes</span></div>
+  <div class="tk-bottom-btn tk-admin-btn" id="btn-gear-menu" style="display:none;background:#e8a838;"><span style="color:#1a472a;">⚙️ Administration</span></div>
 </div>
 
 <div id="pg-vente" class="pg">
-  <div class="topbar"><span class="topbar-title">🎫 Nouvelle Vente</span></div>
+  <div class="topbar"><button class="btn-back" id="back-vente">← Menu</button><span class="topbar-title">🎫 Vente</span></div>
+  <div id="vente-vendeur" style="text-align:center;margin-bottom:12px;font-size:13px;color:var(--accent);font-weight:600;"></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-v" id="s-jour">0</div><div class="stat-l">Aujourd'hui</div></div>
+    <div class="stat"><div class="stat-v" id="s-total">0</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-v" id="s-euro">0€</div><div class="stat-l">Vendu</div></div>
+  </div>
   <div class="card" id="step-lieu">
     <div class="card-t">📍 Lieu de pêche</div>
-    <div class="grid2">
-      <button class="opt" id="opt-breit">Breitmatt</button>
-      <button class="opt" id="opt-hardt">Hardt</button>
+    <div class="grid2" id="g-lieu">
+      <button class="opt" id="opt-breit">Étang<br>Breitmatt</button>
+      <button class="opt" id="opt-hardt">Étang<br>de la Hardt</button>
       <button class="opt" id="opt-carpo" style="grid-column:span 2">Carpodrome</button>
     </div>
   </div>
   <div class="card hidden" id="step-carte">
     <div class="card-t">💳 Carte de pêche</div>
-    <div class="grid2">
-      <button class="opt" id="opt-tit">Titulaire</button>
-      <button class="opt" id="opt-sans">Sans carte</button>
+    <div class="grid2" id="g-carte">
+      <button class="opt" id="opt-tit">Titulaire<br>carte de pêche</button>
+      <button class="opt" id="opt-sans">Sans carte<br>de pêche</button>
     </div>
   </div>
   <div class="card hidden" id="step-type">
     <div class="card-t">⏱ Type de ticket</div>
-    <div id="g-type" class="grid2"></div>
+    <div class="moment" id="lbl-moment"></div>
+    <div id="g-type"></div>
+  </div>
+  <div class="card hidden" id="step-date">
+    <div class="card-t">📅 Date de validité</div>
+    <div class="grid2">
+      <button class="opt on" id="opt-today">📅 Aujourd'hui</button>
+      <button class="opt" id="opt-otherdate">📆 Autre date</button>
+    </div>
+    <div id="date-custom" class="hidden" style="margin-top:12px;">
+      <label class="field"><span class="lbl">Choisir la date</span>
+        <input type="date" id="inp-date">
+      </label>
+    </div>
+  </div>
+  <div class="card hidden" id="step-sejour">
+    <div class="card-t">🏕️ Multi-jours à la Hardt</div>
+    <div class="grid2">
+      <label class="field"><span class="lbl">Date début</span><input type="date" id="inp-sej-debut"></label>
+      <label class="field"><span class="lbl">Date fin</span><input type="date" id="inp-sej-fin"></label>
+    </div>
+    <div style="margin-top:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">🟢 Arrivée :</div>
+      <div class="grid3" id="g-sej-debut">
+        <button class="opt" id="opt-sej-deb-journee">Journée<span class="prix">dès 8h</span></button>
+        <button class="opt" id="opt-sej-deb-demi">Demi-journée<span class="prix">dès 14h</span></button>
+        <button class="opt" id="opt-sej-deb-nuit">Nuit<span class="prix">dès 18h</span></button>
+      </div>
+    </div>
+    <div style="margin-top:8px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">🔴 Départ :</div>
+      <div class="grid3" id="g-sej-fin">
+        <button class="opt" id="opt-sej-fin-matin">Matin<span class="prix">à 8h</span></button>
+        <button class="opt" id="opt-sej-fin-demi">Après-midi<span class="prix">à 14h</span></button>
+        <button class="opt" id="opt-sej-fin-soir">Soir<span class="prix">à 18h</span></button>
+      </div>
+    </div>
+    <button type="button" id="btn-sej-offert" style="width:100%;margin-top:12px;background:#fff3e0;border:2px solid #ff9800;border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left;font-size:14px;font-weight:700;color:#e65100;">🎁 Créditer des créneaux offerts</button>
+    <div id="offert-details" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;margin-bottom:4px;background:#fff8e1;border-radius:10px;padding:14px;">
+        <div style="text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:2px;">Journées</div>
+          <div style="font-size:10px;color:#888;margin-bottom:4px;" id="lbl-max-j">max 0</div>
+          <input type="number" id="inp-off-journee" min="0" max="0" value="0" style="width:60px;padding:8px;border-radius:10px;border:2px solid #ff9800;text-align:center;font-size:20px;font-weight:700;color:#e65100;">
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:2px;">Demi-j.</div>
+          <div style="font-size:10px;color:#888;margin-bottom:4px;" id="lbl-max-d">max 0</div>
+          <input type="number" id="inp-off-demi" min="0" max="0" value="0" style="width:60px;padding:8px;border-radius:10px;border:2px solid #ff9800;text-align:center;font-size:20px;font-weight:700;color:#e65100;">
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:12px;font-weight:700;color:#e65100;margin-bottom:2px;">Nuits</div>
+          <div style="font-size:10px;color:#888;margin-bottom:4px;" id="lbl-max-n">max 0</div>
+          <input type="number" id="inp-off-nuit" min="0" max="0" value="0" style="width:60px;padding:8px;border-radius:10px;border:2px solid #ff9800;text-align:center;font-size:20px;font-weight:700;color:#e65100;">
+        </div>
+      </div>
+    </div>
+    <div id="sejour-calc" class="hidden" style="margin-top:12px;background:var(--card2);border-radius:12px;padding:14px;text-align:center;">
+      <div id="sejour-detail" style="font-size:13px;color:var(--text2);line-height:1.6;"></div>
+      <div id="sejour-total" style="font-size:20px;font-weight:700;color:var(--accent);margin-top:6px;"></div>
+    </div>
+  </div>
+  <div class="card hidden" id="step-poste">
+    <div class="card-t">📍 Numéro de poste</div>
+    <label class="field"><span class="lbl" id="poste-lbl">N° de poste</span><input type="number" id="inp-poste" min="1" placeholder="Ex: 5" inputmode="numeric" style="text-align:center;font-size:18px;font-weight:700;"></label>
   </div>
   <div class="card hidden" id="step-tel">
-    <div class="card-t">📱 Coordonnées</div>
-    <label class="field"><span class="lbl">Nom / Prénom</span><input type="text" id="inp-nom-prenom" placeholder="Ex: MARTIN Jean"></label>
-    <label class="field"><span class="lbl">N° Téléphone</span><input type="tel" id="inp-tel" placeholder="06XXXXXXXX"></label>
+    <div class="card-t">📱 Coordonnées pêcheur</div>
+    <div style="position:relative;">
+      <input type="text" id="inp-search-pecheur" placeholder="🔍 Chercher un pêcheur (nom ou prénom)" autocomplete="off" style="width:100%;padding:12px 15px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:15px;font-family:inherit;box-sizing:border-box;">
+      <div id="search-results" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:2px solid var(--accent);border-top:none;border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+    </div>
+    <div id="selected-pecheur" style="display:none;margin-top:8px;background:#e8f5e9;border-radius:10px;padding:10px 14px;display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div><span style="font-weight:700;color:#1a472a;" id="sel-pecheur-name"></span><br><span style="font-size:13px;color:#666;" id="sel-pecheur-tel2"></span></div>
+        <button type="button" id="btn-clear-pecheur" style="background:#ffebee;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label class="field"><span class="lbl">Numéro de téléphone</span><input type="tel" id="inp-tel" placeholder="06 XX XX XX XX" autocomplete="tel"></label>
+    </div>
+    <button type="button" id="btn-add-pecheur" style="width:100%;padding:10px;background:#fff3e0;border:2px solid #ff9800;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:#e65100;margin-top:4px;">➕ Ajouter un nouveau pêcheur à la base</button>
+    <div id="add-pecheur-form" style="display:none;margin-top:8px;background:#fff8e1;border-radius:10px;padding:14px;">
+      <div style="font-size:13px;font-weight:700;color:#e65100;margin-bottom:8px;">➕ Nouveau pêcheur</div>
+      <input type="text" id="new-pech-nom" placeholder="NOM" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;text-transform:uppercase;margin-bottom:6px;box-sizing:border-box;">
+      <input type="text" id="new-pech-prenom" placeholder="Prénom" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;margin-bottom:6px;box-sizing:border-box;">
+      <input type="tel" id="new-pech-tel" placeholder="06 XX XX XX XX" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;margin-bottom:8px;box-sizing:border-box;">
+      <button type="button" id="btn-save-pecheur" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;">✅ Enregistrer et utiliser</button>
+    </div>
   </div>
   <div id="step-recap" class="hidden">
-    <button class="btn btn-green" id="btn-emit">✅ Générer le ticket</button>
+    <div class="card" style="border:2px solid #2d5a3d;"><div class="card-t">📝 Récapitulatif</div><div id="recap-txt" style="font-size:14px;line-height:1.6;"></div></div>
+    <button class="btn btn-blue" id="btn-emit">📨 Générer & Envoyer par SMS</button>
   </div>
   <div id="emit-ok" class="hidden">
-    <div class="card" style="text-align:center;">
-       <div style="font-size:40px;">✅</div>
-       <div id="emit-ok-id" style="font-weight:700;margin:10px 0;"></div>
-       <div id="emit-ok-ticket"></div>
-       <button class="btn btn-blue mt12" id="btn-sms">📱 Envoyer par SMS</button>
-       <button class="btn btn-out mt8" onclick="location.reload()">🔄 Nouveau ticket</button>
+    <div class="rbox ok"><div class="ri">✅</div><div class="rt">Ticket prêt à être envoyé</div><div class="rd" id="emit-ok-id"></div></div>
+    <div id="sms-zone" style="margin-top:12px;background:#e8f5e9;border-radius:12px;padding:16px;text-align:center;">
+      <button class="btn btn-green" id="btn-sms" style="width:100%;font-size:16px;padding:14px;">📱 Envoyer le ticket par SMS</button>
+      <div style="margin-top:10px;padding:10px;background:#fff3e0;border-radius:8px;border:1px solid #ff9800;">
+        <div style="font-size:13px;color:#e65100;font-weight:700;">⚠️ Après avoir cliqué sur "Envoyer par SMS"</div>
+        <div style="font-size:12px;color:#bf360c;margin-top:4px;">N'oubliez pas d'appuyer sur <b>Envoyer</b> dans votre application de messagerie pour que le pêcheur reçoive son ticket.</div>
+      </div>
     </div>
+    <button type="button" id="btn-preview-tk" style="width:100%;margin-top:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;padding:10px;cursor:pointer;font-size:14px;color:#666;text-align:center;">👁️ Voir le ticket généré</button>
+    <div id="emit-ok-ticket" style="display:none;margin-top:8px;"></div>
+    <button class="btn btn-out mt8" id="btn-new" style="width:100%;">🔄 Nouveau ticket</button>
   </div>
 </div>
 
+<!-- ==================== PAGE SCAN ==================== -->
 <div id="pg-scan" class="pg">
-  <div class="topbar"><span class="topbar-title">🔍 Vérification</span></div>
-  <div class="card">
-    <div id="qr-reader" style="width:100%;"></div>
-    <button class="btn btn-blue mt8" id="btn-start-scan">📷 Scanner QR Code</button>
-    <div class="field mt12"><span class="lbl">Ou saisir code (ex: A3F9)</span><input type="text" id="inp-tkid" maxlength="4" style="text-align:center;font-size:20px;"></div>
-    <button class="btn btn-out mt8" id="btn-search-tk">Vérifier</button>
+  <div class="topbar"><button class="btn-back" id="back-scan">← Menu</button><span class="topbar-title">🔍 Vérification</span></div>
+  <div id="scan-input">
+    <div class="card">
+      <div class="card-t">📸 Scanner le QR Code du ticket</div>
+      <div id="qr-reader" style="width:100%;border-radius:10px;overflow:hidden;"></div>
+      <button class="btn btn-blue mt8" id="btn-start-scan" style="font-size:18px;padding:18px;">📷 Lancer le scan</button>
+      <button class="btn btn-out mt8 hidden" id="btn-stop-scan">⏹️ Arrêter le scan</button>
+      <div id="scan-status" class="hidden"></div>
+    </div>
+    <div class="sep-or">OU</div>
+    <div class="card">
+      <div class="card-t">🔢 Saisir le numéro du ticket</div>
+      <label class="field"><span class="lbl">Code du ticket (4 caractères après TK-)</span>
+        <input type="text" id="inp-tkid" placeholder="ex: A3F9" maxlength="4" autocomplete="off" autocapitalize="characters" style="text-align:center;font-size:22px;font-weight:700;letter-spacing:4px;text-transform:uppercase;">
+      </label>
+      <button class="btn btn-out" id="btn-search-tk">Vérifier</button>
+    </div>
   </div>
   <div id="scan-out" class="hidden">
     <div id="scan-rbox"></div>
     <div id="scan-ticket"></div>
-    <button class="btn btn-out mt12" onclick="location.reload()">Nouvelle vérification</button>
+    <div id="scan-btns" class="hidden" style="margin-top:12px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;text-align:center;color:#fff;">Contrôle validé ?</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-green" id="btn-ctrl-oui" style="flex:1;">✅ OUI</button>
+        <button class="btn btn-red" id="btn-ctrl-non" style="flex:1;">❌ NON</button>
+      </div>
+    </div>
+    <button class="btn btn-out mt12" id="btn-rescan">Nouvelle vérification</button>
   </div>
 </div>
 
+<!-- ==================== PAGE HISTORIQUE ==================== -->
+<div id="pg-histo" class="pg">
+  <div class="topbar"><button class="btn-back" id="back-histo">← Menu</button><span class="topbar-title">📋 Historique</span></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-v" id="h-total">0</div><div class="stat-l">Total émis</div></div>
+    <div class="stat"><div class="stat-v" id="h-enc">0</div><div class="stat-l">Transmis</div></div>
+    <div class="stat"><div class="stat-v" id="h-euro">0€</div><div class="stat-l">Vendu</div></div>
+  </div>
+  <div id="h-content"></div>
+  <div id="h-empty" style="text-align:center;padding:20px;color:#fff;font-weight:600;">Aucun ticket émis</div>
+</div>
+
+<!-- ==================== PAGE HISTORIQUE DETAIL ==================== -->
+<div id="pg-histo-detail" class="pg">
+  <div class="topbar"><button class="btn-back" id="back-histo-detail">← Historique</button><span class="topbar-title">📋 Détail</span></div>
+  <div class="detail-head">
+    <div class="detail-name" id="hd-name"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-v" id="hd-count">0</div><div class="stat-l">Tickets</div></div>
+    <div class="stat"><div class="stat-v" id="hd-vendu">0€</div><div class="stat-l">Vendu</div></div>
+    <div class="stat"><div class="stat-v" id="hd-trans">0€</div><div class="stat-l">Transmis</div></div>
+  </div>
+  <div id="hd-actions"></div>
+  <div id="hd-traces"></div>
+  <div id="hd-toggle"></div>
+  <div id="hd-tickets"></div>
+</div>
+
+<!-- MODAL SUPPRESSION -->
+<div id="modal-del" class="overlay hidden">
+  <div class="modal">
+    <div class="modal-title">🗑️ Suppression de ticket</div>
+    <div class="modal-warn">⚠️ Cette action est irréversible</div>
+    <div id="modal-info" style="font-size:13px;text-align:center;margin-bottom:12px;color:var(--text2);"></div>
+    <div id="del-step1">
+      <input type="password" id="del-pwd" placeholder="Mot de passe administrateur" autocomplete="off">
+      <div class="modal-btns">
+        <button class="btn btn-out" id="btn-del-cancel1">Annuler</button>
+        <button class="btn btn-red" id="btn-del-check">Vérifier</button>
+      </div>
+      <div class="modal-err hidden" id="del-err">Mot de passe incorrect</div>
+    </div>
+    <div id="del-step2" class="hidden">
+      <div style="text-align:center;padding:12px 0;font-size:15px;font-weight:700;color:var(--red);">Confirmer la suppression définitive ?</div>
+      <div class="modal-btns">
+        <button class="btn btn-out" id="btn-del-cancel2">Annuler</button>
+        <button class="btn btn-red" id="btn-del-confirm">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ENCAISSEMENT -->
+<div id="modal-enc" class="overlay hidden">
+  <div class="modal">
+    <div class="modal-title">💰 Transmettre au trésorier</div>
+    <div id="enc-info" style="font-size:14px;text-align:center;margin-bottom:16px;"></div>
+    <input type="password" id="enc-pwd" placeholder="Mot de passe administrateur" autocomplete="off">
+    <div class="modal-btns">
+      <button class="btn btn-out" id="btn-enc-cancel">Annuler</button>
+      <button class="btn btn-orange" id="btn-enc-confirm">💰 Transmettre</button>
+    </div>
+    <div class="modal-err hidden" id="enc-err">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN SETTINGS -->
+<div id="modal-admin" class="overlay hidden">
+  <div class="modal">
+    <div class="modal-title">⚙️ Administration</div>
+    <div id="admin-step1">
+      <input type="password" id="admin-pwd" placeholder="Mot de passe administrateur" autocomplete="off">
+      <div class="modal-btns">
+        <button class="btn btn-out" id="btn-admin-cancel1">Annuler</button>
+        <button class="btn btn-blue" id="btn-admin-check">Accéder</button>
+      </div>
+      <div class="modal-err hidden" id="admin-err">Mot de passe incorrect</div>
+    </div>
+    <div id="admin-step2" class="hidden">
+      <div class="admin-menu">
+        <div class="admin-menu-title">🛠️ Panneau d'administration</div>
+        <button class="admin-item" id="btn-admin-contacts" style="border-color:#1565c0;background:#e3f2fd;color:#1565c0;">📇 Contacts tickets</button>
+        <button class="admin-item" id="btn-reset-all">🗑️ Tout réinitialiser</button>
+      </div>
+      <div class="modal-btns" style="margin-top:12px;">
+        <button class="btn btn-out" id="btn-admin-cancel2">Fermer</button>
+      </div>
+    </div>
+    <div id="admin-step5" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:700;color:var(--text);">📇 Contacts tickets</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-out" id="btn-contacts-add" style="padding:6px 12px;font-size:12px;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;">➕ Ajouter</button>
+          <button class="btn btn-out" id="btn-contacts-back" style="padding:6px 12px;font-size:12px;">← Retour</button>
+        </div>
+      </div>
+      <div id="contacts-list" style="max-height:400px;overflow-y:auto;"></div>
+    </div>
+    <div id="admin-step3" class="hidden">
+      <div style="text-align:center;padding:12px 0;">
+        <div style="font-size:40px;margin-bottom:8px;">⚠️</div>
+        <div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px;">Tout réinitialiser ?</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">Tous les tickets, encaissements et données seront supprimés définitivement.<br>Cette action est irréversible.</div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn btn-out" id="btn-reset-cancel">Annuler</button>
+        <button class="btn btn-red" id="btn-reset-confirm1">Confirmer</button>
+      </div>
+    </div>
+    <div id="admin-step4" class="hidden">
+      <div style="text-align:center;padding:12px 0;">
+        <div style="font-size:40px;margin-bottom:8px;">🚨</div>
+        <div style="font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px;">DERNIÈRE CONFIRMATION</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">Êtes-vous absolument sûr ?<br>Toutes les données seront perdues.</div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn btn-out" id="btn-reset-cancel2">Non, annuler</button>
+        <button class="btn btn-red" id="btn-reset-final">🗑️ Oui, tout supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VISUALISATION TICKET -->
+<div id="modal-view-tk" class="overlay hidden">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">🎫 Visualisation du ticket</div>
+    <div id="view-tk-content"></div>
+    <button class="btn btn-out mt12" id="btn-view-tk-close">Fermer</button>
+  </div>
+</div>
+
+<!-- Bottom Nav Bar -->
 <div class="tk-nav" id="tkNav">
   <button class="tk-nav-btn" id="tkNavMenu">🏠 Accueil</button>
   <button class="tk-nav-btn" id="tkNavBack">← Retour</button>
 </div>
 
 <script>
-// =========================================================
-var LOGO='data:image/jpeg;base64,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';;
-// =========================================================
-
 document.addEventListener('DOMContentLoaded',function(){
+try{(function(){
+  var hasCrypto=(typeof CryptoJS!=='undefined');
+  var hasQR=(typeof QRCode!=='undefined');
+  var hasScan=(typeof Html5Qrcode!=='undefined');
+
+  var ADMIN_HASH='8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+  if(hasCrypto){try{ADMIN_HASH=CryptoJS.SHA256('admin').toString();}catch(e){}}
+  var SECRET='AAPPMA-GUN-2026-X9kL3mP7qR2wT5vY8bN1cF4hJ6dS0aE';
+  var SK='aappma_tk';
+  var SK_ENC='aappma_enc';
+  var SK_VENDEUR='aappma_vendeur';
+  var LIEUX={breitmatt:'Étang Breitmatt',hardt:'Étang de la Hardt',carpodrome:'Carpodrome'};
+  var TARIFS={
+    breitmatt:[['demi','Demi-journée',6],['journee','Journée',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]],
+    hardt_sans:[['demi','Demi-journée',6],['journee','Journée',10],['nuit','Nuit',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0],['nuit_off','🎁 Nuit offerte',0]],
+    hardt_tit:[['nuit','Nuit',10],['nuit_off','🎁 Nuit offerte',0]],
+    carpo_tit:[['demi','Demi-journée',3],['journee','Journée',5],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]],
+    carpo_sans:[['demi','Demi-journée',6],['journee','Journée',10],['demi_off','🎁 Demi-journée offerte',0],['journee_off','🎁 Journée offerte',0]]
+  };
+  var TARIFS_FLAT=[['demi','Demi-journée'],['journee','Journée'],['nuit','Nuit'],['demi_off','🎁 Demi-journée offerte'],['journee_off','🎁 Journée offerte'],['nuit_off','🎁 Nuit offerte']];
+
+  var LOGO='data:image/jpeg;base64,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';
+
+  var currentVendeur='';
+  var ADMIN_NAME='patrice';
+  var viewAllUsers=[];
+  function isAdmin(){return currentVendeur.toLowerCase()===ADMIN_NAME;}
+  function canViewAll(){
+    if(isAdmin())return true;
+    var u=currentVendeur.toLowerCase();
+    for(var i=0;i<viewAllUsers.length;i++){if(viewAllUsers[i].toLowerCase()===u)return true;}
+    return false;
+  }
+  var selLieu=null,selCarte=null,selType=null,selPrix=null,selPoste='';
+  var selPecheurNom='',selPecheurPrenom='';
+  var lastTicket=null;
+  var delTarget=null;
+  var encTarget=null;
+  var scanner=null;
+
+  function $(id){return document.getElementById(id);}
+  function show(el){if(el)el.classList.remove('hidden');}
+  function hide(el){if(el)el.classList.add('hidden');}
+  function clearOn(el){if(el){var b=el.querySelectorAll('.opt');for(var i=0;i<b.length;i++)b[i].classList.remove('on');}}
+
+  function setStatus(msg,isErr){
+    var el=$('scan-status');
+    el.innerHTML=msg;
+    el.className='scan-status '+(isErr?'err':'info');
+    show(el);
+  }
+
+  var tkPageHistory=[];
+  function goPage(id){
+    var cur=document.querySelector('.pg.on');
+    if(cur&&cur.id&&cur.id!==id) tkPageHistory.push(cur.id);
+    var pages=document.querySelectorAll('.pg');
+    for(var i=0;i<pages.length;i++)pages[i].classList.remove('on');
+    $(id).classList.add('on');
+    if(id==='pg-vente')resetVente();
+    if(id==='pg-scan')resetScan();
+    if(id==='pg-histo')refreshHisto();
+    window.scrollTo(0,0);
+  }
+
+  // ===== FIREBASE INIT =====
   var fbApp=firebase.initializeApp({
     apiKey:"AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
     authDomain:"appli-controleur-gunder.firebaseapp.com",
@@ -182,100 +568,1856 @@ document.addEventListener('DOMContentLoaded',function(){
     appId:"1:780831512988:web:f0f263cfaf9abd18269059"
   },'ticketApp');
   var fbDb=firebase.database(fbApp);
-  var currentVendeur = localStorage.getItem('controleurUser') || 'Inconnu';
-  var _tickets = [];
+  var fbTickets=fbDb.ref('ticketsVente');
+  var fbEnc=fbDb.ref('ticketsEncaisse');
 
-  function $(id){return document.getElementById(id);}
-  function show(el){if(el)el.classList.remove('hidden');}
-  function hide(el){if(el)el.classList.add('hidden');}
+  // Charger liste utilisateurs avec accès historique complet
+  fbDb.ref('ticketViewAllUsers').once('value').then(function(snap){
+    var data=snap.val();
+    if(data){viewAllUsers=Array.isArray(data)?data:Object.values(data);}
+  }).catch(function(){});
 
-  // Navigation
-  function goPage(id){
-    document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-    $(id).classList.add('on');
-    window.scrollTo(0,0);
+  // ===== STORAGE (Firebase + cache local) =====
+  var _tickets=[];
+  var _enc={};
+  var _fbReady=false;
+
+  // Écoute temps réel des tickets
+  fbTickets.on('value',function(snap){
+    var data=snap.val()||{};
+    _tickets=[];
+    for(var k in data){if(data[k]&&data[k].id)_tickets.push(data[k]);}
+    _tickets.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    _fbReady=true;
+    // Rafraîchir si on est sur l'historique
+    var histoPage=document.getElementById('pg-histo');
+    if(histoPage&&histoPage.classList.contains('on'))refreshHisto();
+    var detailPage=document.getElementById('pg-histo-detail');
+    if(detailPage&&detailPage.classList.contains('on')&&currentDetailVendeur)showVendeurDetail(currentDetailVendeur);
+  });
+
+  // Écoute temps réel des encaissements
+  fbEnc.on('value',function(snap){
+    _enc=snap.val()||{};
+  });
+
+  function dbGet(){return _tickets;}
+  function dbAdd(t){
+    _tickets.unshift(t);
+    fbTickets.child(t.id).set(t);
+  }
+  function dbFind(id){
+    for(var i=0;i<_tickets.length;i++){if(_tickets[i].id===id)return _tickets[i];}
+    return null;
+  }
+  function dbUpdate(id,u){
+    for(var i=0;i<_tickets.length;i++){
+      if(_tickets[i].id===id){for(var k in u)_tickets[i][k]=u[k];fbTickets.child(id).set(_tickets[i]);break;}
+    }
+  }
+  function dbRemove(id){
+    var b=[];for(var i=0;i<_tickets.length;i++){if(_tickets[i].id!==id)b.push(_tickets[i]);}
+    _tickets=b;
+    fbTickets.child(id).remove();
   }
 
-  $('tkNavMenu').onclick = function(){ window.location.href='index.html'; };
-  $('tkNavBack').onclick = function(){ 
-    if($('pg-menu').classList.contains('on')) window.location.href='index.html';
-    else location.reload();
-  };
-  $('go-vente').onclick = function(){ goPage('pg-vente'); };
-  $('go-scan').onclick = function(){ goPage('pg-scan'); };
+  function encGet(){return _enc;}
+  function encSave(o){_enc=o;fbEnc.set(o);}
 
-  // Vente Logic
-  var selLieu, selCarte, selType, selPrix;
-  $('opt-breit').onclick = function(){ selLieu='Breitmatt'; hide($('step-carte')); showTypes(); };
-  $('opt-hardt').onclick = function(){ selLieu='Hardt'; show($('step-carte')); };
-  $('opt-carpo').onclick = function(){ selLieu='Carpodrome'; show($('step-carte')); };
-  
-  $('opt-tit').onclick = function(){ selCarte='Titulaire'; showTypes(); };
-  $('opt-sans').onclick = function(){ selCarte='Sans carte'; showTypes(); };
+  // ===== CRYPTO =====
+  function makeId(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var a=dbGet();var existing={};for(var i=0;i<a.length;i++)existing[a[i].id]=true;var id;do{var r='';for(var i=0;i<4;i++)r+=c[Math.floor(Math.random()*c.length)];id='TK-'+r;}while(existing[id]);return id;}
 
-  function showTypes(){
-    var g = $('g-type'); g.innerHTML = '';
-    var opts = [ ['Demi-journée', 6], ['Journée', 10] ];
-    if(selLieu==='Hardt') opts.push(['Nuit', 10]);
-    
-    opts.forEach(o=>{
-      var b = document.createElement('button');
-      b.className='opt'; b.innerHTML = o[0]+'<span class="prix">'+o[1]+'€</span>';
-      b.onclick = function(){ selType=o[0]; selPrix=o[1]; show($('step-tel')); show($('step-recap')); };
+  function signTk(d){
+    if(!hasCrypto)return'nosig';
+    var p=d.id+'|'+d.lieu+'|'+d.type+'|'+d.prix+'|'+d.carte+'|'+d.date;
+    return CryptoJS.HmacSHA256(p,SECRET).toString(CryptoJS.enc.Hex);
+  }
+
+  function verifTk(tk){
+    if(!hasCrypto||!tk||!tk.sig)return false;
+    var p=tk.id+'|'+tk.lieu+'|'+tk.type+'|'+tk.prix+'|'+tk.carte+'|'+tk.date;
+    var expected=CryptoJS.HmacSHA256(p,SECRET).toString(CryptoJS.enc.Hex);
+    return expected===tk.sig;
+  }
+
+  function checkPwd(val){
+    if(!hasCrypto)return val==='admin';
+    return CryptoJS.SHA256(val).toString()===ADMIN_HASH;
+  }
+
+
+
+  // ===== VENTE =====
+  var selSejour=false,selSejourOffert=false;
+  var selDate='';
+  var selDateFin='';
+  var selSejourType='';
+  var selSejourDebType='';
+  var selSejourFinType='';
+
+  function resetVente(){
+    selLieu=null;selCarte=null;selType=null;selPrix=null;lastTicket=null;selPoste='';
+    selPecheurNom='';selPecheurPrenom='';
+    selSejour=false;selSejourOffert=false;selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
+    clearOn($('g-lieu'));
+    hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));hide($('emit-ok'));
+    show($('step-lieu'));
+    $('inp-tel').value='';$('inp-poste').value='';$('inp-search-pecheur').value='';$('search-results').style.display='none';$('selected-pecheur').style.display='none';$('add-pecheur-form').style.display='none';selSejourOffert=false;$('btn-sej-offert').style.background='#fff3e0';$('btn-sej-offert').style.color='#e65100';$('btn-sej-offert').textContent='🎁 Créditer des créneaux offerts';
+    $('offert-details').style.display='none';$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
+    $('emit-ok-ticket').style.display='none';$('btn-preview-tk').textContent='👁️ Voir le ticket généré';$('btn-preview-tk').style.background='#f5f5f5';$('btn-preview-tk').style.color='#666';$('btn-preview-tk').style.borderColor='#ddd';
+    updateVenteStats();
+  }
+
+  function updateVenteStats(){
+    var a=dbGet();
+    var today=new Date().toDateString();
+    var mesToday=0,mesTotal=0,mesEuros=0;
+    for(var i=0;i<a.length;i++){
+      if(a[i].vendeur===currentVendeur){
+        mesTotal++;
+        if(new Date(a[i].date).toDateString()===today)mesToday++;
+        if(!a[i].encaisse)mesEuros+=a[i].prix;
+      }
+    }
+    $('s-jour').textContent=mesToday;
+    $('s-total').textContent=mesTotal;
+    $('s-euro').textContent=mesEuros+'€';
+    if($('sm-jour')){$('sm-jour').textContent=mesToday;$('sm-total').textContent=mesTotal;$('sm-euro').textContent=mesEuros+'€';}
+  }
+
+  function pickLieu(lieu){
+    selLieu=lieu;selCarte=null;selType=null;selPrix=null;selSejour=false;selSejourOffert=false;selPoste='';selDate='';selDateFin='';selSejourType='';selSejourDebType='';selSejourFinType='';
+    clearOn($('g-lieu'));
+    var btn=lieu==='breitmatt'?$('opt-breit'):lieu==='hardt'?$('opt-hardt'):$('opt-carpo');
+    if(btn)btn.classList.add('on');
+    hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
+    $('inp-poste').value='';
+    if(lieu==='breitmatt'){
+      hide($('step-carte'));selCarte='na';
+      buildTypes();
+    } else {
+      show($('step-carte'));clearOn($('g-carte'));
+    }
+  }
+
+  function pickCarte(c){
+    selCarte=c;selType=null;selPrix=null;selSejour=false;selSejourOffert=false;
+    clearOn($('g-carte'));
+    var btn=c==='titulaire'?$('opt-tit'):$('opt-sans');
+    if(btn)btn.classList.add('on');
+    hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
+    buildTypes();
+  }
+
+  function buildTypes(){
+    var key=selLieu;
+    if(selLieu==='carpodrome')key=selCarte==='titulaire'?'carpo_tit':'carpo_sans';
+    if(selLieu==='hardt')key=selCarte==='titulaire'?'hardt_tit':'hardt_sans';
+    var arr=TARIFS[key];
+    if(!arr)return;
+    var g=$('g-type');
+    g.innerHTML='';
+    // For Hardt: add séjour option, so always use grid2 with 4 items (2x2)
+    var hasSejourOpt=(selLieu==='hardt');
+    var totalItems=arr.length+(hasSejourOpt?1:0);
+    var cls=totalItems<=2?'grid2':totalItems<=3?'grid3':'grid2';
+    g.className=cls;
+    for(var i=0;i<arr.length;i++){
+      var b=document.createElement('button');
+      b.className='opt';
+      b.setAttribute('data-type',arr[i][0]);
+      b.setAttribute('data-prix',arr[i][2]);
+      b.innerHTML=arr[i][1]+'<span class="prix">'+(arr[i][2]===0?'Gratuit':arr[i][2]+'€')+'</span>';
+      (function(bi){b.addEventListener('click',function(){pickType(bi[0],bi[2]);});})(arr[i]);
       g.appendChild(b);
-    });
+    }
+    if(hasSejourOpt){
+      var bs=document.createElement('button');
+      bs.className='opt';
+      bs.setAttribute('data-type','sejour');
+      var sejourLbl='🏕️ Multi-jours';
+      if(selCarte==='titulaire')sejourLbl+='<span class="prix">Nuits payantes</span>';
+      bs.innerHTML=sejourLbl;
+      bs.addEventListener('click',function(){pickSejour();});
+      g.appendChild(bs);
+    }
+    var now=new Date();
+    $('lbl-moment').textContent=now.getHours()<14?'☀️ Actuellement : Matin':'🌅 Actuellement : Après-midi';
     show($('step-type'));
   }
 
-  $('btn-emit').onclick = function(){
-    if(this.disabled) return;
-    this.disabled = true; // Anti-double clic
-    
-    var tid = 'TK-'+Math.random().toString(36).substr(2,4).toUpperCase();
-    var tk = {
-      id: tid, lieu: selLieu, type: selType, prix: selPrix,
-      nom: $('inp-nom-prenom').value, tel: $('inp-tel').value,
-      vendeur: currentVendeur, date: new Date().toISOString()
-    };
-    
-    fbDb.ref('ticketsVente/'+tid).set(tk).then(()=>{
-      $('emit-ok-id').textContent = tid;
-      renderTicket(tk, 'emit-ok-ticket');
-      hide($('step-recap')); hide($('step-tel')); hide($('step-type')); hide($('step-lieu'));
-      show($('emit-ok'));
-    });
-  };
-
-  function renderTicket(tk, contId){
-    var el = $(contId); el.innerHTML = '';
-    var card = document.createElement('div');
-    card.className = 'ticket-card';
-    card.innerHTML = '<img src="'+LOGO+'" class="tc-img-logo"><div class="tc-title">AAPPMA GUNDERSHOFFEN</div>' +
-                     '<div class="tc-num">'+tk.id+'</div><div><b>'+tk.lieu+'</b></div>' +
-                     '<div>'+tk.type+' — '+tk.prix+'€</div><div id="qr-'+contId+'" class="tc-qr"></div>';
-    el.appendChild(card);
-    new QRCode($('qr-'+contId), {text:tk.id, width:150, height:150});
+  function pickType(t,p){
+    selType=t;selPrix=p;selSejour=false;
+    clearOn($('g-type'));
+    var btns=$('g-type').querySelectorAll('.opt');
+    for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')===t)btns[i].classList.add('on');}
+    hide($('step-sejour'));
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    selDate=todayStr;
+    $('inp-date').value=todayStr;
+    $('inp-date').min=todayStr;
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-today').classList.add('on');
+    hide($('date-custom'));
+    show($('step-date'));
+    if(selLieu==='hardt'||selLieu==='carpodrome'){
+      var maxP=selLieu==='hardt'?12:14;
+      $('inp-poste').max=maxP;
+      $('poste-lbl').textContent='N° de poste (max '+maxP+')';
+      show($('step-poste'));
+    } else {hide($('step-poste'));}
+    show($('step-tel'));
+    updateRecap();
+    show($('step-recap'));
   }
 
-  // Scan Logic
-  $('btn-search-tk').onclick = function(){
-    var id = 'TK-'+$('inp-tkid').value.toUpperCase();
-    fbDb.ref('ticketsVente/'+id).once('value').then(s=>{
-      var val = s.val();
-      hide($('scan-input')); show($('scan-out'));
-      var rb = $('scan-rbox');
-      if(val){
-        rb.innerHTML = '<div class="tc-status valid">✅ TICKET VALIDE</div>';
-        renderTicket(val, 'scan-ticket');
+  function pickSejour(){
+    selSejour=true;selType=null;selPrix=null;selSejourDebType='';selSejourFinType='';selSejourOffert=false;
+    selSejourOffert=false;$('btn-sej-offert').style.background='#fff3e0';$('btn-sej-offert').style.color='#e65100';$('btn-sej-offert').textContent='🎁 Créditer des créneaux offerts';
+    $('offert-details').style.display='none';$('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
+    clearOn($('g-type'));
+    var btns=$('g-type').querySelectorAll('.opt');
+    for(var i=0;i<btns.length;i++){if(btns[i].getAttribute('data-type')==='sejour')btns[i].classList.add('on');}
+    hide($('step-date'));
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    $('inp-sej-debut').value=todayStr;
+    $('inp-sej-debut').min=todayStr;
+    $('inp-sej-fin').value='';
+    $('inp-sej-fin').min=todayStr;
+    clearOn($('g-sej-debut'));
+    clearOn($('g-sej-fin'));
+    hide($('sejour-calc'));
+    hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
+    show($('step-sejour'));
+  }
+
+  function pickSejourDebType(type){
+    selSejourDebType=type;
+    clearOn($('g-sej-debut'));
+    var id=type==='journee'?'opt-sej-deb-journee':type==='demi'?'opt-sej-deb-demi':'opt-sej-deb-nuit';
+    $(id).classList.add('on');
+    calcSejour();
+  }
+
+  function pickSejourFinType(type){
+    selSejourFinType=type;
+    clearOn($('g-sej-fin'));
+    var id=type==='matin'?'opt-sej-fin-matin':type==='demi'?'opt-sej-fin-demi':'opt-sej-fin-soir';
+    $(id).classList.add('on');
+    calcSejour();
+  }
+
+  function toggleSejourOffert(){
+    selSejourOffert=!selSejourOffert;
+    var det=$('offert-details');
+    var btn=$('btn-sej-offert');
+    if(selSejourOffert){
+      det.style.display='block';
+      btn.style.background='#ff9800';btn.style.color='#fff';
+      btn.textContent='✅ Créneaux offerts activés (cliquer pour désactiver)';
+    } else {
+      det.style.display='none';
+      btn.style.background='#fff3e0';btn.style.color='#e65100';
+      btn.textContent='🎁 Créditer des créneaux offerts';
+      $('inp-off-journee').value=0;$('inp-off-demi').value=0;$('inp-off-nuit').value=0;
+    }
+    calcSejour();
+  }
+
+  function clampOffert(el){
+    var max=parseInt(el.max)||0;
+    var val=parseInt(el.value)||0;
+    if(val<0)el.value=0;
+    if(val>max)el.value=max;
+  }
+
+  function calcSejour(){
+    var debut=$('inp-sej-debut').value;
+    var fin=$('inp-sej-fin').value;
+    if(!debut||!fin||!selSejourDebType||!selSejourFinType){hide($('sejour-calc'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));return;}
+    var dDebut=new Date(debut);
+    var dFin=new Date(fin);
+    if(dFin<=dDebut){hide($('sejour-calc'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));return;}
+    var nbJours=Math.round((dFin-dDebut)/86400000)+1;
+    var nbMilieu=nbJours-2;
+
+    var tit=(selCarte==='titulaire');
+    var pJournee=tit?0:10;
+    var pDemi=tit?0:6;
+    var pNuit=10;
+
+    // Compter les créneaux
+    var totalJ=0,totalD=0,totalN=0;
+    // Arrivée
+    if(selSejourDebType==='journee'){totalJ++;totalN++;}
+    else if(selSejourDebType==='demi'){totalD++;totalN++;}
+    else{totalN++;} // nuit
+    // Milieu
+    totalJ+=nbMilieu>0?nbMilieu:0;
+    totalN+=nbMilieu>0?nbMilieu:0;
+    // Départ
+    if(selSejourFinType==='soir')totalJ++;
+    else if(selSejourFinType==='demi')totalD++;
+
+    // Mise à jour max offerts
+    // Chaque type est indépendant : max offert = total de ce type dans le séjour
+    if(tit){
+      $('inp-off-journee').parentElement.style.display='none';
+      $('inp-off-demi').parentElement.style.display='none';
+      $('inp-off-nuit').parentElement.style.display='';
+      $('inp-off-journee').value=0;$('inp-off-demi').value=0;
+    } else {
+      $('inp-off-journee').parentElement.style.display='';
+      $('inp-off-demi').parentElement.style.display='';
+      $('inp-off-nuit').parentElement.style.display='';
+      $('inp-off-journee').max=totalJ;$('lbl-max-j').textContent='max '+totalJ;
+      $('inp-off-demi').max=totalD;$('lbl-max-d').textContent='max '+totalD;
+    }
+    $('inp-off-nuit').max=totalN;$('lbl-max-n').textContent='max '+totalN;
+    clampOffert($('inp-off-journee'));clampOffert($('inp-off-demi'));clampOffert($('inp-off-nuit'));
+    // Lire offerts après clamp
+    var offJ=selSejourOffert?parseInt($('inp-off-journee').value)||0:0;
+    var offD=selSejourOffert?parseInt($('inp-off-demi').value)||0:0;
+    var offN=selSejourOffert?parseInt($('inp-off-nuit').value)||0:0;
+
+    // Calcul : brut - réductions offertes
+    var brut=(totalJ*pJournee)+(totalD*pDemi)+(totalN*pNuit);
+    var reduc=(offJ*pJournee)+(offD*6)+(offN*pNuit);
+    var total=Math.max(0,brut-reduc);
+
+    selDate=debut;
+    selDateFin=fin;
+    selType='multi';
+    selPrix=total;
+
+    // Détail affiché
+    var detail='';
+    detail+='📊 <b>Créneaux du séjour :</b><br>';
+    if(totalJ>0)detail+=totalJ+' journée'+(totalJ>1?'s':'')+' × '+(tit?'gratuit':'10€')+' = '+(totalJ*pJournee)+'€<br>';
+    if(totalD>0)detail+=totalD+' demi-journée'+(totalD>1?'s':'')+' × '+(tit?'gratuit':'6€')+' = '+(totalD*pDemi)+'€<br>';
+    detail+=totalN+' nuit'+(totalN>1?'s':'')+' × 10€ = '+(totalN*pNuit)+'€';
+
+    if(offJ>0||offD>0||offN>0){
+      detail+='<br><br>🎁 <b>Créneaux offerts :</b><br>';
+      if(offJ>0)detail+=offJ+' journée'+(offJ>1?'s':'')+' offerte'+(offJ>1?'s':'')+' = -'+(offJ*pJournee)+'€<br>';
+      if(offD>0)detail+=offD+' demi-journée'+(offD>1?'s':'')+' offerte'+(offD>1?'s':'')+' = -'+(offD*6)+'€<br>';
+      if(offN>0)detail+=offN+' nuit'+(offN>1?'s':'')+' offerte'+(offN>1?'s':'')+' = -'+(offN*pNuit)+'€';
+    }
+    if(tit)detail+='<br><span style="color:#2e7d32;font-weight:700;">🎫 Titulaire carte : journées/demi-journées déjà gratuites</span>';
+
+    $('sejour-detail').innerHTML=detail;
+    $('sejour-total').textContent='Total : '+(total===0?'GRATUIT':total+'€');
+    show($('sejour-calc'));
+    var maxP=selLieu==="hardt"?12:14;$("inp-poste").max=maxP;$("poste-lbl").textContent="N° de poste (max "+maxP+")";show($("step-poste"));
+    show($('step-tel'));
+    updateRecap();
+    show($('step-recap'));
+  }
+
+  function pickDateToday(){
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    selDate=todayStr;
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-today').classList.add('on');
+    hide($('date-custom'));
+    updateRecap();
+  }
+
+  function pickDateOther(){
+    clearOn(document.querySelector('#step-date .grid2'));
+    $('opt-otherdate').classList.add('on');
+    show($('date-custom'));
+    if($('inp-date').value)selDate=$('inp-date').value;
+    updateRecap();
+  }
+
+  function onDateChange(){
+    selDate=$('inp-date').value;
+    updateRecap();
+  }
+
+  function updateRecap(){
+    var cl=selCarte==='titulaire'?' (Titulaire carte)':selCarte==='sans'?' (Sans carte)':'';
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===selType)typeLbl=TARIFS_FLAT[i][1];}
+
+    var dateStr='';
+    if(selSejour&&selDate&&selDateFin){
+      var dD=new Date(selDate),dF=new Date(selDateFin);
+      dateStr='Du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR');
+      var nbJ=Math.round((dF-dD)/86400000)+1;
+      var nbN=nbJ-1;
+      typeLbl='Multi-jours ('+nbJ+'j/'+nbN+'n)';
+    } else if(selDate){
+      dateStr=new Date(selDate).toLocaleDateString('fr-FR');
+    } else {
+      dateStr=new Date().toLocaleDateString('fr-FR');
+    }
+
+    var isTypeOff=(selType&&selType.indexOf('_off')!==-1);
+    var oJ=selSejourOffert?parseInt($('inp-off-journee').value)||0:0;
+    var oD=selSejourOffert?parseInt($('inp-off-demi').value)||0:0;
+    var oN=selSejourOffert?parseInt($('inp-off-nuit').value)||0:0;
+    var hasOffInput=(oJ+oD+oN)>0;
+    var offertLbl='';
+    if(isTypeOff){
+      offertLbl='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:6px 10px;border-radius:8px;text-align:center;font-weight:700;font-size:13px;margin-bottom:6px;">🎁 OFFERT — Journée de travail bénévole</div>';
+    } else if(hasOffInput){
+      var parts=[];
+      if(oJ>0)parts.push(oJ+' journée'+(oJ>1?'s':''));
+      if(oD>0)parts.push(oD+' demi-j.');
+      if(oN>0)parts.push(oN+' nuit'+(oN>1?'s':''));
+      offertLbl='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:6px 10px;border-radius:8px;text-align:center;font-size:12px;margin-bottom:6px;"><b>🎁 Offert :</b> '+parts.join(' • ')+'</div>';
+    }
+    var posteLbl=((selLieu==='hardt'||selLieu==='carpodrome')&&$('inp-poste').value.trim())?'<br><b>📍 Poste n°'+$('inp-poste').value.trim()+'</b>':'';
+
+    $('recap-txt').innerHTML=
+      offertLbl+
+      '<b>📍 '+LIEUX[selLieu]+'</b>'+cl+'<br>'+
+      '<b>⏱ '+typeLbl+'</b> — <b style="color:var(--accent)">'+(selPrix===0?'Gratuit':selPrix+'€')+'</b><br>'+
+      '<b>📅 '+dateStr+'</b>'+posteLbl;
+  }
+
+  // ===== EMISSION =====
+  function emitTicket(){
+    try{
+    if(!selLieu||!selType||selPrix===null||selPrix===undefined){alert('Sélections incomplètes');return;}
+    if(!selDate){alert('Date non sélectionnée');return;}
+    var tel=$('inp-tel').value.trim();
+    var poste=(selLieu==='hardt'||selLieu==='carpodrome')?$('inp-poste').value.trim():'';
+    var now=new Date();
+    var tk={
+      id:makeId(),
+      lieu:selLieu,
+      type:selType,
+      prix:selPrix,
+      carte:selCarte||'na',
+      poste:poste,
+      nom:selPecheurNom,
+      prenom:selPecheurPrenom,
+      date:now.toISOString(),
+      dateDebut:selDate,
+      dateFin:selSejour?selDateFin:selDate,
+      sejour:selSejour,
+      sejourOffert:selSejourOffert,
+      offJournees:selSejourOffert?parseInt($('inp-off-journee').value)||0:0,
+      offDemis:selSejourOffert?parseInt($('inp-off-demi').value)||0:0,
+      offNuits:selSejourOffert?parseInt($('inp-off-nuit').value)||0:0,
+      sejourDebType:selSejourDebType||'',
+      sejourFinType:selSejourFinType||'',
+      tel:tel,
+      vendeur:currentVendeur,
+      controlled:false,
+      controlResult:null,
+      controlDate:null,
+      controls:[],
+      encaisse:false,
+      encaisseDate:null,
+      sig:''
+    };
+    tk.sig=signTk(tk);
+    dbAdd(tk);
+    lastTicket=tk;
+
+    // === AUTO-SYNCHRO RÉSERVATION À LA VENTE ===
+    if(tk.poste&&tk.dateDebut&&(tk.lieu==='carpodrome'||tk.lieu==='hardt')){
+      var syncRef=tk.lieu==='carpodrome'?fbCarpoDb:fbHardtDb;
+      var syncDate=tk.dateDebut;
+      var syncPoste=tk.poste.toString();
+      var syncNom=(tk.nom||'').toUpperCase();
+      syncRef.ref('reservations/'+syncDate+'/'+syncPoste).once('value').then(function(snap){
+        var resa=snap.val();
+        if(resa&&resa.nom){
+          var resaNom=resa.nom.toUpperCase();
+          if(resaNom===syncNom||!syncNom){
+            // Match pêcheur+poste+date → auto-contrôle
+            var nowSync=new Date();
+            syncRef.ref('reservations/'+syncDate+'/'+syncPoste).update({
+              controlled:true,
+              heure:nowSync.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+              controleur:currentVendeur||'Inconnu'
+            });
+            console.log('✅ Auto-synchro vente: contrôle marqué pour '+tk.lieu+' poste '+syncPoste+' le '+syncDate);
+            // Telegram notification
+            var hSync=nowSync.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+            var dSync=nowSync.toLocaleDateString('fr-FR');
+            var lieuSync=LIEUX[tk.lieu]||tk.lieu;
+            var typSync='';for(var t2=0;t2<TARIFS_FLAT.length;t2++){if(TARIFS_FLAT[t2][0]===tk.type)typSync=TARIFS_FLAT[t2][1];}
+            var msgSync='🎫 *TICKET NUMÉRIQUE VENDU*\n'+
+              '📅 '+dSync+' à '+hSync+'\n'+
+              '📍 '+lieuSync+' — Poste n°'+syncPoste+'\n'+
+              '🎟️ '+tk.id+'\n'+
+              '👤 '+syncNom+' '+(tk.prenom||'')+'\n'+
+              '⏱️ '+(typSync||'Ticket')+' — '+(tk.prix===0?'Gratuit':tk.prix+'€')+'\n'+
+              '✅ Contrôle auto depuis réservation\n'+
+              '👮 Vendeur : '+(currentVendeur||'Inconnu');
+            envoyerTelegram(msgSync);
+          }
+        }
+      }).catch(function(e){console.error('Synchro vente error:',e);});
+    }
+
+    $('emit-ok-id').textContent='Ticket '+tk.id;
+    renderTicket(tk,'emit-ok-ticket');
+    hide($('step-lieu'));hide($('step-carte'));hide($('step-type'));hide($('step-date'));hide($('step-sejour'));hide($('step-poste'));hide($('step-tel'));hide($('step-recap'));
+    show($('emit-ok'));
+    $('sms-zone').style.display=tel?'':'none';
+    updateVenteStats();
+    }catch(e){alert('Erreur: '+e.message);console.error(e);}
+  }
+
+  // ===== RENDER TICKET CARD =====
+  function renderTicket(tk,containerId){
+    try{
+    var el=$(containerId);if(!el)return;
+    var d=new Date(tk.date);
+    var cl=tk.carte==='titulaire'?'Titulaire carte':tk.carte==='sans'?'Sans carte':'';
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+    var lieuName=LIEUX[tk.lieu]||tk.lieu;
+
+    // Date display
+    var dateHtml='';
+    if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+      var dD=new Date(tk.dateDebut),dF=new Date(tk.dateFin);
+      var nbJ=Math.round((dF-dD)/86400000)+1;
+      var nbN=nbJ-1;
+      var lblDeb=tk.sejourDebType==='journee'?'Journée (8h)':tk.sejourDebType==='demi'?'Demi-journée (14h)':'Nuit (18h)';
+      var lblFin=tk.sejourFinType==='matin'?'Départ 8h':tk.sejourFinType==='demi'?'Départ 14h':'Départ 18h';
+      dateHtml='<div class="tc-detail">🏕️ Multi-jours du '+dD.toLocaleDateString('fr-FR')+' au '+dF.toLocaleDateString('fr-FR')+'</div>';
+      dateHtml+='<div class="tc-detail">🟢 '+lblDeb+' → 🔴 '+lblFin+'</div>';
+    } else if(tk.dateDebut){
+      dateHtml='<div class="tc-detail">📅 Valable le '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+'</div>';
+    } else {
+      dateHtml='<div class="tc-detail">'+d.toLocaleDateString('fr-FR')+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';
+    }
+
+    var badge='';
+    if(tk.sejour){
+      var controls=tk.controls||[];
+      var nbCtrl=0;
+      for(var ci=0;ci<controls.length;ci++){if(controls[ci].result)nbCtrl++;}
+      if(nbCtrl>0){
+        badge='<div class="tc-status controlled">✅ '+nbCtrl+' contrôle'+(nbCtrl>1?'s':'')+' effectué'+(nbCtrl>1?'s':'')+'</div>';
       } else {
-        rb.innerHTML = '<div class="tc-status controlled" style="background:#ffcdd2;color:#c62828;">❌ INCONNU</div>';
+        badge='<div class="tc-status valid">Valide</div>';
       }
+    } else if(tk.controlled){
+      badge='<div class="tc-status controlled">✅ Contrôlé le '+new Date(tk.controlDate).toLocaleDateString('fr-FR')+'</div>';
+    } else {
+      badge='<div class="tc-status valid">Valide</div>';
+    }
+
+    var hasOfferts=(tk.offJournees>0||tk.offDemis>0||tk.offNuits>0);
+    var isTypeOff=(tk.type&&tk.type.indexOf('_off')!==-1);
+    var offertBanner='';
+    if(isTypeOff){
+      offertBanner='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:8px 12px;border-radius:8px;text-align:center;font-weight:700;font-size:14px;margin:8px 0;">🎁 OFFERT — Journée de travail bénévole</div>';
+    } else if(hasOfferts){
+      var offParts=[];
+      if(tk.offJournees>0)offParts.push(tk.offJournees+' journée'+(tk.offJournees>1?'s':''));
+      if(tk.offDemis>0)offParts.push(tk.offDemis+' demi-j.');
+      if(tk.offNuits>0)offParts.push(tk.offNuits+' nuit'+(tk.offNuits>1?'s':''));
+      offertBanner='<div style="background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;padding:8px 12px;border-radius:8px;text-align:center;font-size:13px;margin:8px 0;"><b>🎁 Offert (travail)</b><br>'+offParts.join(' • ')+'</div>';
+    }
+    var posteLbl=(tk.poste)?'<div class="tc-detail">📍 Poste n°'+tk.poste+'</div>':'';
+    el.innerHTML=
+      '<div class="ticket-card">'+
+      '<img src="'+LOGO+'" alt="AAPPMA" class="tc-img-logo">'+
+      '<div class="tc-title">Autorisation de pêche</div>'+
+      '<div class="tc-sub2">AAPPMA GUNDERSHOFFEN</div>'+
+      '<div class="tc-num">'+tk.id+'</div>'+
+      offertBanner+
+      '<div class="tc-detail"><b>'+lieuName+'</b></div>'+
+      posteLbl+
+      (cl?'<div class="tc-detail">'+cl+'</div>':'')+
+      '<div class="tc-detail"><b>'+typeLbl+'</b> — <b>'+(tk.prix===0?'Gratuit':tk.prix+'€')+'</b></div>'+
+      dateHtml+
+      '<div class="tc-qr" id="qr-'+containerId+'"></div>'+
+      badge+
+      '</div>';
+
+    if(hasQR){
+      var qrData=tk.id+'|'+(tk.dateDebut||'')+'|'+(tk.dateFin||'')+'|'+(tk.sig||'').substring(0,16);
+      new QRCode(document.getElementById('qr-'+containerId),{
+        text:qrData,width:180,height:180,
+        colorDark:'#000000',colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.H
+      });
+    }
+    }catch(e){console.error('renderTicket error:',e);}
+  }
+
+  // ===== LIEN TICKET WEB =====
+  function buildTicketUrl(tk){
+    var base=window.location.href.replace(/[^\/]*$/,'')+'ticket_view.html';
+    var params='?id='+encodeURIComponent(tk.id)+
+      '&lieu='+encodeURIComponent(tk.lieu)+
+      '&type='+encodeURIComponent(tk.type)+
+      '&prix='+encodeURIComponent(tk.prix)+
+      '&carte='+encodeURIComponent(tk.carte||'na')+
+      '&date='+encodeURIComponent(tk.date)+
+      '&dateDebut='+encodeURIComponent(tk.dateDebut||'')+
+      '&dateFin='+encodeURIComponent(tk.dateFin||'')+
+      '&sejour='+encodeURIComponent(tk.sejour?'1':'0')+
+      '&sejourDebType='+encodeURIComponent(tk.sejourDebType||'')+
+      '&sejourFinType='+encodeURIComponent(tk.sejourFinType||'')+
+      '&sejourOffert='+encodeURIComponent(tk.sejourOffert?'1':'0')+
+      '&offJ='+encodeURIComponent(tk.offJournees||0)+
+      '&offD='+encodeURIComponent(tk.offDemis||0)+
+      '&offN='+encodeURIComponent(tk.offNuits||0)+
+      '&poste='+encodeURIComponent(tk.poste||'')+
+      '&sig='+encodeURIComponent((tk.sig||'').substring(0,16));
+    return base+params;
+  }
+
+  // ===== SMS =====
+  function openSMS(){
+    if(!lastTicket)return;
+    var tel=lastTicket.tel.replace(/\s/g,'');
+    if(!tel)return;
+    var d=new Date(lastTicket.date);
+    var cl=lastTicket.carte==='titulaire'?' (Titulaire carte)':lastTicket.carte==='sans'?' (Sans carte)':'';
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===lastTicket.type)typeLbl=TARIFS_FLAT[i][1];}
+    var dateInfo='';
+    if(lastTicket.sejour&&lastTicket.dateDebut&&lastTicket.dateFin){
+      dateInfo='Du '+new Date(lastTicket.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(lastTicket.dateFin).toLocaleDateString('fr-FR');
+    } else if(lastTicket.dateDebut){
+      dateInfo='Valable le '+new Date(lastTicket.dateDebut).toLocaleDateString('fr-FR');
+    } else {
+      dateInfo=d.toLocaleDateString('fr-FR');
+    }
+    var ticketUrl=buildTicketUrl(lastTicket);
+
+    var btn=$('btn-sms');
+    btn.textContent='⏳ Préparation...';
+    btn.disabled=true;
+
+    // Raccourcir le lien puis envoyer SMS
+    shortenUrl(ticketUrl,function(shortUrl){
+      var offertSms=(lastTicket.type&&lastTicket.type.indexOf('_off')!==-1)?'🎁 OFFERT - Journée de travail\n':'';
+      var prixSms=lastTicket.prix===0?'Gratuit':lastTicket.prix+'€';
+      var msg=encodeURIComponent(
+        'AAPPMA Gundershoffen\nTicket de pêche\n'+
+        '━━━━━━━━━━━━━━━━━━━\n'+
+        offertSms+
+        'N° '+lastTicket.id+'\n'+
+        (LIEUX[lastTicket.lieu]||lastTicket.lieu)+cl+'\n'+
+        typeLbl+' — '+prixSms+'\n'+
+        dateInfo+'\n'+
+        '━━━━━━━━━━━━━━━━━━━\n\n'+
+        '🎣 Accès à votre ticket :\n'+shortUrl
+      );
+      btn.textContent='📱 Envoyer par SMS';btn.disabled=false;
+      window.open('sms:'+tel+'?body='+msg,'_self');
     });
+  }
+
+  function shortenUrl(url,cb){
+    // Essai TinyURL
+    fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(url))
+      .then(function(r){return r.text();})
+      .then(function(short){
+        if(short&&short.indexOf('http')===0)cb(short);
+        else cb(url);
+      })
+      .catch(function(){cb(url);});
+  }
+
+  // ===== SCAN =====
+  function stopScanner(){
+    if(scanner){
+      try{scanner.stop().catch(function(){});}catch(e){}
+      try{scanner.clear();}catch(e){}
+      scanner=null;
+    }
+    hide($('btn-stop-scan'));
+    show($('btn-start-scan'));
+  }
+
+  function resetScan(){
+    stopScanner();
+    hide($('scan-out'));show($('scan-input'));
+    hide($('scan-status'));
+    $('inp-tkid').value='';
+    $('scan-rbox').innerHTML='';
+    $('scan-ticket').innerHTML='';
+    hide($('scan-btns'));
+  }
+
+  function startLiveScan(){
+    if(!hasScan){setStatus('❌ Scanner non disponible',true);return;}
+    if(scanner){stopScanner();}
+    scanner=new Html5Qrcode('qr-reader');
+    hide($('btn-start-scan'));
+    show($('btn-stop-scan'));
+    setStatus('Recherche de la caméra...',false);
+    scanner.start(
+      {facingMode:'environment'},
+      {fps:15,qrbox:{width:280,height:280},aspectRatio:1.0,formatsToSupport:[0]},
+      function(decoded){
+        stopScanner();
+        hide($('scan-status'));
+        handleScanResult(decoded);
+      },
+      function(){}
+    ).then(function(){
+      hide($('scan-status'));
+    }).catch(function(err){
+      stopScanner();
+      setStatus('❌ Impossible d\'accéder à la caméra. Vérifiez les autorisations.',true);
+    });
+  }
+
+  function handleScanResult(decoded){
+    var parts=decoded.split('|');
+    var tkId=null;
+    // Nouveau format: id|dateDebut|dateFin|sig16 (4 parts)
+    // Ancien format: id|lieu|type|prix|carte|date|sig16 (7 parts)
+    if(parts.length>=1&&parts[0].indexOf('TK-')===0){
+      tkId=parts[0];
+    } else {
+      try{var j=JSON.parse(decoded);tkId=j.id;}catch(e){
+        showScanResult(false,'QR Code invalide','Format non reconnu');
+        return;
+      }
+    }
+    if(!tkId){
+      showScanResult(false,'Données incomplètes','ID ticket manquant');
+      return;
+    }
+    var stored=dbFind(tkId);
+    if(!stored){
+      showScanResult(false,'⚠️ Ticket inconnu','Non émis par ce système');
+      return;
+    }
+    if(!verifTk(stored)){
+      showScanResult(false,'⚠️ SIGNATURE INVALIDE','Ticket potentiellement falsifié');
+      return;
+    }
+    var dCheck=checkTicketDate(stored);
+    if(!dCheck.ok){
+      showScanResult(false,'⚠️ DATE NON VALIDE',dCheck.msg,stored);
+      return;
+    }
+    showScanResult(true,'TICKET CONFORME','Signature vérifiée • Date valide',stored);
+  }
+
+  function showScanResult(ok,title,detail,tk){
+    hide($('scan-input'));show($('scan-out'));
+    var rbox=$('scan-rbox');
+    rbox.innerHTML=
+      '<div class="rbox '+(ok?'ok':'ko')+'">'+
+      '<div class="ri">'+(ok?'✅':'❌')+'</div>'+
+      '<div class="rt">'+title+'</div>'+
+      '<div class="rd">'+detail+'</div>'+
+      '</div>';
+    if(ok&&tk){
+      renderTicket(tk,'scan-ticket');
+      if(tk.sejour){
+        // Multi-jours : vérifier le créneau actuel
+        var now=new Date();
+        var h=now.getHours();
+        var creneau=(h>=18||h<8)?'nuit':'jour';
+        var creneauLbl=creneau==='nuit'?'🌙 Créneau nuit (18h→8h)':'☀️ Créneau journée (8h→18h)';
+        var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+        var controls=tk.controls||[];
+        var dejaCtrl=false;
+        for(var c=0;c<controls.length;c++){
+          if(controls[c].date===todayStr&&controls[c].creneau===creneau&&controls[c].result)dejaCtrl=true;
+        }
+        // Afficher historique des contrôles
+        if(controls.length>0){
+          var histHtml='<div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.1);border-radius:10px;"><div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;">📋 Contrôles précédents :</div>';
+          for(var c2=0;c2<controls.length;c2++){
+            var cc=controls[c2];
+            var cDate=new Date(cc.timestamp);
+            var cIcon=cc.result?'✅':'❌';
+            var cCreneauLbl=cc.creneau==='nuit'?'🌙 Créneau nuit':'☀️ Créneau journée';
+            histHtml+='<div style="font-size:11px;color:rgba(255,255,255,0.8);padding:2px 0;">'+cIcon+' '+cDate.toLocaleDateString('fr-FR')+' '+cCreneauLbl+' — '+(cc.controleur||'?')+'</div>';
+          }
+          histHtml+='</div>';
+          rbox.innerHTML+=histHtml;
+        }
+        rbox.innerHTML+='<div style="text-align:center;padding:8px;font-weight:700;color:#fff;font-size:14px;">Créneau actuel : '+creneauLbl+'</div>';
+        if(dejaCtrl){
+          rbox.innerHTML+='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:700;">⚠️ Déjà contrôlé pour ce créneau</div>';
+          hide($('scan-btns'));
+        } else {
+          show($('scan-btns'));
+        }
+      } else {
+        // Ticket 1 jour
+        if(tk.controlled){
+          rbox.innerHTML+='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:700;">⚠️ Déjà contrôlé le '+new Date(tk.controlDate).toLocaleDateString('fr-FR')+'</div>';
+          hide($('scan-btns'));
+        } else {
+          show($('scan-btns'));
+        }
+      }
+    } else {
+      $('scan-ticket').innerHTML='';
+      hide($('scan-btns'));
+    }
+  }
+
+  function checkTicketDate(stored){
+    var now=new Date();
+    var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    var isNuit=stored.type&&(stored.type.indexOf('nuit')!==-1);
+    var heure=now.getHours();
+
+    // Pour les tickets de nuit : si on est entre minuit et 8h, la veille est aussi valable
+    var hierStr='';
+    if(isNuit&&heure<8){
+      var hier=new Date(now);
+      hier.setDate(hier.getDate()-1);
+      hierStr=hier.getFullYear()+'-'+String(hier.getMonth()+1).padStart(2,'0')+'-'+String(hier.getDate()).padStart(2,'0');
+    }
+
+    if(stored.dateDebut&&stored.dateFin&&stored.dateDebut!==stored.dateFin){
+      // Multi-jours
+      var finEffective=stored.dateFin;
+      if(isNuit&&heure<8){
+        // Ajouter 1 jour à la fin pour couvrir la dernière nuit
+        var dFinPlus=new Date(stored.dateFin);
+        dFinPlus.setDate(dFinPlus.getDate()+1);
+        finEffective=dFinPlus.getFullYear()+'-'+String(dFinPlus.getMonth()+1).padStart(2,'0')+'-'+String(dFinPlus.getDate()).padStart(2,'0');
+      }
+      if(todayStr<stored.dateDebut)return{ok:false,msg:'Ticket pas encore valide (début : '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+')'};
+      if(todayStr>finEffective)return{ok:false,msg:'Ticket expiré (fin : '+new Date(stored.dateFin).toLocaleDateString('fr-FR')+')'};
+    } else if(stored.dateDebut){
+      // Ticket 1 jour
+      var dateOk=(todayStr===stored.dateDebut);
+      if(!dateOk&&isNuit&&hierStr){
+        dateOk=(hierStr===stored.dateDebut);
+      }
+      if(!dateOk)return{ok:false,msg:'Ticket valable le '+new Date(stored.dateDebut).toLocaleDateString('fr-FR')+' uniquement'+(isNuit?' (nuit valable jusqu\'à 8h le lendemain)':'')};
+    }
+    return{ok:true};
+  }
+
+  function searchTk(){
+    var val=$('inp-tkid').value.trim().toUpperCase();
+    if(!val)return;
+    var tkId='TK-'+val;
+    var tk=dbFind(tkId);
+    if(!tk){
+      showScanResult(false,'Ticket non trouvé','Aucun ticket avec ce numéro');
+      return;
+    }
+    if(!verifTk(tk)){
+      showScanResult(false,'⚠️ SIGNATURE INVALIDE','Ticket potentiellement altéré');
+      return;
+    }
+    var dCheck=checkTicketDate(tk);
+    if(!dCheck.ok){
+      showScanResult(false,'⚠️ DATE NON VALIDE',dCheck.msg,tk);
+      return;
+    }
+    showScanResult(true,'TICKET CONFORME','Trouvé en base • Date valide',tk);
+  }
+
+  // ===== NOTIFICATION TELEGRAM =====
+  var TELEGRAM_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec';
+  function envoyerTelegram(msg){
+    try{
+      fetch(TELEGRAM_SCRIPT_URL,{
+        method:'POST',mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:msg})
+      });
+    }catch(e){console.error('Telegram error:',e);}
+  }
+
+  function validateCtrl(valid){
+    var rbox=$('scan-rbox');
+    var cards=$('scan-ticket').querySelectorAll('.tc-num');
+    if(cards.length===0)return;
+    var tkId=cards[0].textContent;
+    var tk=dbFind(tkId);
+    if(!tk)return;
+
+    // Vérification nom vs réservation avant de valider
+    if(valid&&tk.poste&&tk.dateDebut&&(tk.lieu==='carpodrome'||tk.lieu==='hardt')){
+      var fbRef=tk.lieu==='carpodrome'?fbCarpoDb:fbHardtDb;
+      var dateKey=tk.dateDebut;
+      var posteNum=tk.poste.toString();
+      fbRef.ref('reservations/'+dateKey+'/'+posteNum).once('value').then(function(snap){
+        var resa=snap.val();
+        if(resa&&resa.nom){
+          var nomResa=resa.nom.toUpperCase();
+          var prenomResa=resa.prenom||'';
+          var nomTicket=(tk.nom||'').toUpperCase();
+          if(nomTicket&&nomResa!==nomTicket){
+            // Nom différent → demander si binôme
+            hide($('scan-btns'));
+            var binomeDiv=document.createElement('div');
+            binomeDiv.style.cssText='text-align:center;padding:14px;background:#fff3e0;border-radius:10px;margin-top:10px;';
+            binomeDiv.innerHTML='<div style="font-size:15px;font-weight:700;color:#e65100;margin-bottom:10px;">⚠️ Le ticket est au nom de <b>'+nomTicket+'</b></div>'+
+              '<div style="font-size:14px;margin-bottom:14px;">La réservation poste '+posteNum+' est au nom de <b>'+nomResa+' '+prenomResa+'</b></div>'+
+              '<div style="font-size:16px;font-weight:700;margin-bottom:12px;">Binôme de '+nomResa+' '+prenomResa+' ?</div>'+
+              '<div style="display:flex;gap:10px;justify-content:center;">'+
+                '<button id="btn-binome-oui" style="padding:12px 30px;background:#2e7d32;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">✅ Oui</button>'+
+                '<button id="btn-binome-non" style="padding:12px 30px;background:#c62828;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">❌ Non</button>'+
+              '</div>';
+            rbox.parentElement.appendChild(binomeDiv);
+            document.getElementById('btn-binome-oui').addEventListener('click',function(){
+              binomeDiv.remove();
+              doValidateCtrl(tk,tkId,valid,nomResa+' '+prenomResa);
+            });
+            document.getElementById('btn-binome-non').addEventListener('click',function(){
+              binomeDiv.innerHTML='<div style="font-size:15px;font-weight:700;color:#c62828;">🚫 CONTRÔLE BLOQUÉ<br><br>Le pêcheur n\'est pas le titulaire de la réservation ni son binôme.</div>';
+            });
+          } else {
+            doValidateCtrl(tk,tkId,valid,null);
+          }
+        } else {
+          doValidateCtrl(tk,tkId,valid,null);
+        }
+      }).catch(function(){
+        doValidateCtrl(tk,tkId,valid,null);
+      });
+    } else {
+      doValidateCtrl(tk,tkId,valid,null);
+    }
+  }
+
+  function doValidateCtrl(tk,tkId,valid,binomeDe){
+    var rbox=$('scan-rbox');
+    var now=new Date();
+    var h=now.getHours();
+    var creneau=(h>=18||h<8)?'nuit':'jour';
+    var todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+
+    if(tk.sejour){
+      // Multi-jours : ajouter au tableau controls
+      var controls=tk.controls||[];
+      controls.push({
+        date:todayStr,
+        creneau:creneau,
+        result:valid,
+        controleur:currentVendeur||'Inconnu',
+        timestamp:now.toISOString()
+      });
+      dbUpdate(tkId,{controls:controls,controlled:true,controlResult:valid,controlDate:now.toISOString(),controleur:currentVendeur});
+    } else {
+      // Ticket 1 jour : comportement classique
+      dbUpdate(tkId,{controlled:true,controlResult:valid,controlDate:now.toISOString(),controleur:currentVendeur});
+    }
+
+    tk=dbFind(tkId);
+    renderTicket(tk,'scan-ticket');
+    hide($('scan-btns'));
+    var color=valid?'var(--green)':'var(--red)';
+    var creneauLbl=creneau==='nuit'?'🌙 Créneau nuit':'☀️ Créneau journée';
+    var text=valid?'✅ Contrôle VALIDÉ ('+creneauLbl+')':'❌ Contrôle NON VALIDÉ ('+creneauLbl+')';
+    var binomeInfo=binomeDe?'<div style="text-align:center;padding:8px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:8px;margin-top:6px;">👥 Binôme de '+binomeDe+'</div>':'';
+    rbox.innerHTML+='<div style="text-align:center;padding:10px;font-weight:700;font-size:16px;color:'+color+';">'+text+'</div>'+binomeInfo;
+
+    // Notification Telegram
+    if(valid){
+      var heure=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      var dateFr=now.toLocaleDateString('fr-FR');
+      var typeLbl='';
+      for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+      var multiInfo=tk.sejour?' (Multi-jours '+creneauLbl+')':'';
+      var validite='';
+      if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+        validite='\n📆 Validité : du '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tk.dateFin).toLocaleDateString('fr-FR');
+      }
+      var posteTg=tk.poste?'\n📍 Poste n°'+tk.poste:'';
+      var offParts=[];
+      if(tk.offJournees>0)offParts.push(tk.offJournees+' journée'+(tk.offJournees>1?'s':''));
+      if(tk.offDemis>0)offParts.push(tk.offDemis+' demi-j.');
+      if(tk.offNuits>0)offParts.push(tk.offNuits+' nuit'+(tk.offNuits>1?'s':''));
+      var offertTg=(tk.type&&tk.type.indexOf('_off')!==-1)?'\n🎁 TICKET OFFERT (Journée de travail)':offParts.length>0?'\n🎁 Offert : '+offParts.join(', '):'';
+      var prixTg=tk.prix===0?'Gratuit':tk.prix+'€';
+      var binomeTg=binomeDe?'\n👥 Binôme de '+binomeDe:'';
+      var msgTg='🎫 *CONTRÔLE TICKET VALIDÉ*'+multiInfo+'\n'+
+        '📅 '+dateFr+' à '+heure+'\n'+
+        '📍 '+(LIEUX[tk.lieu]||tk.lieu)+posteTg+'\n'+
+        '🎟️ '+tk.id+offertTg+binomeTg+'\n'+
+        '⏱️ '+(typeLbl||'Multi-jours')+' — '+prixTg+validite+'\n'+
+        '👮 Contrôleur : '+(currentVendeur||'Inconnu');
+      envoyerTelegram(msgTg);
+
+      // Synchro automatique avec Firebase Carpodrome
+      if(tk.lieu==='carpodrome'&&tk.poste&&tk.dateDebut){
+        try{
+          var dateKey=tk.dateDebut;
+          var posteNum=tk.poste.toString();
+          fbCarpoDb.ref('reservations/'+dateKey+'/'+posteNum).once('value').then(function(snap){
+            var resa=snap.val();
+            if(resa){
+              fbCarpoDb.ref('reservations/'+dateKey+'/'+posteNum).update({
+                controlled:true,
+                heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+                controleur:currentVendeur||'Inconnu'
+              });
+              console.log('✅ Carpodrome synchro: contrôle marqué pour poste '+posteNum+' le '+dateKey);
+            }
+          });
+        }catch(e){console.error('Carpo sync error:',e);}
+      }
+
+      // Synchro automatique avec Firebase Hardt
+      if(tk.lieu==='hardt'&&tk.poste&&tk.dateDebut){
+        try{
+          var dateKeyH=tk.dateDebut;
+          var posteNumH=tk.poste.toString();
+          fbHardtDb.ref('reservations/'+dateKeyH+'/'+posteNumH).once('value').then(function(snap){
+            var resa=snap.val();
+            if(resa){
+              fbHardtDb.ref('reservations/'+dateKeyH+'/'+posteNumH).update({
+                controlled:true,
+                heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
+                controleur:currentVendeur||'Inconnu'
+              });
+              console.log('✅ Hardt synchro: contrôle marqué pour poste '+posteNumH+' le '+dateKeyH);
+            }
+          });
+        }catch(e){console.error('Hardt sync error:',e);}
+      }
+
+      // 2ème contrôle par un autre contrôleur
+      if(tk.controleur&&tk.controleur!==(currentVendeur||'Inconnu')&&tk.controlResult===true){
+        var heure2=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        var dateFr2=now.toLocaleDateString('fr-FR');
+        var typeLbl2='';
+        for(var j=0;j<TARIFS_FLAT.length;j++){if(TARIFS_FLAT[j][0]===tk.type)typeLbl2=TARIFS_FLAT[j][1];}
+        var posteTg2=tk.poste?'\n📍 Poste n°'+tk.poste:'';
+        var msgTg2='🔄 *2ème CONTRÔLE TICKET*\n'+
+          '📅 '+dateFr2+' à '+heure2+'\n'+
+          '📍 '+(LIEUX[tk.lieu]||tk.lieu)+posteTg2+'\n'+
+          '🎟️ '+tk.id+'\n'+
+          '⏱️ '+(typeLbl2||'Multi-jours')+' — '+(tk.prix===0?'Gratuit':tk.prix+'€')+'\n'+
+          '👮 1er contrôle : '+tk.controleur+'\n'+
+          '👮 2ème contrôle : '+(currentVendeur||'Inconnu');
+        envoyerTelegram(msgTg2);
+      }
+    }
+  }
+
+  // ===== HISTORIQUE =====
+  function refreshHisto(){
+    var a=dbGet();
+    var filteredA=a;
+    if(!canViewAll()){
+      filteredA=[];
+      for(var i=0;i<a.length;i++){
+        if((a[i].vendeur||'Inconnu').toLowerCase()===currentVendeur.toLowerCase())filteredA.push(a[i]);
+      }
+    }
+    var totalEmis=filteredA.length;
+    var totalEnc=0,totalNonEnc=0;
+    for(var i=0;i<filteredA.length;i++){
+      if(filteredA[i].encaisse)totalEnc+=filteredA[i].prix;
+      else totalNonEnc+=filteredA[i].prix;
+    }
+    $('h-total').textContent=totalEmis;
+    $('h-enc').textContent=totalEnc+'€';
+    $('h-euro').textContent=totalNonEnc+'€';
+
+    if(a.length===0){
+      $('h-content').innerHTML='';
+      show($('h-empty'));
+      return;
+    }
+    hide($('h-empty'));
+
+    // Group by vendeur (non-admin: only own tickets)
+    var vendeurs={};
+    for(var i=0;i<a.length;i++){
+      var v=a[i].vendeur||'Inconnu';
+      if(!canViewAll()&&v.toLowerCase()!==currentVendeur.toLowerCase())continue;
+      if(!vendeurs[v])vendeurs[v]=[];
+      vendeurs[v].push(a[i]);
+    }
+
+    var html='';
+    for(var vName in vendeurs){
+      var tks=vendeurs[vName];
+      var vNonEnc=0,vEnc=0,vCount=tks.length;
+      for(var j=0;j<tks.length;j++){
+        if(tks[j].encaisse)vEnc+=tks[j].prix;
+        else vNonEnc+=tks[j].prix;
+      }
+      var safeV=vName.replace(/'/g,"\\'");
+      html+='<div class="vcrd" onclick="window._showDetail(\''+safeV+'\')">';
+      html+='<div class="vcrd-left">';
+      html+='<div class="vcrd-name">👤 '+vName+'</div>';
+      html+='<div class="vcrd-info"><span>'+vCount+' ticket(s)</span>';
+      if(vNonEnc>0)html+='<span class="vi-vendu"><b>'+vNonEnc+'€</b> vendu</span>';
+      if(vEnc>0)html+='<span class="vi-trans"><b>'+vEnc+'€</b> transmis</span>';
+      html+='</div>';
+      html+='</div>';
+      html+='<div class="vcrd-arrow">›</div>';
+      html+='</div>';
+    }
+    $('h-content').innerHTML=html;
+  }
+
+  // ===== HISTORIQUE DETAIL =====
+  var currentDetailVendeur=null;
+
+  function showVendeurDetail(vName){
+    currentDetailVendeur=vName;
+    var a=dbGet();
+    var enc=encGet();
+    var tks=[];
+    for(var i=0;i<a.length;i++){
+      if((a[i].vendeur||'Inconnu')===vName)tks.push(a[i]);
+    }
+    if(tks.length===0){currentDetailVendeur=null;goPage('pg-histo');return;}
+    var vNonEnc=0,vEnc=0;
+    for(var j=0;j<tks.length;j++){
+      if(tks[j].encaisse)vEnc+=tks[j].prix;
+      else vNonEnc+=tks[j].prix;
+    }
+
+    $('hd-name').textContent='👤 '+vName;
+    $('hd-count').textContent=tks.length;
+    $('hd-vendu').textContent=vNonEnc+'€';
+    $('hd-trans').textContent=vEnc+'€';
+
+    // Action button (admin only)
+    if(isAdmin()&&vNonEnc>0){
+      $('hd-actions').innerHTML='<button class="btn btn-orange" style="width:100%;margin:12px 0;" onclick="window._openEnc(\''+vName.replace(/'/g,"\\'")+'\')" >💰 Transmettre '+vNonEnc+'€ au trésorier</button>';
+    } else if(vNonEnc>0&&!isAdmin()){
+      $('hd-actions').innerHTML='<div style="text-align:center;padding:8px;color:var(--orange);font-weight:600;">💰 '+vNonEnc+'€ à transmettre au trésorier</div>';
+    } else {
+      $('hd-actions').innerHTML='<div style="text-align:center;padding:8px;color:var(--green);font-weight:600;">✅ Tout transmis au trésorier</div>';
+    }
+
+    // Traces
+    var trHtml='';
+    if(enc[vName]){
+      for(var k=0;k<enc[vName].length;k++){
+        var tr=enc[vName][k];
+        trHtml+='<div class="enc-trace">💰 Transmission de '+tr.montant+'€ au trésorier le '+new Date(tr.date).toLocaleDateString('fr-FR')+' à '+new Date(tr.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';
+      }
+    }
+    $('hd-traces').innerHTML=trHtml;
+
+    // Toggle bar
+    $('hd-toggle').innerHTML='<div class="vgrp-toggle-bar open" onclick="window._toggleVgrp(this)"><span class="chevron">▶</span> '+tks.length+' ticket(s)</div>';
+
+    // Tickets
+    var html='<div class="vgrp-body">';
+    for(var j=0;j<tks.length;j++){
+      var t=tks[j];
+      var d=new Date(t.date);
+      var typeLbl='';
+      for(var k2=0;k2<TARIFS_FLAT.length;k2++){if(TARIFS_FLAT[k2][0]===t.type)typeLbl=TARIFS_FLAT[k2][1];}
+      var badge='';
+      if(t.encaisse){
+        badge='<span class="hbadge enc">Transmis</span>';
+      } else if(t.controlled){
+        badge='<span class="hbadge ctrl">Contrôlé</span>';
+      } else {
+        badge='<span class="hbadge actif">Actif</span>';
+      }
+      var opacity=t.encaisse?'opacity:0.6;':'';
+      html+='<div class="hitem" style="'+opacity+'">';
+      html+='<div class="hitem-top">';
+      html+='<div><div class="hid">'+t.id+'</div>';
+      html+='<div class="hinfo">'+(LIEUX[t.lieu]||t.lieu)+' • '+typeLbl+' • '+t.prix+'€ • '+d.toLocaleDateString('fr-FR')+'</div>';
+      html+='</div>';
+      html+='<div class="hright">'+badge;
+      if(isAdmin())html+='<button class="hdel" onclick="window._openDel(\''+t.id+'\')">🗑️</button>';
+      html+='</div></div>';
+      html+='<div class="hitem-actions">';
+      if(t.tel)html+='<button class="hact hact-sms" onclick="window._resendSMS(\''+t.id+'\')">📱 Renvoyer SMS</button>';
+      html+='<button class="hact hact-qr" onclick="window._viewTicket(\''+t.id+'\')">🔍 Visualiser</button>';
+      html+='</div>';
+      html+='</div>';
+    }
+    html+='</div>';
+    $('hd-tickets').innerHTML=html;
+
+    goPage('pg-histo-detail');
+  }
+
+  // ===== MODAL SUPPRESSION =====
+  function openDel(tkId){
+    delTarget=tkId;
+    var tk=dbFind(tkId);
+    if(!tk)return;
+    var d=new Date(tk.date);
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+    var cl=tk.carte==='titulaire'?' (Titulaire)':tk.carte==='sans'?' (Sans carte)':'';
+    $('modal-info').innerHTML='<b>'+tk.id+'</b><br>'+(LIEUX[tk.lieu]||tk.lieu)+cl+' • '+typeLbl+' • '+tk.prix+'€<br>'+d.toLocaleDateString('fr-FR');
+    show($('del-step1'));hide($('del-step2'));
+    $('del-pwd').value='';hide($('del-err'));
+    show($('modal-del'));
+  }
+
+  function closeDel(){
+    hide($('modal-del'));
+    delTarget=null;
+    $('del-pwd').value='';
+  }
+
+  function checkDelPwd(){
+    if(checkPwd($('del-pwd').value)){
+      hide($('del-step1'));show($('del-step2'));
+    } else {
+      show($('del-err'));
+      $('del-pwd').value='';$('del-pwd').focus();
+    }
+  }
+
+  function confirmDel(){
+    if(!delTarget)return;
+    dbRemove(delTarget);
+    closeDel();
+    refreshHisto();
+    if(currentDetailVendeur)showVendeurDetail(currentDetailVendeur);
+  }
+
+  // ===== MODAL ENCAISSEMENT =====
+  function openEnc(vendeurName){
+    encTarget=vendeurName;
+    var a=dbGet();
+    var montant=0,count=0;
+    for(var i=0;i<a.length;i++){
+      if(a[i].vendeur===vendeurName&&!a[i].encaisse){montant+=a[i].prix;count++;}
+    }
+    if(count===0)return;
+    $('enc-info').innerHTML='<b>'+vendeurName+'</b><br>'+count+' ticket(s) — <b>'+montant+'€</b> à transmettre';
+    $('enc-pwd').value='';hide($('enc-err'));
+    show($('modal-enc'));
+  }
+
+  function closeEnc(){
+    hide($('modal-enc'));
+    encTarget=null;
+    $('enc-pwd').value='';
+  }
+
+  function confirmEnc(){
+    if(!encTarget)return;
+    if(!checkPwd($('enc-pwd').value)){
+      show($('enc-err'));
+      $('enc-pwd').value='';$('enc-pwd').focus();
+      return;
+    }
+    var a=dbGet();
+    var now=new Date().toISOString();
+    var montant=0;
+    for(var i=0;i<a.length;i++){
+      if(a[i].vendeur===encTarget&&!a[i].encaisse){
+        a[i].encaisse=true;
+        a[i].encaisseDate=now;
+        montant+=a[i].prix;
+        fbTickets.child(a[i].id).set(a[i]);
+      }
+    }
+
+    // Trace encaissement
+    var enc=encGet();
+    if(!enc[encTarget])enc[encTarget]=[];
+    enc[encTarget].push({montant:montant,date:now});
+    encSave(enc);
+
+    closeEnc();
+    refreshHisto();
+    if(currentDetailVendeur)showVendeurDetail(currentDetailVendeur);
+  }
+
+  // ===== RENVOYER SMS DEPUIS HISTORIQUE =====
+  function resendSMS(tkId){
+    var tk=dbFind(tkId);
+    if(!tk||!tk.tel)return;
+    var tel=tk.tel.replace(/\s/g,'');
+    var cl=tk.carte==='titulaire'?' (Titulaire carte)':tk.carte==='sans'?' (Sans carte)':'';
+    var typeLbl='';
+    for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tk.type)typeLbl=TARIFS_FLAT[i][1];}
+    var dateInfo='';
+    if(tk.sejour&&tk.dateDebut&&tk.dateFin){
+      dateInfo='Du '+new Date(tk.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tk.dateFin).toLocaleDateString('fr-FR');
+    } else if(tk.dateDebut){
+      dateInfo='Valable le '+new Date(tk.dateDebut).toLocaleDateString('fr-FR');
+    } else {
+      dateInfo=new Date(tk.date).toLocaleDateString('fr-FR');
+    }
+    var ticketUrl=buildTicketUrl(tk);
+    shortenUrl(ticketUrl,function(shortUrl){
+      var offertSms=(tk.type&&tk.type.indexOf('_off')!==-1)?'🎁 OFFERT - Journée de travail\n':'';
+      var prixSms=tk.prix===0?'Gratuit':tk.prix+'€';
+      var msg=encodeURIComponent(
+        'AAPPMA Gundershoffen\nTicket de pêche\n'+
+        '━━━━━━━━━━━━━━━━━━━\n'+
+        offertSms+
+        'N° '+tk.id+'\n'+
+        (LIEUX[tk.lieu]||tk.lieu)+cl+'\n'+
+        typeLbl+' — '+prixSms+'\n'+
+        dateInfo+'\n'+
+        '━━━━━━━━━━━━━━━━━━━\n\n'+
+        '🎣 Accès à votre ticket :\n'+shortUrl
+      );
+      window.open('sms:'+tel+'?body='+msg,'_self');
+    });
+  }
+
+  // ===== VISUALISER TICKET (MODAL) =====
+  function viewTicket(tkId){
+    var tk=dbFind(tkId);
+    if(!tk)return;
+    renderTicket(tk,'view-tk-content');
+    show($('modal-view-tk'));
+  }
+  function closeViewTk(){hide($('modal-view-tk'));$('view-tk-content').innerHTML='';}
+
+  // ===== INIT & EVENTS =====
+  // Expose for onclick
+  window._openDel=openDel;
+  window._openEnc=openEnc;
+  window._showDetail=showVendeurDetail;
+  window._resendSMS=resendSMS;
+  window._viewTicket=viewTicket;
+  window._toggleVgrp=function(el){
+    el.classList.toggle('open');
+    var body=document.getElementById('hd-tickets');
+    if(body)body.classList.toggle('collapsed');
   };
 
-  $('menu-date-tk').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
-  $('menu-vendeur').textContent = 'Bienvenue ' + currentVendeur;
+  // ===== ADMIN SETTINGS =====
+  function openAdmin(){
+    hide($('admin-step2'));hide($('admin-step3'));hide($('admin-step4'));hide($('admin-step5'));
+    show($('admin-step1'));
+    $('admin-pwd').value='';hide($('admin-err'));
+    show($('modal-admin'));
+  }
+  function closeAdmin(){hide($('modal-admin'));}
+  function checkAdminPwd(){
+    if(checkPwd($('admin-pwd').value)){
+      hide($('admin-step1'));show($('admin-step2'));
+    } else {
+      show($('admin-err'));
+      $('admin-pwd').value='';$('admin-pwd').focus();
+    }
+  }
+  function startReset(){hide($('admin-step2'));show($('admin-step3'));}
 
+  // ===== GESTION CONTACTS TICKETS =====
+  function showAdminContacts(){
+    hide($('admin-step2'));show($('admin-step5'));
+    loadAdminContacts();
+  }
+
+  function loadAdminContacts(){
+    var list=$('contacts-list');
+    list.innerHTML='<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
+    fbDb.ref('contactsTickets').once('value').then(function(snap){
+      var data=snap.val()||{};
+      var contacts=[];
+      for(var k in data){
+        if(data[k]&&data[k].nom)contacts.push({key:k,nom:data[k].nom,prenom:data[k].prenom||'',telephone:data[k].telephone||''});
+      }
+      contacts.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
+      if(contacts.length===0){
+        list.innerHTML='<div style="text-align:center;padding:20px;color:#999;">Aucun contact enregistré</div>';
+        return;
+      }
+      var html='<div style="font-size:12px;color:#888;margin-bottom:8px;text-align:center;">'+contacts.length+' contact'+(contacts.length>1?'s':'')+'</div>';
+      for(var i=0;i<contacts.length;i++){
+        var c=contacts[i];
+        html+='<div style="background:#f8f9fa;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">';
+        html+='<div style="flex:1;min-width:0;">';
+        html+='<div style="font-weight:700;font-size:14px;color:#333;">'+c.nom+' '+c.prenom+'</div>';
+        html+='<div style="font-size:13px;color:#1565c0;">'+(c.telephone||'Pas de numéro')+'</div>';
+        html+='</div>';
+        html+='<div style="display:flex;gap:6px;flex-shrink:0;">';
+        html+='<button data-key="'+c.key+'" data-nom="'+c.nom+'" data-prenom="'+c.prenom+'" data-tel="'+(c.telephone||'')+'" class="ct-edit" style="background:#e3f2fd;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:13px;">✏️</button>';
+        html+='<button data-key="'+c.key+'" data-nom="'+c.nom+' '+c.prenom+'" class="ct-del" style="background:#ffebee;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:13px;">🗑️</button>';
+        html+='</div></div>';
+      }
+      list.innerHTML=html;
+      list.querySelectorAll('.ct-del').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var key=this.dataset.key;
+          var nom=this.dataset.nom;
+          if(confirm('Supprimer '+nom+' ?')){
+            fbDb.ref('contactsTickets/'+key).remove().then(function(){loadAdminContacts();loadPecheurs();});
+          }
+        });
+      });
+      list.querySelectorAll('.ct-edit').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var key=this.dataset.key;
+          var nom=prompt('Nom :',this.dataset.nom);
+          if(nom===null)return;
+          var prenom=prompt('Prénom :',this.dataset.prenom);
+          if(prenom===null)return;
+          var tel=prompt('Téléphone :',this.dataset.tel);
+          if(tel===null)return;
+          fbDb.ref('contactsTickets/'+key).update({nom:nom.toUpperCase().trim(),prenom:prenom.trim(),telephone:tel.trim()}).then(function(){loadAdminContacts();loadPecheurs();});
+        });
+      });
+    });
+  }
+  function confirmReset1(){hide($('admin-step3'));show($('admin-step4'));}
+  function doResetAll(){
+    fbTickets.remove();
+    fbEnc.remove();
+    _tickets=[];
+    _enc={};
+    localStorage.removeItem(SK_VENDEUR);
+    closeAdmin();
+    goPage('pg-menu');
+    currentVendeur='';
+    $('menu-vendeur').textContent='';
+    $('vente-vendeur').textContent='';
+  }
+
+  // Init vendeur depuis appli contrôleur
+  var ctrlUser=localStorage.getItem('controleurUser')||'';
+  if(ctrlUser){
+    currentVendeur=ctrlUser;
+    localStorage.setItem(SK_VENDEUR,ctrlUser);
+    $('menu-vendeur').textContent='Bienvenue '+ctrlUser;
+    $('vente-vendeur').textContent='Vendeur : '+ctrlUser;
+  } else {
+    var savedV=localStorage.getItem(SK_VENDEUR);
+    if(savedV){
+      currentVendeur=savedV;
+      $('menu-vendeur').textContent='Bienvenue '+savedV;
+      $('vente-vendeur').textContent='Vendeur : '+savedV;
+    }
+  }
+
+  // Admin: gear visibility
+  // Show admin btn on menu for Patrice only
+  if(isAdmin()){$('btn-gear-menu').style.display='';}
+  // Set date
+  $('menu-date-tk').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Auto-navigation depuis appli contrôleur
+  var urlPage=new URLSearchParams(window.location.search).get('page');
+  var fromControleur=!!urlPage;
+  if(urlPage==='scan'){goPage('pg-scan');}
+
+  // Bloquer touche retour navigateur
+  history.pushState({page:'tickets'},'','');
+  window.addEventListener('popstate',function(e){
+    history.pushState({page:'tickets'},'','');
+  });
+
+  // Menu
+  $('go-vente').addEventListener('click',function(){goPage('pg-vente');});
+  $('go-scan').addEventListener('click',function(){goPage('pg-scan');});
+  $('go-histo').addEventListener('click',function(){goPage('pg-histo');});
+
+  // Bottom nav bar
+  $('tkNavMenu').addEventListener('click',function(){
+    window.location.href='index.html';
+  });
+  $('tkNavBack').addEventListener('click',function(){
+    var curPg=document.querySelector('.pg.on');
+    // Si on est sur le menu, retour au contrôleur
+    if(curPg&&curPg.id==='pg-menu'){
+      window.location.href=document.referrer||'index.html';
+      return;
+    }
+    // Si scan, stopper le scanner
+    if(curPg&&curPg.id==='pg-scan'){stopScanner();}
+    var prev=tkPageHistory.pop();
+    if(prev){
+      var pages=document.querySelectorAll('.pg');
+      for(var i=0;i<pages.length;i++)pages[i].classList.remove('on');
+      $(prev).classList.add('on');
+    } else { goPage('pg-menu'); }
+  });
+
+  // Vente - back
+  $('back-vente').addEventListener('click',function(){goPage('pg-menu');});
+
+  // Vente - lieu
+  $('opt-breit').addEventListener('click',function(){pickLieu('breitmatt');});
+  $('opt-hardt').addEventListener('click',function(){pickLieu('hardt');});
+  $('opt-carpo').addEventListener('click',function(){pickLieu('carpodrome');});
+
+  // Vente - carte
+  $('opt-tit').addEventListener('click',function(){pickCarte('titulaire');});
+  $('opt-sans').addEventListener('click',function(){pickCarte('sans');});
+
+  // Date selection
+  $('opt-today').addEventListener('click',pickDateToday);
+  $('opt-otherdate').addEventListener('click',pickDateOther);
+  $('inp-date').addEventListener('change',onDateChange);
+
+  // Multi-jours
+  $('opt-sej-deb-journee').addEventListener('click',function(){pickSejourDebType('journee');});
+  $('opt-sej-deb-demi').addEventListener('click',function(){pickSejourDebType('demi');});
+  $('opt-sej-deb-nuit').addEventListener('click',function(){pickSejourDebType('nuit');});
+  $('opt-sej-fin-matin').addEventListener('click',function(){pickSejourFinType('matin');});
+  $('opt-sej-fin-demi').addEventListener('click',function(){pickSejourFinType('demi');});
+  $('opt-sej-fin-soir').addEventListener('click',function(){pickSejourFinType('soir');});
+  $('inp-sej-debut').addEventListener('change',function(){
+    if($('inp-sej-debut').value)$('inp-sej-fin').min=$('inp-sej-debut').value;
+    calcSejour();
+  });
+  $('inp-sej-fin').addEventListener('change',calcSejour);
+  $('btn-sej-offert').addEventListener('click',toggleSejourOffert);
+  $('inp-off-journee').addEventListener('input',function(){clampOffert(this);calcSejour();});
+  $('inp-off-demi').addEventListener('input',function(){clampOffert(this);calcSejour();});
+  $('inp-off-nuit').addEventListener('input',function(){clampOffert(this);calcSejour();});
+
+  // Vente - emit
+  $('btn-emit').addEventListener('click',emitTicket);
+  $('btn-sms').addEventListener('click',openSMS);
+  $('btn-new').addEventListener('click',resetVente);
+
+  // ===== RECHERCHE PÊCHEURS (FIREBASE + FIREBASE CARPODROME) =====
+  var allPecheurs=[];
+
+  // Firebase Carpodrome (réservations avec numéros de téléphone)
+  var fbCarpoApp=firebase.initializeApp({
+    apiKey:"AIzaSyBdTsLvTO5n0JNpx_pZypY3LjqlEE-YBSQ",
+    databaseURL:"https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app"
+  },'carpoContacts');
+  var fbCarpoDb=firebase.database(fbCarpoApp);
+
+  var fbHardtApp=firebase.initializeApp({
+    apiKey:"AIzaSyADXcfDOBLHC7pdlGedDW-4wAHKyPHW19I",
+    databaseURL:"https://resahardt-default-rtdb.europe-west1.firebasedatabase.app"
+  },'hardtContacts');
+  var fbHardtDb=firebase.database(fbHardtApp);
+
+  function loadPecheurs(){
+    allPecheurs=[];
+    var seen={};
+
+    // Source 1 : Fiches de renseignement (Firebase contrôleur)
+    fbDb.ref('fiches').once('value').then(function(snap){
+      var data=snap.val()||{};
+      for(var k in data){
+        if(data[k]&&data[k].nom){
+          var nom=data[k].nom.toUpperCase();
+          var prenom=data[k].prenom||'';
+          var tel=data[k].telephone||'';
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'fiche',key:k});
+          }
+        }
+      }
+      // Migrer les fiches vers contactsTickets (une seule fois)
+      migrateToContactsTickets(data);
+      // Source 2 : Contacts ajoutés depuis les tickets
+      loadContactsTickets(seen);
+    });
+  }
+
+  function migrateToContactsTickets(fichesData){
+    fbDb.ref('contactsTickets').once('value').then(function(snap){
+      var existing=snap.val()||{};
+      var existingKeys={};
+      for(var ek in existing){
+        if(existing[ek]&&existing[ek].nom){
+          existingKeys[(existing[ek].nom||'').toUpperCase()+' '+(existing[ek].prenom||'').toLowerCase()]=true;
+        }
+      }
+      var added=0;
+      // Migration source 1 : Fiches de renseignement
+      for(var k in fichesData){
+        var f=fichesData[k];
+        if(!f||!f.nom)continue;
+        var nom=f.nom.toUpperCase();
+        var prenom=f.prenom||'';
+        var tel=f.telephone||'';
+        var key=nom+' '+prenom.toLowerCase();
+        if(!existingKeys[key]){
+          existingKeys[key]=true;
+          fbDb.ref('contactsTickets').push({nom:nom,prenom:prenom,telephone:tel});
+          added++;
+        }
+      }
+      // Migration source 2 : Réservations Carpodrome
+      fbCarpoDb.ref('reservations').once('value').then(function(cSnap){
+        var dates=cSnap.val()||{};
+        for(var dateKey in dates){
+          var postes=dates[dateKey];
+          for(var poste in postes){
+            var r=postes[poste];
+            if(!r||!r.nom)continue;
+            var nom=(r.nom||'').toUpperCase();
+            var prenom=r.prenom||'';
+            var tel=(r.telephone||'').toString().trim();
+            if(tel&&tel.charAt(0)!=='0'&&tel.charAt(0)!=='+'&&tel.length>=9)tel='0'+tel;
+            if(!nom||!tel)continue;
+            var key=nom+' '+prenom.toLowerCase();
+            if(!existingKeys[key]){
+              existingKeys[key]=true;
+              fbDb.ref('contactsTickets').push({nom:nom,prenom:prenom,telephone:tel});
+              added++;
+            }
+          }
+        }
+        if(added>0)console.log('📋 Migration: '+added+' contacts copiés vers contactsTickets');
+      }).catch(function(){});
+    });
+  }
+
+  function loadContactsTickets(seen){
+    fbDb.ref('contactsTickets').once('value').then(function(snap){
+      var data=snap.val()||{};
+      for(var k in data){
+        if(data[k]&&data[k].nom){
+          var nom=data[k].nom.toUpperCase();
+          var prenom=data[k].prenom||'';
+          var tel=data[k].telephone||'';
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'ticket',key:k});
+          }
+        }
+      }
+      // Source 3 : Réservations Carpodrome (Firebase Carpodrome)
+      loadCarpoContacts(seen);
+    });
+  }
+
+  function loadCarpoContacts(seen){
+    fbCarpoDb.ref('reservations').once('value').then(function(snap){
+      var dates=snap.val()||{};
+      var count=0;
+      for(var dateKey in dates){
+        var postes=dates[dateKey];
+        for(var poste in postes){
+          var r=postes[poste];
+          if(!r||!r.nom)continue;
+          var nom=(r.nom||'').toUpperCase();
+          var prenom=r.prenom||'';
+          var tel=(r.telephone||'').toString().trim();
+          if(tel&&tel.charAt(0)!=='0'&&tel.charAt(0)!=='+'&&tel.length>=9)tel='0'+tel;
+          if(!nom||!tel)continue;
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'carpodrome',key:''});
+            count++;
+          }
+        }
+      }
+      console.log('📋 Carpodrome: '+count+' contacts ajoutés');
+      // Source 4 : Réservations Hardt
+      loadHardtContacts(seen);
+    }).catch(function(e){console.error('❌ Carpo contacts error:',e);loadHardtContacts(seen);});
+  }
+
+  function loadHardtContacts(seen){
+    fbHardtDb.ref('reservations').once('value').then(function(snap){
+      var dates=snap.val()||{};
+      var count=0;
+      for(var dateKey in dates){
+        var postes=dates[dateKey];
+        for(var poste in postes){
+          var r=postes[poste];
+          if(!r||!r.nom)continue;
+          var nom=(r.nom||'').toUpperCase();
+          var prenom=r.prenom||'';
+          if(!nom)continue;
+          var key=nom+' '+prenom.toLowerCase();
+          if(!seen[key]){
+            seen[key]=true;
+            allPecheurs.push({nom:nom,prenom:prenom,telephone:'',source:'hardt',key:''});
+            count++;
+          }
+        }
+      }
+      console.log('📋 Hardt: '+count+' contacts ajoutés (total: '+allPecheurs.length+')');
+      allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});
+    }).catch(function(e){console.error('❌ Hardt contacts error:',e);allPecheurs.sort(function(a,b){return(a.nom+a.prenom).localeCompare(b.nom+b.prenom);});});
+  }
+
+  loadPecheurs();
+
+  $('inp-search-pecheur').addEventListener('input',function(){
+    var q=this.value.trim().toLowerCase();
+    var res=$('search-results');
+    if(q.length<2){res.style.display='none';return;}
+    var matches=[];
+    for(var i=0;i<allPecheurs.length;i++){
+      var p=allPecheurs[i];
+      var full=(p.nom+' '+p.prenom).toLowerCase();
+      var telSearch=(p.telephone||'').replace(/\s/g,'');
+      if(full.indexOf(q)!==-1||p.prenom.toLowerCase().indexOf(q)!==-1||telSearch.indexOf(q.replace(/\s/g,''))!==-1){
+        matches.push(p);
+      }
+      if(matches.length>=8)break;
+    }
+    if(matches.length===0){
+      res.innerHTML='<div style="padding:12px;color:#999;font-size:13px;text-align:center;">Aucun pêcheur trouvé</div>';
+      res.style.display='block';
+      return;
+    }
+    var html='';
+    for(var j=0;j<matches.length;j++){
+      var m=matches[j];
+      html+='<div class="sr-item" data-idx="'+j+'" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;">';
+      html+='<b>'+m.nom+' '+m.prenom+'</b>';
+      if(m.telephone)html+='<span style="float:right;color:#1565c0;">'+m.telephone+'</span>';
+      var srcLbl=m.source==='carpodrome'?'<div style="font-size:10px;color:#888;">📋 Réservation Carpodrome</div>':m.source==='hardt'?'<div style="font-size:10px;color:#888;">📋 Réservation Hardt</div>':m.source==='ticket'?'<div style="font-size:10px;color:#888;">📋 Contact tickets</div>':'<div style="font-size:10px;color:#888;">📋 Fiche de renseignement</div>';
+      html+=srcLbl;
+      html+='</div>';
+    }
+    res.innerHTML=html;
+    res.style.display='block';
+    res.querySelectorAll('.sr-item').forEach(function(el){
+      el.addEventListener('click',function(){
+        var idx=parseInt(this.dataset.idx);
+        var p=matches[idx];
+        selectPecheur(p.nom+' '+p.prenom,p.telephone);
+      });
+    });
+  });
+
+  // Fermer résultats si clic ailleurs
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#step-tel'))$('search-results').style.display='none';
+  });
+
+  function selectPecheur(name,tel){
+    $('search-results').style.display='none';
+    $('inp-search-pecheur').value='';
+    $('sel-pecheur-name').textContent=name;
+    $('sel-pecheur-tel2').textContent=tel||'Pas de numéro';
+    $('selected-pecheur').style.display='block';
+    if(tel)$('inp-tel').value=tel;
+    var parts=name.split(' ');
+    selPecheurNom=parts[0]||'';
+    selPecheurPrenom=parts.slice(1).join(' ')||'';
+  }
+
+  $('btn-clear-pecheur').addEventListener('click',function(){
+    $('selected-pecheur').style.display='none';
+    $('inp-tel').value='';
+    $('sel-pecheur-name').textContent='';
+    $('sel-pecheur-tel2').textContent='';
+    selPecheurNom='';selPecheurPrenom='';
+  });
+
+  // Ajouter nouveau pêcheur
+  $('btn-add-pecheur').addEventListener('click',function(){
+    var form=$('add-pecheur-form');
+    form.style.display=form.style.display==='none'?'block':'none';
+  });
+
+  $('btn-save-pecheur').addEventListener('click',function(){
+    var nom=$('new-pech-nom').value.trim().toUpperCase();
+    var prenom=$('new-pech-prenom').value.trim();
+    var tel=$('new-pech-tel').value.trim();
+    if(!nom||!prenom){alert('Nom et prénom obligatoires');return;}
+    // Vérifier doublon uniquement dans les contacts tickets
+    var key=nom+' '+prenom.toLowerCase();
+    for(var i=0;i<allPecheurs.length;i++){
+      var p=allPecheurs[i];
+      if(p.source==='ticket'&&(p.nom+' '+p.prenom.toLowerCase())===key){
+        alert('⚠️ '+nom+' '+prenom+' existe déjà dans les contacts tickets !\n\nUtilisez la recherche pour le trouver.');
+        return;
+      }
+    }
+    var newContact={nom:nom,prenom:prenom,telephone:tel};
+    fbDb.ref('contactsTickets').push(newContact).then(function(ref){
+      allPecheurs.push({nom:nom,prenom:prenom,telephone:tel,source:'ticket',key:ref.key});
+      selectPecheur(nom+' '+prenom,tel);
+      $('add-pecheur-form').style.display='none';
+      $('new-pech-nom').value='';$('new-pech-prenom').value='';$('new-pech-tel').value='';
+    }).catch(function(e){
+      alert('Erreur: '+e.message);
+    });
+  });
+
+  $('btn-preview-tk').addEventListener('click',function(){
+    var tk=$('emit-ok-ticket');
+    var btn=$('btn-preview-tk');
+    if(tk.style.display==='none'){
+      tk.style.display='block';
+      btn.textContent='🔽 Masquer le ticket';
+      btn.style.background='#e8f5e9';btn.style.color='#2e7d32';btn.style.borderColor='#2e7d32';
+    } else {
+      tk.style.display='none';
+      btn.textContent='👁️ Voir le ticket généré';
+      btn.style.background='#f5f5f5';btn.style.color='#666';btn.style.borderColor='#ddd';
+    }
+  });
+
+  // Scan
+  $('back-scan').addEventListener('click',function(){stopScanner();if(fromControleur){window.location.href=document.referrer||'index.html';}else{goPage('pg-menu');}});
+  $('btn-start-scan').addEventListener('click',startLiveScan);
+  $('btn-stop-scan').addEventListener('click',stopScanner);
+  $('btn-search-tk').addEventListener('click',searchTk);
+  $('inp-tkid').addEventListener('keydown',function(e){if(e.key==='Enter')searchTk();});
+  $('btn-ctrl-oui').addEventListener('click',function(){validateCtrl(true);});
+  $('btn-ctrl-non').addEventListener('click',function(){validateCtrl(false);});
+  $('btn-rescan').addEventListener('click',resetScan);
+
+  // Histo
+  $('back-histo').addEventListener('click',function(){goPage('pg-menu');});
+  $('back-histo-detail').addEventListener('click',function(){currentDetailVendeur=null;goPage('pg-histo');});
+
+  // Modal del
+  $('btn-del-cancel1').addEventListener('click',closeDel);
+  $('btn-del-cancel2').addEventListener('click',closeDel);
+  $('btn-del-check').addEventListener('click',checkDelPwd);
+  $('btn-del-confirm').addEventListener('click',confirmDel);
+
+  // Modal enc
+  $('btn-enc-cancel').addEventListener('click',closeEnc);
+  $('btn-enc-confirm').addEventListener('click',confirmEnc);
+
+  // Admin
+  $('btn-gear-menu').addEventListener('click',openAdmin);
+  $('btn-admin-cancel1').addEventListener('click',closeAdmin);
+  $('btn-admin-check').addEventListener('click',checkAdminPwd);
+  $('btn-admin-cancel2').addEventListener('click',closeAdmin);
+  $('btn-reset-all').addEventListener('click',startReset);
+  $('btn-admin-contacts').addEventListener('click',showAdminContacts);
+  $('btn-contacts-back').addEventListener('click',function(){hide($('admin-step5'));show($('admin-step2'));});
+  $('btn-contacts-add').addEventListener('click',function(){
+    var nom=prompt('Nom :');
+    if(!nom)return;
+    var prenom=prompt('Prénom :');
+    if(prenom===null)return;
+    nom=nom.toUpperCase().trim();prenom=prenom.trim();
+    // Vérifier doublon uniquement dans les contacts tickets
+    var key=nom+' '+prenom.toLowerCase();
+    for(var i=0;i<allPecheurs.length;i++){
+      var p=allPecheurs[i];
+      if(p.source==='ticket'&&(p.nom+' '+p.prenom.toLowerCase())===key){
+        alert('⚠️ '+nom+' '+prenom+' existe déjà dans les contacts tickets !');
+        return;
+      }
+    }
+    var tel=prompt('Téléphone :');
+    if(tel===null)return;
+    fbDb.ref('contactsTickets').push({nom:nom,prenom:prenom,telephone:tel.trim()}).then(function(){
+      loadAdminContacts();loadPecheurs();
+    });
+  });
+  $('btn-reset-cancel').addEventListener('click',function(){hide($('admin-step3'));show($('admin-step2'));});
+  $('btn-reset-confirm1').addEventListener('click',confirmReset1);
+  $('btn-reset-cancel2').addEventListener('click',function(){hide($('admin-step4'));show($('admin-step2'));});
+  $('btn-reset-final').addEventListener('click',doResetAll);
+
+  // Modal visualisation ticket
+  $('btn-view-tk-close').addEventListener('click',closeViewTk);
+  $('modal-view-tk').addEventListener('click',function(e){if(e.target===this)closeViewTk();});
+
+})();
+}catch(e){
+  document.body.innerHTML='<div style="padding:40px;color:#ef4444;background:#1a1d27;min-height:100vh;font-family:sans-serif;"><h2>Erreur application</h2><p>'+e.message+'</p><pre style="white-space:pre-wrap;font-size:12px;color:#9ca3af;">'+e.stack+'</pre></div>';
+}
 });
 </script>
 </body>
