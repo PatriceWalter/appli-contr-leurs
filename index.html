@@ -32,14 +32,14 @@
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         
-        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 100px; background: #f0f2e9; }
+        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
         .page.active { display: block !important; }
         
         .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
         .page-topbar-icon { font-size: 20px; }
         .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
-        .sub-menu-page { padding: 0 !important; padding-bottom: 100px !important; }
-        .menu-page { padding-top: 0 !important; background: #f0f2e9 !important; }
+        .sub-menu-page { padding: 0 !important; padding-bottom: 130px !important; }
+        .menu-page { padding-top: 0 !important; padding-bottom: 130px !important; background: #f0f2e9 !important; }
         .menu-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
         .menu-topbar-left { display: flex; align-items: center; gap: 10px; }
         .menu-topbar-logo { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -72,6 +72,8 @@
         .menu-bottom-btn span { font-size: 15px; font-weight: 700; color: #fff; }
         .menu-bottom-btn.logout { background: #fff; border: 2px solid #e0e0e0; box-shadow: none; }
         .menu-bottom-btn.logout span { color: #999; }
+        .menu-header { display: none; }
+        #pageMenu > .menu-cards { display: none; }
         .page-content { max-width: 800px; margin: 0 auto; padding: 16px; }
         .page-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #d5d8ce; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
         .page-title { display: none; }
@@ -82,7 +84,6 @@
         .form-group.required label::after { content: " *"; color: #e74c3c; }
         .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
         .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
-        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
         .reglement-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         .reglement-item { display: flex; align-items: center; gap: 15px; background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; }
         .reglement-item.checked { border-color: #2d5a3d; background: #e8f5e9; }
@@ -136,6 +137,10 @@
         .badge-banned { background: #ffebee; color: #c62828; }
         .badge-temp { background: #fff3e0; color: #ff9800; }
         .badge-expired { background: #e8f5e9; color: #2e7d32; }
+        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
+        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
+        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
         .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
         .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
@@ -160,6 +165,14 @@
         .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
+        
+        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
+        .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
+        .exclusion-type-option:hover { border-color: #dc3545; }
+        .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
+        .exclusion-type-option .title { font-weight: 700; color: #333; font-size:15px; }
+        
         .alert { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; font-weight: 500; z-index: 3000; display: none; max-width: 90%; text-align: center; }
         .alert.visible { display: block; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -239,13 +252,10 @@
         .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
         .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
         .reglement-info strong { color: #1565c0; }
-        .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
-        .exclusion-type-option:hover { border-color: #dc3545; }
-        .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
-        .exclusion-type-option .icon { font-size: 32px; margin-bottom: 10px; }
-        .exclusion-type-option .title { font-weight: 700; color: #333; }
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
+        
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } .menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
+
+        /* --- Module Tickets --- */
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
         .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
@@ -728,6 +738,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
+        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
+        let currentHistTab = 'avertissements';
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
+        let pendingExclusion = null, selectedExclusionType = null;
+        let controleursMdp = {};
+        let infractionsListenerSetup = false;
+
         // BASE CENTRALE UNIQUE pour toutes les données
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
@@ -994,15 +1013,6 @@
             
             return { title: titles[name], content: html };
         }
-
-        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
-        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
-        let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
-        let pendingExclusion = null, selectedExclusionType = null;
-        let controleursMdp = {};
-        let infractionsListenerSetup = false;
 
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
@@ -1446,9 +1456,13 @@
             } 
         });
 
+        // ==========================================
+        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
+        // ==========================================
         async function loadAllData() { 
             await loadFiches(); 
             
+            // 1. Avant d'écouter les infractions, on effectue la migration des anciennes si besoin
             if (!infractionsListenerSetup) {
                 try {
                     const banSnap = await dbCentral.ref('infractions/bannis').once('value');
@@ -1458,11 +1472,12 @@
                         let needsUpdate = false;
                         
                         bannisArr.forEach(b => {
+                            // Si c'est temporaire mais qu'il n'y a pas la nouvelle variable "dureeMois"
                             if (b && b.nom && b.typeExclusion === 'temporaire' && !b.dureeMois) {
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2);
+                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1475,7 +1490,8 @@
                         }
                     }
                 } catch(e) { console.error("Erreur lors de la migration:", e); }
-                
+
+                // 2. Ensuite on lance l'écouteur en temps réel
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
             }
