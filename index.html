@@ -9,6 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; background: #f0f2e9; min-height: 100vh; color: #333; }
         
+        /* OPTIMISATION MOBILE */
         a, button, .menu-grid-card, .fiche-tab, .admin-tab, .tab-btn, .controle-big-btn, .reglement-item, .search-result-item, .hist-infraction-item, .carte-item, .tk-user-item, input[type="checkbox"], .menu-bottom-btn, .exclusion-type-option {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -84,6 +85,7 @@
         .form-group.required label::after { content: " *"; color: #e74c3c; }
         .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
         .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
         .reglement-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         .reglement-item { display: flex; align-items: center; gap: 15px; background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; }
         .reglement-item.checked { border-color: #2d5a3d; background: #e8f5e9; }
@@ -137,10 +139,6 @@
         .badge-banned { background: #ffebee; color: #c62828; }
         .badge-temp { background: #fff3e0; color: #ff9800; }
         .badge-expired { background: #e8f5e9; color: #2e7d32; }
-        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
-        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
-        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
-        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
         .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
         .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
@@ -252,7 +250,6 @@
         .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
         .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
         .reglement-info strong { color: #1565c0; }
-        
         @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } .menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
         /* --- Module Tickets --- */
@@ -659,9 +656,16 @@
             </div>
             <div class="modal-body">
                 <p style="margin-bottom:15px;text-align:center;color:#666;">Renseignez les informations du pêcheur contrôlé.</p>
-                <div class="form-group required"><label>Nom</label><input type="text" id="hiNom" placeholder="NOM"></div>
+                
+                <div class="form-group required" style="position:relative;">
+                    <label>Nom</label>
+                    <input type="text" id="hiNom" oninput="filterPecheursIndiv()" placeholder="NOM" autocomplete="off">
+                    <div id="suggestionsBoxIndiv" style="display:none; max-height:180px; overflow-y:auto; border:2px solid #d5d8ce; border-radius:8px; background:#fff; margin:-8px 0 8px;"></div>
+                </div>
+                
                 <div class="form-group required"><label>Prénom</label><input type="text" id="hiPrenom" placeholder="Prénom"></div>
                 <div class="form-group"><label>Téléphone</label><input type="tel" id="hiTel" placeholder="06 XX XX XX XX"></div>
+                
                 <div class="form-group required">
                     <label>Poste (1 à 12)</label>
                     <select id="hiPoste">
@@ -746,6 +750,8 @@
         let pendingExclusion = null, selectedExclusionType = null;
         let controleursMdp = {};
         let infractionsListenerSetup = false;
+        
+        let allPecheurs = []; // Utilisé pour l'autocomplétion
 
         // BASE CENTRALE UNIQUE pour toutes les données
         const appCentral = firebase.initializeApp({ 
@@ -798,9 +804,12 @@
             const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             const message = '🐠 *CONTRÔLE BREITMATT*\n📅 ' + date + '\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
+            
             fermerModalBreitmatt();
             showAlert('⏳ Envoi en cours...', 'info');
+            
             await envoyerNotificationTelegram(message);
+            
             showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
         }
         
@@ -820,13 +829,16 @@
             const date = new Date().toLocaleDateString('fr-FR');
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
+            
             fermerModalHardtJournee();
             showAlert('⏳ Envoi en cours...', 'info');
+            
             await envoyerNotificationTelegram(message);
+            
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // ===== CONTRÔLE HARDT INDIVIDUEL =====
+        // ===== CONTRÔLE HARDT INDIVIDUEL (Avec Autocomplétion) =====
         function ouvrirModalHardtIndiv() {
             document.getElementById('hiNom').value = '';
             document.getElementById('hiPrenom').value = '';
@@ -834,9 +846,41 @@
             document.getElementById('hiPoste').value = '';
             document.getElementById('hardtIndivModal').classList.add('visible');
         }
+        
         function fermerModalHardtIndiv() {
             document.getElementById('hardtIndivModal').classList.remove('visible');
         }
+        
+        function filterPecheursIndiv() {
+            var input = document.getElementById('hiNom').value.trim().toUpperCase();
+            var box = document.getElementById('suggestionsBoxIndiv');
+            if (input.length < 2) { box.style.display = 'none'; return; }
+            
+            var matches = allPecheurs.filter(function(p) { 
+                return p.nom.indexOf(input) === 0; 
+            });
+            
+            if (matches.length === 0) { box.style.display = 'none'; return; }
+            
+            box.innerHTML = matches.slice(0, 8).map(function(p, i) {
+                return '<div onclick="selectPecheurIndiv(' + i + ')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;' + (i % 2 === 0 ? '' : 'background:#f8f9fa;') + '">' +
+                    '<strong>' + p.nom + '</strong> ' + (p.prenom || '') + '</div>';
+            }).join('');
+            box.style.display = 'block';
+            box._matches = matches.slice(0, 8);
+        }
+
+        function selectPecheurIndiv(idx) {
+            var box = document.getElementById('suggestionsBoxIndiv');
+            var p = box._matches[idx];
+            if (p) {
+                document.getElementById('hiNom').value = p.nom;
+                document.getElementById('hiPrenom').value = p.prenom || '';
+                document.getElementById('hiTel').value = p.telephone || '';
+            }
+            box.style.display = 'none';
+        }
+        
         async function envoyerControleHardtIndiv() {
             const nom = document.getElementById('hiNom').value.trim().toUpperCase();
             const prenom = document.getElementById('hiPrenom').value.trim();
@@ -846,6 +890,21 @@
             if(!nom || !prenom || !poste) {
                 showAlert('❌ Veuillez remplir le nom, prénom et le poste.', 'error');
                 return;
+            }
+            
+            // Vérification dans la base existante
+            const prenomF = prenom.toLowerCase();
+            const exists = allPecheurs.some(p => p.nom === nom && (p.prenom || '').toLowerCase() === prenomF);
+            
+            if (!exists) {
+                if (confirm(`Le pêcheur ${nom} ${prenom} n'est pas dans la base de données.\n\nVoulez-vous l'ajouter pour de futurs contrôles ?`)) {
+                    try {
+                        await dbCentral.ref('contactsTickets').push({nom: nom, prenom: prenom, telephone: tel});
+                        allPecheurs.push({nom: nom, prenom: prenom, telephone: tel, source: 'ticket', key: ''});
+                    } catch(e) {
+                        console.error('Erreur ajout:', e);
+                    }
+                }
             }
             
             const controleur = getCurrentUser();
@@ -1462,7 +1521,6 @@
         async function loadAllData() { 
             await loadFiches(); 
             
-            // 1. Avant d'écouter les infractions, on effectue la migration des anciennes si besoin
             if (!infractionsListenerSetup) {
                 try {
                     const banSnap = await dbCentral.ref('infractions/bannis').once('value');
@@ -1472,12 +1530,11 @@
                         let needsUpdate = false;
                         
                         bannisArr.forEach(b => {
-                            // Si c'est temporaire mais qu'il n'y a pas la nouvelle variable "dureeMois"
                             if (b && b.nom && b.typeExclusion === 'temporaire' && !b.dureeMois) {
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
+                                    d.setMonth(d.getMonth() + 2);
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1491,7 +1548,6 @@
                     }
                 } catch(e) { console.error("Erreur lors de la migration:", e); }
 
-                // 2. Ensuite on lance l'écouteur en temps réel
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
             }
@@ -1506,7 +1562,60 @@
             updateMenuStats();
         }
         
-        async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
+        // Ajout du listener global pour cacher les boîtes de suggestions
+        document.addEventListener('click', function(e) {
+            var sr = document.getElementById('searchResults');
+            if (sr && !e.target.closest('.search-container')) sr.style.display = 'none';
+            
+            var boxIndiv = document.getElementById('suggestionsBoxIndiv');
+            if (boxIndiv && e.target.id !== 'hiNom' && !boxIndiv.contains(e.target)) {
+                boxIndiv.style.display = 'none';
+            }
+        });
+        
+        async function loadFiches() { 
+            allFiches = []; 
+            allFichesWithIndex = []; 
+            allPecheurs = []; // On réinitialise allPecheurs pour l'autocomplétion
+            var seen = {};
+
+            try { 
+                const s = await dbCentral.ref('fiches').once('value'); 
+                if (s.val()) { 
+                    Object.entries(s.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allFiches.push(v); 
+                            allFichesWithIndex.push({ index: key, fiche: v }); 
+                            
+                            // Ajout pour l'autocomplétion
+                            var nom = v.nom.toUpperCase();
+                            var prenom = v.prenom || '';
+                            var fKey = nom + ' ' + prenom.toLowerCase();
+                            if(!seen[fKey]) {
+                                seen[fKey] = true;
+                                allPecheurs.push({nom: nom, prenom: prenom, telephone: v.telephone || '', source: 'fiche'});
+                            }
+                        } 
+                    }); 
+                } 
+                
+                // Charger aussi les contactsTickets pour l'autocomplétion
+                const ctSnap = await dbCentral.ref('contactsTickets').once('value');
+                if (ctSnap.val()) {
+                    Object.values(ctSnap.val()).forEach(c => {
+                        if (c && c.nom) {
+                            var nom = c.nom.toUpperCase();
+                            var prenom = c.prenom || '';
+                            var cKey = nom + ' ' + prenom.toLowerCase();
+                            if(!seen[cKey]) {
+                                seen[cKey] = true;
+                                allPecheurs.push({nom: nom, prenom: prenom, telephone: c.telephone || '', source: 'ticket'});
+                            }
+                        }
+                    });
+                }
+            } catch(e) { console.error("Erreur chargement données:", e); } 
+        }
         
         function setupInfractionsListener() {
             dbCentral.ref('infractions').on('value', (snapshot) => {
