@@ -33,7 +33,7 @@
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         
-        /* Espacement bas de page */
+        /* Correction Mobile Marge Basse */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
         .page.active { display: block !important; }
         
@@ -160,7 +160,6 @@
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
         
-        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
         .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
         .exclusion-type-option:hover { border-color: #dc3545; }
@@ -172,6 +171,7 @@
         .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
         .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
         .alert-warning { background: #fff3e0; color: #f57c00; border: 1px solid #ffcc80; }
+        
         .admin-fiche-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
         .admin-fiche-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .admin-fiche-name { font-weight: 700; color: #1a472a; font-size: 16px; }
@@ -714,9 +714,12 @@
         let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
         let controleursMdp = {};
+        let isFichesListenerSetup = false;
         let infractionsListenerSetup = false;
+        let fichesCache = {};
+        let contactsCache = {};
         
-        let allPecheurs = []; // Pour l'autocomplétion
+        let allPecheurs = []; 
 
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
@@ -746,9 +749,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message })
                 });
-            } catch (error) {
-                console.error('❌ Erreur notification Telegram:', error);
-            }
+            } catch (error) {}
         }
         
         function ouvrirModalBreitmatt() {
@@ -857,13 +858,10 @@
                 if (confirm(`Le pêcheur ${nom} ${prenom} n'est pas dans la base de données.\n\nVoulez-vous l'ajouter pour de futurs contrôles ?`)) {
                     try {
                         await dbCentral.ref('contactsTickets').push({nom: nom, prenom: prenom, telephone: tel});
-                        allPecheurs.push({nom: nom, prenom: prenom, telephone: tel, source: 'ticket', key: ''});
                         if (tel) {
                             sendSmsForm = true;
                         }
-                    } catch(e) {
-                        console.error('Erreur ajout:', e);
-                    }
+                    } catch(e) {}
                 }
             }
             
@@ -1000,7 +998,10 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
             document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
             document.getElementById('navButtons').classList.toggle('visible', id !== 'menu');
-            if (id === 'recherche') renderPecheursAlphabetique();
+            if (id === 'recherche') {
+                var searchInp = document.getElementById('searchInput');
+                renderPecheursAlphabetique(searchInp ? searchInp.value.toLowerCase().trim() : '');
+            }
             if (id === 'historique') renderHistorique();
             if (id === 'travail') renderTravail();
         }
@@ -1069,9 +1070,7 @@
                     document.getElementById('loginError').style.display = 'block'; 
                     setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
                 } 
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) {}
         }
         
         function saveNewPwd() {
@@ -1226,9 +1225,27 @@
         document.getElementById('adminSubmitBtn').addEventListener('click', checkAdminPassword);
         document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
         
-        function checkAdminPassword() { if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { document.getElementById('adminModal').classList.remove('visible'); loadAdminFiches(); showPage('admin'); } else { showAlert('❌ Mot de passe incorrect', 'error'); } }
+        function checkAdminPassword() { 
+            if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { 
+                document.getElementById('adminModal').classList.remove('visible'); 
+                loadAdminFiches(); 
+                showPage('admin'); 
+            } else { 
+                showAlert('❌ Mot de passe incorrect', 'error'); 
+            } 
+        }
 
-        function loadAdminFiches() { const container = document.getElementById('adminFichesList'); const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + item.fiche.nom + ' ' + item.fiche.prenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>').join(''); }
+        function loadAdminFiches() { 
+            const container = document.getElementById('adminFichesList'); 
+            const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); 
+            if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } 
+            
+            container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => {
+                const safeNom = (item.fiche.nom || '').replace(/'/g, "\\'");
+                const safePrenom = (item.fiche.prenom || '').replace(/'/g, "\\'");
+                return '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + safeNom + ' ' + safePrenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>';
+            }).join(''); 
+        }
 
         function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); renderTicketViewAllSettings(); } }
 
@@ -1351,8 +1368,6 @@
                     await dbCentral.ref('fiches/' + index).remove();
                 }
                 showAlert('✅ Modifié !', 'success'); 
-                await loadAllData(); 
-                loadAdminFiches(); 
                 pageHistory.pop(); 
                 showPage('admin'); 
             } catch(e) { 
@@ -1363,7 +1378,7 @@
         function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
         document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
         document.getElementById('deleteCancelBtn').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
-        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbCentral.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); await loadAllData(); loadAdminFiches(); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbCentral.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
 
         document.getElementById('codePostal').addEventListener('input', async function() { const cp = this.value.trim(), sel = document.getElementById('ville'); if (cp.length === 5) { sel.innerHTML = '<option>🔄 Recherche...</option>'; sel.disabled = true; try { const r = await fetch('https://geo.api.gouv.fr/communes?codePostal='+cp+'&fields=nom&format=json'); const v = await r.json(); if (v.length === 0) sel.innerHTML = '<option value="">❌ Aucune</option>'; else { sel.innerHTML = '<option value="">-- Sélectionnez --</option>' + v.map(x => '<option value="'+x.nom+'">'+x.nom+'</option>').join(''); sel.disabled = false; if (v.length === 1) sel.value = v[0].nom; } updateValidateBtn(); } catch(e) { sel.innerHTML = '<option value="">❌ Erreur</option>'; } } else { sel.innerHTML = '<option value="">Entrez le code postal</option>'; sel.disabled = true; } });
         document.getElementById('ville').addEventListener('change', updateValidateBtn);
@@ -1418,17 +1433,75 @@
                 document.getElementById('validateBtn').disabled = true; 
                 document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; 
                 document.getElementById('ville').disabled = true; 
-                loadAllData(); 
             } catch(e) { 
                 showAlert('❌ Erreur: ' + e.message, 'error'); 
             } 
         });
 
         // ==========================================
-        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
+        // GESTION EN TEMPS RÉEL (REMPLACE LE SYSTEME DE F5)
         // ==========================================
+        function setupFichesRealtime() {
+            if (isFichesListenerSetup) return;
+            isFichesListenerSetup = true;
+
+            dbCentral.ref('fiches').on('value', (snap) => {
+                fichesCache = snap.val() || {};
+                rebuildFichesAndPecheurs();
+            });
+
+            dbCentral.ref('contactsTickets').on('value', (snap) => {
+                contactsCache = snap.val() || {};
+                rebuildFichesAndPecheurs();
+            });
+        }
+
+        function rebuildFichesAndPecheurs() {
+            allFiches = []; 
+            allFichesWithIndex = []; 
+            allPecheurs = []; 
+            var seen = {};
+
+            Object.entries(fichesCache).forEach(([key, v]) => { 
+                if (v && v.nom) { 
+                    allFiches.push(v); 
+                    allFichesWithIndex.push({ index: key, fiche: v }); 
+                    
+                    var nom = v.nom.toUpperCase();
+                    var prenom = v.prenom || '';
+                    var fKey = nom + ' ' + prenom.toLowerCase();
+                    if(!seen[fKey]) {
+                        seen[fKey] = true;
+                        allPecheurs.push({nom: nom, prenom: prenom, telephone: v.telephone || '', source: 'fiche', key: key, ficheData: v});
+                    }
+                } 
+            }); 
+            
+            Object.entries(contactsCache).forEach(([k, c]) => {
+                if (c && c.nom) {
+                    var nom = c.nom.toUpperCase();
+                    var prenom = c.prenom || '';
+                    var cKey = nom + ' ' + prenom.toLowerCase();
+                    if(!seen[cKey]) {
+                        seen[cKey] = true;
+                        allPecheurs.push({nom: nom, prenom: prenom, telephone: c.telephone || '', source: 'ticket', key: k});
+                    }
+                }
+            });
+
+            // Met à jour l'affichage dynamique s'il est affiché sur l'écran
+            if (currentPage === 'recherche') {
+                var inp = document.getElementById('searchInput');
+                renderPecheursAlphabetique(inp ? inp.value.toLowerCase().trim() : '');
+            }
+            if (currentPage === 'admin' && document.getElementById('adminTabFiches') && document.getElementById('adminTabFiches').classList.contains('active')) {
+                loadAdminFiches();
+            }
+            updateMenuStats();
+        }
+
         async function loadAllData() { 
-            await loadFiches(); 
+            setupFichesRealtime(); 
             
             if (!infractionsListenerSetup) {
                 try {
@@ -1443,7 +1516,7 @@
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
+                                    d.setMonth(d.getMonth() + 2); // 1 mois -> 3 mois
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1452,10 +1525,9 @@
                         
                         if (needsUpdate) {
                             await dbCentral.ref('infractions/bannis').set(bannisArr);
-                            console.log('🔄 Migration automatique : anciens bannissements mis à 3 mois.');
                         }
                     }
-                } catch(e) { console.error("Erreur lors de la migration:", e); }
+                } catch(e) {}
 
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
@@ -1481,50 +1553,6 @@
                 boxIndiv.style.display = 'none';
             }
         });
-        
-        async function loadFiches() { 
-            allFiches = []; 
-            allFichesWithIndex = []; 
-            allPecheurs = []; // On réinitialise allPecheurs pour l'autocomplétion
-            var seen = {};
-
-            try { 
-                const s = await dbCentral.ref('fiches').once('value'); 
-                if (s.val()) { 
-                    Object.entries(s.val()).forEach(([key, v]) => { 
-                        if (v && v.nom) { 
-                            allFiches.push(v); 
-                            allFichesWithIndex.push({ index: key, fiche: v }); 
-                            
-                            // Ajout pour l'autocomplétion globale de l'app (Tickets & Contrôles)
-                            var nom = v.nom.toUpperCase();
-                            var prenom = v.prenom || '';
-                            var fKey = nom + ' ' + prenom.toLowerCase();
-                            if(!seen[fKey]) {
-                                seen[fKey] = true;
-                                allPecheurs.push({nom: nom, prenom: prenom, telephone: v.telephone || '', source: 'fiche', key: key});
-                            }
-                        } 
-                    }); 
-                } 
-                
-                // Charger aussi les contactsTickets pour l'autocomplétion
-                const ctSnap = await dbCentral.ref('contactsTickets').once('value');
-                if (ctSnap.val()) {
-                    Object.entries(ctSnap.val()).forEach(([k, c]) => {
-                        if (c && c.nom) {
-                            var nom = c.nom.toUpperCase();
-                            var prenom = c.prenom || '';
-                            var cKey = nom + ' ' + prenom.toLowerCase();
-                            if(!seen[cKey]) {
-                                seen[cKey] = true;
-                                allPecheurs.push({nom: nom, prenom: prenom, telephone: c.telephone || '', source: 'ticket', key: k});
-                            }
-                        }
-                    });
-                }
-            } catch(e) { console.error("Erreur chargement données:", e); } 
-        }
         
         function setupInfractionsListener() {
             dbCentral.ref('infractions').on('value', (snapshot) => {
@@ -1556,6 +1584,12 @@
                 updateHistoriqueCounts();
                 if (document.getElementById('pageHistorique').classList.contains('active')) {
                     renderHistorique();
+                }
+                
+                // Mettre à jour la recherche si un pêcheur change de statut de bannissement
+                if (currentPage === 'recherche') {
+                    var inp = document.getElementById('searchInput');
+                    renderPecheursAlphabetique(inp ? inp.value.toLowerCase().trim() : '');
                 }
             });
         }
@@ -1606,11 +1640,8 @@
                 } 
                 const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; 
                 
-                // Remplacement strict pour éviter le bug des apostrophes
-                const safeNom = (f.nom || '').replace(/'/g, "\\'");
-                const safePrenom = (f.prenom || '').replace(/'/g, "\\'");
-
-                return '<div class="search-result-item" onclick="showDetailByName(\'' + safeNom + '\', \'' + safePrenom + '\')"><div class="search-result-name">' + (f.nom || '') + ' ' + (f.prenom || '') + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; 
+                // Utilisation de f.id (sûr à 100%, pas de plantage avec les guillemets)
+                return `<div class="search-result-item" onclick="showDetailById('${f.id}')"><div class="search-result-name">${f.nom} ${f.prenom} ${badge}</div><div class="search-result-address">📍 ${f.codePostal || ''} ${f.ville || ''}</div>${email}</div>`; 
             }).join(''); 
         }
         
@@ -1622,11 +1653,8 @@
             return { avertissement, exclusion }; 
         }
         
-        // Nouvelle fonction blindée pour afficher les détails depuis la liste de recherche
-        function showDetailByName(nom, prenom) {
-            const nomUpper = (nom || '').toUpperCase();
-            const prenomLower = (prenom || '').toLowerCase();
-            const fiche = allFiches.find(f => (f.nom || '').toUpperCase() === nomUpper && (f.prenom || '').toLowerCase() === prenomLower);
+        function showDetailById(id) {
+            const fiche = allFiches.find(f => f.id === id);
             if (fiche) {
                 showDetail(fiche);
             } else {
@@ -1702,7 +1730,6 @@
             } 
         }
 
-        // ===== SELECTION TYPE D'EXCLUSION =====
         function selectExclusionType(type) { 
             selectedExclusionType = type; 
             document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
@@ -1786,14 +1813,12 @@
                 document.getElementById('infractionForm').reset(); 
                 pendingExclusion = null; 
                 selectedExclusionType = null; 
-                await loadAllData(); 
                 showPage('menu'); 
             } catch(e) { 
                 showAlert('❌ Erreur: ' + e.message, 'error'); 
             } 
         }
 
-        // HISTORIQUE
         function switchHistTab(tab) { 
             currentHistTab = tab; 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
@@ -1867,8 +1892,6 @@
                     await dbCentral.ref(path + key).remove(); 
                     showAlert('✅ Archivé', 'success'); 
                 } 
-                await loadAllData(); 
-                renderHistorique(); 
             } catch(e) { 
                 showAlert('❌ Erreur', 'error'); 
             } 
@@ -1886,8 +1909,6 @@
             try { 
                 await dbCentral.ref('infractions/archives/' + key).remove(); 
                 showAlert('✅ Supprimé', 'success'); 
-                await loadAllData(); 
-                renderHistorique(); 
             } catch(e) { 
                 showAlert('❌ Erreur', 'error'); 
             } 
@@ -1896,9 +1917,9 @@
         function switchFicheTab(tab) { document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderHistoriqueEnvois(); } }
 
         async function loadMailsSent() { try { const snap = await dbCentral.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
-        async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) { console.error('Erreur sauvegarde mails:', e); } }
+        async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) {} }
         async function loadSmsSent() { try { const snap = await dbCentral.ref('smsSent').once('value'); const data = snap.val(); smsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { smsSent = []; } }
-        async function saveSmsSent() { try { await dbCentral.ref('smsSent').set(smsSent); } catch(e) { console.error('Erreur sauvegarde SMS:', e); } }
+        async function saveSmsSent() { try { await dbCentral.ref('smsSent').set(smsSent); } catch(e) {} }
         function renderHistoriqueEnvois() {
             const container = document.getElementById('historiqueEnvoisList');
             const allEnvois = [
@@ -1926,7 +1947,7 @@
             renderHistoriqueEnvois();
             showAlert('✅ Supprimé', 'success');
         }
-        async function envoyerFormulaire() { const nom = document.getElementById('envoyerNom').value.trim().toUpperCase(); const prenom = document.getElementById('envoyerPrenom').value.trim(); const email = document.getElementById('emailPecheur').value.trim(); const status = document.getElementById('envoyerStatus'); if (!nom || !prenom) { status.textContent = '❌ Nom et prénom requis'; status.className = 'envoyer-status error'; return; } if (!email) { status.textContent = '❌ Email requis'; status.className = 'envoyer-status error'; return; } const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) { status.textContent = '❌ Email invalide'; status.className = 'envoyer-status error'; return; } status.textContent = '⏳ Envoi en cours...'; status.className = 'envoyer-status loading'; document.getElementById('btnEnvoyerFormulaire').disabled = true; try { const formulaireUrlAvecEmail = FORMULAIRE_URL + '?email=' + encodeURIComponent(email); const templateParams = { to_email: email, formulaire_url: formulaireUrlAvecEmail, date_envoi: new Date().toLocaleString('fr-FR') }; await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); const ficheItem = allFichesWithIndex.find(f => f.fiche.nom.toUpperCase() === nom && f.fiche.prenom.toLowerCase() === prenom.toLowerCase()); if (ficheItem) { await dbCentral.ref('fiches/' + ficheItem.index + '/email').set(email); } const mailEntry = { nom: nom, prenom: prenom, email: email, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; mailsSent.push(mailEntry); await saveMailsSent(); status.innerHTML = '✅ Email envoyé à ' + prenom + ' ' + nom + ' !'; status.className = 'envoyer-status success'; document.getElementById('envoyerNom').value = ''; document.getElementById('envoyerPrenom').value = ''; document.getElementById('emailPecheur').value = ''; await loadFiches(); } catch (error) { console.error('EmailJS Error:', error); status.textContent = '❌ Erreur EmailJS'; status.className = 'envoyer-status error'; } document.getElementById('btnEnvoyerFormulaire').disabled = false; }
+        async function envoyerFormulaire() { const nom = document.getElementById('envoyerNom').value.trim().toUpperCase(); const prenom = document.getElementById('envoyerPrenom').value.trim(); const email = document.getElementById('emailPecheur').value.trim(); const status = document.getElementById('envoyerStatus'); if (!nom || !prenom) { status.textContent = '❌ Nom et prénom requis'; status.className = 'envoyer-status error'; return; } if (!email) { status.textContent = '❌ Email requis'; status.className = 'envoyer-status error'; return; } const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(email)) { status.textContent = '❌ Email invalide'; status.className = 'envoyer-status error'; return; } status.textContent = '⏳ Envoi en cours...'; status.className = 'envoyer-status loading'; document.getElementById('btnEnvoyerFormulaire').disabled = true; try { const formulaireUrlAvecEmail = FORMULAIRE_URL + '?email=' + encodeURIComponent(email); const templateParams = { to_email: email, formulaire_url: formulaireUrlAvecEmail, date_envoi: new Date().toLocaleString('fr-FR') }; await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams); const ficheItem = allFichesWithIndex.find(f => f.fiche.nom.toUpperCase() === nom && f.fiche.prenom.toLowerCase() === prenom.toLowerCase()); if (ficheItem) { await dbCentral.ref('fiches/' + ficheItem.index + '/email').set(email); } const mailEntry = { nom: nom, prenom: prenom, email: email, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; mailsSent.push(mailEntry); await saveMailsSent(); status.innerHTML = '✅ Email envoyé à ' + prenom + ' ' + nom + ' !'; status.className = 'envoyer-status success'; document.getElementById('envoyerNom').value = ''; document.getElementById('envoyerPrenom').value = ''; document.getElementById('emailPecheur').value = ''; } catch (error) { console.error('EmailJS Error:', error); status.textContent = '❌ Erreur EmailJS'; status.className = 'envoyer-status error'; } document.getElementById('btnEnvoyerFormulaire').disabled = false; }
 
         async function preparerSMS() {
             const nom = document.getElementById('smsNom').value.trim().toUpperCase();
@@ -2190,7 +2211,6 @@
                 loadTravailAnnuel(annee);
             }).catch(err => {
                 listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
-                console.error(err);
             });
         }
 
@@ -2245,7 +2265,6 @@
                 showAlert('✅ Journée ajoutée pour ' + nom + ' ' + prenom, 'success');
                 document.getElementById('travNom').value = '';
                 document.getElementById('travPrenom').value = '';
-                if (getTravMoisKey(travMoisCourant) === moisKey) renderTravail();
             }).catch(err => {
                 showAlert('❌ Erreur : ' + err.message, 'error');
             });
@@ -2256,7 +2275,6 @@
             if (!confirm('Supprimer cette entrée ?')) return;
             dbCentral.ref('journees_travail/' + moisKey + '/' + entryKey).remove().then(() => {
                 showAlert('🗑️ Entrée supprimée', 'warning');
-                renderTravail();
             }).catch(err => {
                 showAlert('❌ Erreur : ' + err.message, 'error');
             });
