@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎣 Contrôleur / Garde de Pêche - AAPPMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,12 +26,14 @@
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
         .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
         .login-error { color: #e74c3c; margin-top: 15px; display: none; font-weight: 500; }
+        
         .app-container { display: none; min-height: 100vh; }
         .nav-buttons { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 10px 16px 20px; justify-content: center; gap: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
         .nav-buttons.visible { display: flex; }
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         
+        /* Correction Mobile Marge Basse */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
         .page.active { display: block !important; }
         
@@ -174,33 +176,19 @@
         .admin-fiche-actions { display: flex; gap: 8px; }
         .admin-fiche-info { font-size: 13px; color: #666; margin-top: 8px; }
         .admin-count { background: #e8f5e9; color: #2e7d32; padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; display: inline-block; }
-        .etang-cards { display: flex; flex-direction: column; gap: 12px; }
-        .etang-card { display: flex; align-items: center; gap: 15px; background: #fff; border: 2px solid #e9ecef; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s; }
-        .etang-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .etang-icon { font-size: 32px; }
-        .etang-info { flex: 1; }
-        .etang-name { font-weight: 700; font-size: 18px; color: #1a472a; }
-        .etang-count { font-size: 13px; color: #666; margin-top: 4px; }
-        .etang-arrow { font-size: 24px; color: #999; }
         .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .tab-btn:hover { border-color: #2d5a3d; }
         .tab-btn.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
-        .tab-btn span { background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 12px; }
         .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
         .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
         .hist-infraction-item.temp-exclusion { border-left-color: #ff9800; background: #fff3e0; }
         .hist-infraction-item.expired-exclusion { border-left-color: #4caf50; background: #e8f5e9; }
         .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
         .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
-        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
-        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
         .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
-        .hist-infraction-date { font-size: 12px; color: #666; }
-        .hist-infraction-motif { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 14px; color: #555; }
         .hist-delete-btn { background: #c62828; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .no-infractions { text-align: center; color: #666; padding: 40px 20px; }
         .fiche-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .fiche-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .fiche-tab:hover { border-color: #2d5a3d; }
@@ -210,8 +198,6 @@
         .envoyer-container { text-align: center; padding: 20px 0; }
         .controle-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border: 2px solid #d5d8ce; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; min-height: 120px; justify-content: center; }
-        .controle-big-btn.hardt { border-color: #d5d8ce; background: #fff; color: #333; }
-        .controle-big-btn.carpodrome { border-color: #d5d8ce; background: #fff; color: #333; }
         .controle-big-btn:active { border-color: #e8a838; box-shadow: 0 4px 12px rgba(232,168,56,0.2); }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .admin-tab { flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
@@ -219,7 +205,11 @@
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; }
         
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } .menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
+        @media (max-width: 600px) { 
+            .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } 
+            .menu-page, .sub-menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } 
+            .exclusion-type-choice { flex-direction: column; } 
+        }
 
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
@@ -719,9 +709,8 @@
         let controleursMdp = {};
         let infractionsListenerSetup = false;
         
-        let allPecheurs = []; // Utilisé pour l'autocomplétion
+        let allPecheurs = []; 
 
-        // BASE CENTRALE UNIQUE pour toutes les données
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
             authDomain: "appli-controleur-gunder.firebaseapp.com",
@@ -740,7 +729,6 @@
         const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
         emailjs.init(EMAILJS_PUBLIC_KEY);
         
-        // ===== NOTIFICATIONS TELEGRAM =====
         const TELEGRAM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec";
         
         async function envoyerNotificationTelegram(message) {
@@ -751,7 +739,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message })
                 });
-                console.log('✅ Notification Telegram envoyée');
             } catch (error) {
                 console.error('❌ Erreur notification Telegram:', error);
             }
@@ -779,7 +766,6 @@
             showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
         }
         
-        // ===== CONTRÔLE HARDT JOURNÉE =====
         function ouvrirModalHardtJournee() {
             const controleur = getCurrentUser();
             const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -802,7 +788,6 @@
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // ===== CONTRÔLE HARDT INDIVIDUEL (Avec Autocomplétion et SMS) =====
         function ouvrirModalHardtIndiv() {
             document.getElementById('hiNom').value = '';
             document.getElementById('hiPrenom').value = '';
@@ -887,7 +872,6 @@
             await envoyerNotificationTelegram(message);
             showAlert('✅ Contrôle individuel envoyé !', 'success');
 
-            // Proposition SMS pour l'inscription
             if (sendSmsForm) {
                 setTimeout(async () => {
                     if (confirm(`Voulez-vous envoyer le lien de la fiche de renseignement par SMS au ${tel} ?`)) {
@@ -1303,7 +1287,6 @@
             }
         }
         
-        // REINITIALISER MOT DE PASSE
         window.resetPwdControleur = function(nom) {
             if (confirm('Réinitialiser le mot de passe de ' + nom + ' à 911 ?')) {
                 dbCentral.ref('controleurs_mdp/' + nom).remove().then(() => {
@@ -1450,7 +1433,7 @@
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
+                                    d.setMonth(d.getMonth() + 2);
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1573,7 +1556,49 @@
             document.getElementById('tabCountArchives').textContent = allInfractions.archives.length; 
         }
 
-        function renderPecheursAlphabetique(filter = '') { const container = document.getElementById('searchResults'); const countEl = document.getElementById('pecheursCount'); let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } countEl.textContent = sorted.length; if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } container.innerHTML = sorted.map((f, i) => { const inf = getInfractionsForUser(f.nom, f.prenom); const exclusion = inf.exclusion; const avert = inf.avertissement; let badge = '<span class="badge badge-ok">✅ OK</span>'; if (exclusion) { if (exclusion.typeExclusion === 'temporaire' && exclusion.dateFin) { const now = new Date(); const fin = new Date(exclusion.dateFin); if (now > fin) { badge = '<span class="badge badge-expired">✅ Exclusion expirée</span>'; } else { badge = '<span class="badge badge-temp">⏱️ EXCLU TEMP.</span>'; } } else { badge = '<span class="badge badge-banned">🚫 EXCLU</span>'; } } else if (avert) { badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; } const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; }).join(''); }
+        function renderPecheursAlphabetique(filter = '') { 
+            const container = document.getElementById('searchResults'); 
+            const countEl = document.getElementById('pecheursCount'); 
+            let sorted = [...allFiches].sort((a, b) => { 
+                const nomA = (a.nom || '').toLowerCase(); 
+                const nomB = (b.nom || '').toLowerCase(); 
+                if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); 
+                return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); 
+            }); 
+            
+            if (filter.length >= 2) { 
+                const q = filter.toLowerCase(); 
+                sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); 
+            } 
+            
+            countEl.textContent = sorted.length; 
+            if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } 
+            
+            container.innerHTML = sorted.map((f, i) => { 
+                const inf = getInfractionsForUser(f.nom, f.prenom); 
+                const exclusion = inf.exclusion; 
+                const avert = inf.avertissement; 
+                let badge = '<span class="badge badge-ok">✅ OK</span>'; 
+                if (exclusion) { 
+                    if (exclusion.typeExclusion === 'temporaire' && exclusion.dateFin) { 
+                        const now = new Date(); 
+                        const fin = new Date(exclusion.dateFin); 
+                        if (now > fin) { 
+                            badge = '<span class="badge badge-expired">✅ Exclusion expirée</span>'; 
+                        } else { 
+                            badge = '<span class="badge badge-temp">⏱️ EXCLU TEMP.</span>'; 
+                        } 
+                    } else { 
+                        badge = '<span class="badge badge-banned">🚫 EXCLU</span>'; 
+                    } 
+                } else if (avert) { 
+                    badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; 
+                } 
+                const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; 
+                // On passe le vrai nom et prénom pour la fonction showDetailFromList
+                return '<div class="search-result-item" onclick="showDetailByName(\'' + f.nom.replace(/'/g, "\\'") + '\', \'' + (f.prenom || '').replace(/'/g, "\\'") + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; 
+            }).join(''); 
+        }
         
         function getInfractionsForUser(nom, prenom) { 
             const nomUpper = (nom || '').toUpperCase(); 
@@ -1583,7 +1608,12 @@
             return { avertissement, exclusion }; 
         }
         
-        function showDetailFromList(index, filter) { let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter && filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } if (sorted[index]) showDetail(sorted[index]); }
+        function showDetailByName(nom, prenom) {
+            const nomUpper = nom.toUpperCase();
+            const prenomLower = prenom.toLowerCase();
+            const fiche = allFiches.find(f => (f.nom || '').toUpperCase() === nomUpper && (f.prenom || '').toLowerCase() === prenomLower);
+            if (fiche) showDetail(fiche);
+        }
 
         document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
         
