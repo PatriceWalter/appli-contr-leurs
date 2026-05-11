@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎣 Contrôleur / Garde de Pêche - AAPPMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -33,7 +33,7 @@
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         
-        /* Correction Mobile Marge Basse */
+        /* Espacement bas de page */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
         .page.active { display: block !important; }
         
@@ -155,10 +155,12 @@
         .no-results { text-align: center; color: #666; padding: 40px; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-primary { background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
         
+        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
         .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
         .exclusion-type-option:hover { border-color: #dc3545; }
@@ -186,9 +188,14 @@
         .hist-infraction-item.expired-exclusion { border-left-color: #4caf50; background: #e8f5e9; }
         .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
         .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
+        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
+        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
         .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
+        .hist-infraction-date { font-size: 12px; color: #666; }
+        .hist-infraction-motif { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 14px; color: #555; }
         .hist-delete-btn { background: #c62828; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .no-infractions { text-align: center; color: #666; padding: 40px 20px; }
         .fiche-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .fiche-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .fiche-tab:hover { border-color: #2d5a3d; }
@@ -709,7 +716,7 @@
         let controleursMdp = {};
         let infractionsListenerSetup = false;
         
-        let allPecheurs = []; 
+        let allPecheurs = []; // Pour l'autocomplétion
 
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
@@ -1417,6 +1424,9 @@
             } 
         });
 
+        // ==========================================
+        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
+        // ==========================================
         async function loadAllData() { 
             await loadFiches(); 
             
@@ -1433,7 +1443,7 @@
                                 b.dureeMois = 3;
                                 if (b.dateFin) {
                                     let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2);
+                                    d.setMonth(d.getMonth() + 2); // C'était 1 mois, on ajoute 2 mois pour faire 3.
                                     b.dateFin = d.toISOString();
                                 }
                                 needsUpdate = true;
@@ -1595,8 +1605,12 @@
                     badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; 
                 } 
                 const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; 
-                // On passe le vrai nom et prénom pour la fonction showDetailFromList
-                return '<div class="search-result-item" onclick="showDetailByName(\'' + f.nom.replace(/'/g, "\\'") + '\', \'' + (f.prenom || '').replace(/'/g, "\\'") + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; 
+                
+                // Remplacement strict pour éviter le bug des apostrophes
+                const safeNom = (f.nom || '').replace(/'/g, "\\'");
+                const safePrenom = (f.prenom || '').replace(/'/g, "\\'");
+
+                return '<div class="search-result-item" onclick="showDetailByName(\'' + safeNom + '\', \'' + safePrenom + '\')"><div class="search-result-name">' + (f.nom || '') + ' ' + (f.prenom || '') + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; 
             }).join(''); 
         }
         
@@ -1608,22 +1622,45 @@
             return { avertissement, exclusion }; 
         }
         
+        // Nouvelle fonction blindée pour afficher les détails depuis la liste de recherche
         function showDetailByName(nom, prenom) {
-            const nomUpper = nom.toUpperCase();
-            const prenomLower = prenom.toLowerCase();
+            const nomUpper = (nom || '').toUpperCase();
+            const prenomLower = (prenom || '').toLowerCase();
             const fiche = allFiches.find(f => (f.nom || '').toUpperCase() === nomUpper && (f.prenom || '').toLowerCase() === prenomLower);
-            if (fiche) showDetail(fiche);
+            if (fiche) {
+                showDetail(fiche);
+            } else {
+                showAlert('❌ Impossible de charger les détails.', 'error');
+            }
         }
 
         document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
         
         async function showDetail(f) { 
-            document.getElementById('detailName').textContent = f.nom + ' ' + f.prenom; 
+            if (!f) return;
+            document.getElementById('detailName').textContent = (f.nom || '') + ' ' + (f.prenom || ''); 
             const st = document.getElementById('detailStatus'); 
             const inf = getInfractionsForUser(f.nom, f.prenom); 
-            const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement || '').toUpperCase(); 
+            const reglementsList = Array.isArray(f.reglements) ? f.reglements.join(', ').toUpperCase() : (f.reglement ? f.reglement.toUpperCase() : 'NON RENSEIGNÉ'); 
             const emailInfo = f.email ? '<div class="info-item"><div class="info-item-label">📧 Email</div><div class="info-item-value">' + f.email + '</div></div>' : ''; 
-            document.getElementById('detailInfo').innerHTML = '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">' + f.adresse + '<br>' + f.codePostal + ' ' + f.ville + '</div></div><div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">' + f.telephone + '</div></div>' + emailInfo + '<div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">' + (f.urgence?.nom || '') + ' ' + (f.urgence?.prenom || '') + '<br>' + (f.urgence?.telephone || '') + '</div></div><div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">' + reglementsList + '</div></div><div class="info-item"><div class="info-item-label">📅 Inscription</div><div class="info-item-value">' + (f.date || '') + '</div></div>'; 
+            
+            const adresse = f.adresse || 'Non renseignée';
+            const cp = f.codePostal || '';
+            const ville = f.ville || '';
+            const tel = f.telephone || 'Non renseigné';
+            const urgNom = f.urgence && f.urgence.nom ? f.urgence.nom : '';
+            const urgPrenom = f.urgence && f.urgence.prenom ? f.urgence.prenom : '';
+            const urgTel = f.urgence && f.urgence.telephone ? f.urgence.telephone : 'Non renseigné';
+            const dateInsc = f.date || 'Inconnue';
+
+            document.getElementById('detailInfo').innerHTML = 
+                '<div class="info-item"><div class="info-item-label">📍 Adresse</div><div class="info-item-value">' + adresse + '<br>' + cp + ' ' + ville + '</div></div>' +
+                '<div class="info-item"><div class="info-item-label">📞 Téléphone</div><div class="info-item-value">' + tel + '</div></div>' + 
+                emailInfo + 
+                '<div class="info-item"><div class="info-item-label">🚨 Urgence</div><div class="info-item-value">' + urgNom + ' ' + urgPrenom + '<br>' + urgTel + '</div></div>' +
+                '<div class="info-item"><div class="info-item-label">📜 Règlement(s)</div><div class="info-item-value">' + reglementsList + '</div></div>' +
+                '<div class="info-item"><div class="info-item-label">📅 Inscription</div><div class="info-item-value">' + dateInsc + '</div></div>'; 
+            
             showPage('detail'); 
             
             const is = document.getElementById('detailInfractions'); 
