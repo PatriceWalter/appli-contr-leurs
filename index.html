@@ -33,7 +33,6 @@
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         
-        /* Correction Mobile Marge Basse */
         .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
         .page.active { display: block !important; }
         
@@ -127,8 +126,6 @@
         .search-result-item:hover { background: #e8f5e9; }
         .search-result-name { font-weight: 700; color: #1a472a; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
-        .search-result-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-        .search-result-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
         .badge-ok { background: #e8f5e9; color: #2e7d32; }
         .badge-warning { background: #fff3e0; color: #f57c00; }
@@ -171,7 +168,6 @@
         .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
         .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
         .alert-warning { background: #fff3e0; color: #f57c00; border: 1px solid #ffcc80; }
-        
         .admin-fiche-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
         .admin-fiche-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .admin-fiche-name { font-weight: 700; color: #1a472a; font-size: 16px; }
@@ -188,14 +184,11 @@
         .hist-infraction-item.expired-exclusion { border-left-color: #4caf50; background: #e8f5e9; }
         .hist-infraction-item.archive-item { border-left-color: #9e9e9e; background: #f5f5f5; opacity: 0.9; }
         .hist-infraction-item.mail-sent { border-left-color: #667eea; background: #f0f4ff; }
-        .archive-type { font-size: 12px; color: #666; margin-top: 4px; }
-        .archive-date { font-size: 11px; color: #999; margin-top: 2px; font-style: italic; }
         .hist-infraction-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
         .hist-infraction-name { font-weight: 700; font-size: 16px; color: #1a472a; }
         .hist-infraction-date { font-size: 12px; color: #666; }
         .hist-infraction-motif { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 14px; color: #555; }
         .hist-delete-btn { background: #c62828; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .no-infractions { text-align: center; color: #666; padding: 40px 20px; }
         .fiche-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .fiche-tab { flex: 1; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .fiche-tab:hover { border-color: #2d5a3d; }
@@ -1464,6 +1457,7 @@
 
             Object.entries(fichesCache).forEach(([key, v]) => { 
                 if (v && v.nom) { 
+                    v._key = key; // On sécurise avec l'ID Firebase
                     allFiches.push(v); 
                     allFichesWithIndex.push({ index: key, fiche: v }); 
                     
@@ -1543,7 +1537,6 @@
             updateMenuStats();
         }
         
-        // Ajout du listener global pour cacher les boîtes de suggestions
         document.addEventListener('click', function(e) {
             var sr = document.getElementById('searchResults');
             if (sr && !e.target.closest('.search-container')) sr.style.display = 'none';
@@ -1586,7 +1579,6 @@
                     renderHistorique();
                 }
                 
-                // Mettre à jour la recherche si un pêcheur change de statut de bannissement
                 if (currentPage === 'recherche') {
                     var inp = document.getElementById('searchInput');
                     renderPecheursAlphabetique(inp ? inp.value.toLowerCase().trim() : '');
@@ -1603,7 +1595,9 @@
         function renderPecheursAlphabetique(filter = '') { 
             const container = document.getElementById('searchResults'); 
             const countEl = document.getElementById('pecheursCount'); 
-            let sorted = [...allFiches].sort((a, b) => { 
+            
+            let sorted = [...allFiches];
+            sorted.sort((a, b) => { 
                 const nomA = (a.nom || '').toLowerCase(); 
                 const nomB = (b.nom || '').toLowerCase(); 
                 if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); 
@@ -1612,11 +1606,14 @@
             
             if (filter.length >= 2) { 
                 const q = filter.toLowerCase(); 
-                sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); 
+                sorted = sorted.filter(f => (f.nom || '').toLowerCase().indexOf(q) === 0 || (f.prenom || '').toLowerCase().indexOf(q) === 0 || (f.nom || '').toLowerCase().includes(q)); 
             } 
             
             countEl.textContent = sorted.length; 
-            if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } 
+            if (sorted.length === 0) { 
+                container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; 
+                return; 
+            } 
             
             container.innerHTML = sorted.map((f, i) => { 
                 const inf = getInfractionsForUser(f.nom, f.prenom); 
@@ -1640,8 +1637,8 @@
                 } 
                 const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; 
                 
-                // Utilisation de f.id (sûr à 100%, pas de plantage avec les guillemets)
-                return `<div class="search-result-item" onclick="showDetailById('${f.id}')"><div class="search-result-name">${f.nom} ${f.prenom} ${badge}</div><div class="search-result-address">📍 ${f.codePostal || ''} ${f.ville || ''}</div>${email}</div>`; 
+                // Utilisation exclusive de f._key (sûr et sans risque de crash lié aux guillemets)
+                return `<div class="search-result-item" onclick="showDetailByKey('${f._key}')"><div class="search-result-name">${f.nom} ${f.prenom} ${badge}</div><div class="search-result-address">📍 ${f.codePostal || ''} ${f.ville || ''}</div>${email}</div>`; 
             }).join(''); 
         }
         
@@ -1653,14 +1650,15 @@
             return { avertissement, exclusion }; 
         }
         
-        function showDetailById(id) {
-            const fiche = allFiches.find(f => f.id === id);
+        // Nouvelle fonction blindée avec la clé Firebase
+        window.showDetailByKey = function(key) {
+            const fiche = allFiches.find(f => f._key === key);
             if (fiche) {
                 showDetail(fiche);
             } else {
                 showAlert('❌ Impossible de charger les détails.', 'error');
             }
-        }
+        };
 
         document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
         
@@ -1917,9 +1915,9 @@
         function switchFicheTab(tab) { document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderHistoriqueEnvois(); } }
 
         async function loadMailsSent() { try { const snap = await dbCentral.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
-        async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) {} }
+        async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) { console.error('Erreur sauvegarde mails:', e); } }
         async function loadSmsSent() { try { const snap = await dbCentral.ref('smsSent').once('value'); const data = snap.val(); smsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { smsSent = []; } }
-        async function saveSmsSent() { try { await dbCentral.ref('smsSent').set(smsSent); } catch(e) {} }
+        async function saveSmsSent() { try { await dbCentral.ref('smsSent').set(smsSent); } catch(e) { console.error('Erreur sauvegarde SMS:', e); } }
         function renderHistoriqueEnvois() {
             const container = document.getElementById('historiqueEnvoisList');
             const allEnvois = [
