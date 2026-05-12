@@ -8,13 +8,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Roboto', sans-serif; background: #f0f2e9; min-height: 100vh; color: #333; }
-        
-        /* OPTIMISATION MOBILE */
-        a, button, .menu-grid-card, .fiche-tab, .admin-tab, .tab-btn, .controle-big-btn, .reglement-item, .search-result-item, .hist-infraction-item, .carte-item, .tk-user-item, input[type="checkbox"], .menu-bottom-btn, .exclusion-type-option {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: #f0f2e9; }
         .login-container { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 2px 20px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; border: 1px solid #d5d8ce; }
         .login-logo { width: 120px; height: 120px; margin: 0 auto 20px; background: linear-gradient(135deg, #1a472a 0%, #1565c0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; }
@@ -32,15 +25,13 @@
         .nav-buttons.visible { display: flex; }
         .nav-btn { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; max-width: 200px; }
         .admin-btn { position: fixed; top: 15px; right: 15px; z-index: 1000; background: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        
-        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 130px !important; background: #f0f2e9; }
-        .page.active { display: block !important; }
-        
+        .page { display: none; min-height: 100vh; padding: 0; padding-bottom: 80px; background: #f0f2e9; }
+        .page.active { display: block; }
         .page-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
         .page-topbar-icon { font-size: 20px; }
         .page-topbar-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
-        .sub-menu-page { padding: 0 !important; padding-bottom: 130px !important; }
-        .menu-page { padding-top: 0 !important; padding-bottom: 130px !important; background: #f0f2e9 !important; }
+        .sub-menu-page { padding: 0 !important; padding-bottom: 80px !important; }
+        .menu-page { padding-top: 0 !important; background: #f0f2e9 !important; }
         .menu-topbar { background: linear-gradient(135deg,#1a472a 0%,#1565c0 100%); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
         .menu-topbar-left { display: flex; align-items: center; gap: 10px; }
         .menu-topbar-logo { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -75,12 +66,21 @@
         .menu-bottom-btn.logout span { color: #999; }
         .menu-header { display: none; }
         #pageMenu > .menu-cards { display: none; }
+        .menu-card { background: white; border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 20px; }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-card-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #2d5a3d 0%, #4a7c59 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+        .menu-card-content { flex: 1; }
+        .menu-card-title { font-size: 18px; font-weight: 700; color: #1a472a; margin-bottom: 5px; }
+        .menu-card-desc { font-size: 13px; color: #666; }
+        .menu-card-arrow { font-size: 24px; color: #ccc; }
+        .menu-cards { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; padding: 0 20px; }
         .page-content { max-width: 800px; margin: 0 auto; padding: 16px; }
         .page-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #d5d8ce; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
         .page-title { display: none; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #d5d8ce; border-radius: 10px; font-size: 16px; background: #fff; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #1565c0; outline: none; }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2d5a3d; }
         .form-group.required label::after { content: " *"; color: #e74c3c; }
         .form-section-title { background: #f5f5f5; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #1a472a; margin: 25px 0 15px; }
@@ -125,7 +125,7 @@
         .search-input:focus { outline: none; border-color: #2d5a3d; }
         .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 24px; color: #666; }
         .search-results { margin-top: 15px; max-height: 500px; overflow-y: auto; }
-        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; cursor: pointer; }
+        .search-result-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
         .search-result-item:hover { background: #e8f5e9; }
         .search-result-name { font-weight: 700; color: #1a472a; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
@@ -139,6 +139,10 @@
         .badge-banned { background: #ffebee; color: #c62828; }
         .badge-temp { background: #fff3e0; color: #ff9800; }
         .badge-expired { background: #e8f5e9; color: #2e7d32; }
+        .badge-source { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .source-breitmatt { background: #e8f5e9; color: #2e7d32; }
+        .source-carpodrome { background: #e3f2fd; color: #1565c0; }
+        .source-hardt { background: #f3e5f5; color: #7b1fa2; }
         .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .detail-name { font-size: 24px; font-weight: 700; color: #1a472a; }
         .detail-status { padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 14px; }
@@ -163,14 +167,10 @@
         .btn-warning { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
-        
-        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
-        .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
-        .exclusion-type-option:hover { border-color: #dc3545; }
-        .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
-        .exclusion-type-option .title { font-weight: 700; color: #333; font-size:15px; }
-        
+        .infraction-type-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .infraction-type-btn { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; }
+        .infraction-type-btn.selected { border-color: #ff9800; background: #fff3e0; }
+        .infraction-type-btn.banned.selected { border-color: #c62828; background: #ffebee; }
         .alert { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; font-weight: 500; z-index: 3000; display: none; max-width: 90%; text-align: center; }
         .alert.visible { display: block; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -250,9 +250,16 @@
         .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
         .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
         .reglement-info strong { color: #1565c0; }
-        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } .menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
+        .exclusion-type-choice { display: flex; gap: 15px; margin: 20px 0; }
+        .exclusion-type-option { flex: 1; padding: 20px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .exclusion-type-option:hover { border-color: #dc3545; }
+        .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
+        .exclusion-type-option .icon { font-size: 32px; margin-bottom: 10px; }
+        .exclusion-type-option .title { font-weight: 700; color: #333; }
+        .exclusion-type-option .desc { font-size: 12px; color: #666; margin-top: 5px; }
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; } .menu-page { padding-top: 15px; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
-        /* --- Module Tickets --- */
+        /* --- Module Tickets (ajout) --- */
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
         .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
@@ -280,18 +287,7 @@
         </div>
     </div>
     
-    <div class="modal-overlay" id="setupPwdModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-header" style="background:#f57c00;"><h2>🔐 Nouveau mot de passe</h2></div>
-            <div class="modal-body" style="text-align:center;">
-                <p style="margin-bottom:15px;">C'est votre première connexion (ou votre mot de passe a été réinitialisé).</p>
-                <p style="margin-bottom:20px; font-weight:bold;">Veuillez créer votre mot de passe personnel :</p>
-                <input type="password" id="newPwdInput" class="admin-input" placeholder="Nouveau mot de passe" autocomplete="off">
-                <button class="btn btn-primary" onclick="saveNewPwd()" style="width:100%;">Enregistrer</button>
-            </div>
-        </div>
-    </div>
-    
+    <!-- Modal changement utilisateur -->
     <div class="modal-overlay" id="changeUserModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background:#ff9800;"><h2>👤 Changement d'utilisateur</h2><button class="modal-close" onclick="cancelChangeUser()">&times;</button></div>
@@ -316,6 +312,7 @@
         <button class="admin-btn" id="adminBtn" style="display:none;">⚙️</button>
         
         <div class="page menu-page active" id="pageMenu">
+            <!-- Top Bar -->
             <div class="menu-topbar">
                 <div class="menu-topbar-left">
                     <div class="menu-topbar-logo">🐟</div>
@@ -326,6 +323,7 @@
                 </div>
                 <div class="menu-sync"><div class="menu-sync-dot"></div><span class="menu-sync-text">Synchronisé</span></div>
             </div>
+            <!-- Welcome Card -->
             <div class="menu-welcome">
                 <div class="menu-welcome-bg1"></div>
                 <div class="menu-welcome-bg2"></div>
@@ -335,24 +333,29 @@
                 <div id="onlineUsers" class="menu-online" style="display:none;"></div>
             </div>
             <p id="currentUserDisplay" style="display:none;" onclick="promptChangeUser()"></p>
+            <!-- Stats Row -->
             <div class="menu-stats">
                 <div class="menu-stat"><div class="menu-stat-label">🎫 TICKETS</div><div class="menu-stat-value" id="statTickets" style="color:#e8a838;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">👥 EN LIGNE</div><div class="menu-stat-value" id="statOnline" style="color:#2e7d32;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">📋 FICHES</div><div class="menu-stat-value" id="statFiches" style="color:#1565c0;">0</div></div>
                 <div class="menu-stat"><div class="menu-stat-label">⚠️ ALERTES</div><div class="menu-stat-value" id="statAlertes" style="color:#c62828;">0</div></div>
             </div>
+            <!-- Section Title -->
             <div class="menu-section-title"><div class="menu-section-bar"></div><span>Modules</span></div>
+            <!-- Modules Grid -->
             <div class="menu-grid">
                 <div class="menu-grid-card" data-page="menuRenseignement"><div class="menu-grid-icon">📋</div><div class="menu-grid-title">Renseignement</div><div class="menu-grid-desc">Fiches et recherche pêcheurs</div></div>
                 <div class="menu-grid-card" data-page="menuControle"><div class="menu-grid-icon">🎯</div><div class="menu-grid-title">Contrôle</div><div class="menu-grid-desc">Vérification QR et contrôle du jour</div></div>
                 <div class="menu-grid-card" data-page="menuInfractions"><div class="menu-grid-icon">⚠️</div><div class="menu-grid-title">Infractions</div><div class="menu-grid-desc">Avertissements et exclusions</div></div>
                 <div class="menu-grid-card menu-card-ticket" id="ticketMenuCard"><div class="menu-grid-icon">🎫</div><div class="menu-grid-title">Tickets</div><div class="menu-grid-desc">Vente de tickets numériques</div></div>
             </div>
+            <!-- Bottom Buttons -->
             <div class="menu-bottom-btn" id="btnMenuTravail" data-page="travail"><span>🛠️ Journées de Travail</span></div>
             <div class="menu-bottom-btn" id="btnMenuAdmin" style="display:none;background:#e8a838;"><span style="color:#1a472a;">⚙️ Administration</span></div>
             <div class="menu-bottom-btn logout" id="logoutBtn"><span>🔒 Déconnexion</span></div>
         </div>
         
+        <!-- PAGE SOUS-MENU RENSEIGNEMENT -->
         <div class="page sub-menu-page" id="pageMenuRenseignement">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">📋</div><div><div class="menu-topbar-title">RENSEIGNEMENT</div><div class="menu-topbar-sub">FICHES ET RECHERCHE</div></div></div>
@@ -365,6 +368,7 @@
             </div>
         </div>
 
+        <!-- PAGE SOUS-MENU INFRACTIONS -->
         <div class="page sub-menu-page" id="pageMenuInfractions">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">⚠️</div><div><div class="menu-topbar-title">INFRACTIONS</div><div class="menu-topbar-sub">AVERTISSEMENTS ET EXCLUSIONS</div></div></div>
@@ -421,10 +425,12 @@
                         <button type="button" class="btn btn-primary" id="btnEnvoyerFormulaire" onclick="envoyerFormulaire()">✉️ Envoyer le formulaire</button>
                         <div id="envoyerStatus" class="envoyer-status"></div>
                         
+                        <!-- Séparateur -->
                         <div style="margin: 30px 0; border-top: 2px dashed #ccc; position: relative;">
                             <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #f5f5f5; padding: 0 15px; color: #666;">OU</span>
                         </div>
                         
+                        <!-- Envoi par SMS -->
                         <div class="envoyer-icon">📱</div>
                         <h3 class="envoyer-title">Envoyer le formulaire par SMS</h3>
                         <p class="envoyer-desc">Entrez les informations du pêcheur. Votre application SMS s'ouvrira avec le message prêt à envoyer.</p>
@@ -471,7 +477,7 @@
                 <div class="reglement-info">
                     <strong>📜 Selon le règlement 2026 :</strong><br>
                     • 1ère infraction → Avertissement<br>
-                    • 2ème infraction → Exclusion (temporaire 1 à 3 mois ou définitive)
+                    • 2ème infraction → Exclusion (temporaire 1 mois ou définitive)
                 </div>
                 <form id="infractionForm">
                     <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
@@ -550,6 +556,7 @@
             </div></div>
         </div>
         
+        <!-- PAGE SOUS-MENU CONTRÔLE -->
         <div class="page sub-menu-page" id="pageMenuControle">
             <div class="menu-topbar">
                 <div class="menu-topbar-left"><div class="menu-topbar-logo">🎯</div><div><div class="menu-topbar-title">CONTRÔLE</div><div class="menu-topbar-sub">VÉRIFICATION ET CONTRÔLE DU JOUR</div></div></div>
@@ -575,13 +582,6 @@
                         <button class="controle-big-btn" onclick="ouvrirModalBreitmatt()" style="flex:1; min-width:200px;"><span class="controle-big-icon">🐠</span><span class="controle-big-title">Breitmatt</span><span class="controle-big-desc">Signaler un contrôle</span></button>
                         <button class="controle-big-btn" onclick="ouvrirModalHardtJournee()" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%); flex:1; min-width:200px; color:white;"><span class="controle-big-icon">🐟</span><span class="controle-big-title" style="color:white;">Hardt journée</span><span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle</span></button>
                     </div>
-                </div>
-                <div style="margin-top:15px;">
-                    <button class="controle-big-btn" onclick="ouvrirModalHardtIndiv()" style="width:100%; background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%); color:white;">
-                        <span class="controle-big-icon">👤</span>
-                        <span class="controle-big-title" style="color:white;">Hardt individuel</span>
-                        <span class="controle-big-desc" style="color:rgba(255,255,255,0.9);">Signaler un contrôle spécifique</span>
-                    </button>
                 </div>
             </div></div>
         </div>
@@ -611,6 +611,8 @@
             </div></div>
         </div>
     </div>
+
+        </div>
     
     <div class="modal-overlay" id="breitmattModal">
         <div class="modal-content" style="max-width:400px;">
@@ -630,6 +632,7 @@
         </div>
     </div>
     
+    <!-- Modal Hardt journée -->
     <div class="modal-overlay" id="hardtJourneeModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);"><h2>🐟 Contrôle Hardt journée</h2><button class="modal-close" onclick="fermerModalHardtJournee()">&times;</button></div>
@@ -643,42 +646,6 @@
                 <div style="display:flex; gap:10px;">
                     <button class="btn" onclick="fermerModalHardtJournee()" style="flex:1; background:#eee; color:#333;">Annuler</button>
                     <button class="btn btn-primary" onclick="envoyerControleHardtJournee()" style="flex:1; background:linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);">✅ Confirmer</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="hardtIndivModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">
-                <h2>👤 Contrôle Hardt Individuel</h2>
-                <button class="modal-close" onclick="fermerModalHardtIndiv()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom:15px;text-align:center;color:#666;">Renseignez les informations du pêcheur contrôlé.</p>
-                
-                <div class="form-group required" style="position:relative;">
-                    <label>Nom</label>
-                    <input type="text" id="hiNom" oninput="filterPecheursIndiv()" placeholder="NOM" autocomplete="off">
-                    <div id="suggestionsBoxIndiv" style="display:none; max-height:180px; overflow-y:auto; border:2px solid #d5d8ce; border-radius:8px; background:#fff; margin:-8px 0 8px;"></div>
-                </div>
-                
-                <div class="form-group required"><label>Prénom</label><input type="text" id="hiPrenom" placeholder="Prénom"></div>
-                <div class="form-group"><label>Téléphone</label><input type="tel" id="hiTel" placeholder="06 XX XX XX XX"></div>
-                
-                <div class="form-group required">
-                    <label>Poste (1 à 12)</label>
-                    <select id="hiPoste">
-                        <option value="">-- Choisir un poste --</option>
-                        <option value="1">Poste 1</option><option value="2">Poste 2</option><option value="3">Poste 3</option>
-                        <option value="4">Poste 4 (Contrôleur)</option><option value="5">Poste 5</option><option value="6">Poste 6</option>
-                        <option value="7">Poste 7</option><option value="8">Poste 8</option><option value="9">Poste 9</option>
-                        <option value="10">Poste 10</option><option value="11">Poste 11</option><option value="12">Poste 12</option>
-                    </select>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" onclick="fermerModalHardtIndiv()" style="flex:1; background:#eee; color:#333;">Annuler</button>
-                    <button class="btn btn-primary" onclick="envoyerControleHardtIndiv()" style="flex:1; background:linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">✅ Valider</button>
                 </div>
             </div>
         </div>
@@ -706,28 +673,23 @@
         </div>
     </div>
     
+    <!-- Modal Exclusion -->
     <div class="modal-overlay" id="exclusionModal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header" style="background: #dc3545;"><h2>🚫 Exclusion obligatoire</h2><button class="modal-close" onclick="document.getElementById('exclusionModal').classList.remove('visible')">&times;</button></div>
             <div class="modal-body">
                 <div id="exclusionInfo" style="background:#fff3cd; padding:15px; border-radius:10px; margin-bottom:20px; border-left:4px solid #ffc107;"></div>
-                <p style="font-weight:600; margin-bottom:15px;">Choisissez la durée de l'exclusion :</p>
+                <p style="font-weight:600; margin-bottom:15px;">Choisissez le type d'exclusion :</p>
                 <div class="exclusion-type-choice">
-                    <div class="exclusion-type-option" id="opt-excl-temp1" onclick="selectExclusionType('temp_1')">
-                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
-                        <div class="title">1 Mois</div>
+                    <div class="exclusion-type-option" onclick="selectExclusionType('temporaire')">
+                        <div class="icon">⏱️</div>
+                        <div class="title">Temporaire</div>
+                        <div class="desc">1 mois</div>
                     </div>
-                    <div class="exclusion-type-option" id="opt-excl-temp2" onclick="selectExclusionType('temp_2')">
-                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
-                        <div class="title">2 Mois</div>
-                    </div>
-                    <div class="exclusion-type-option" id="opt-excl-temp3" onclick="selectExclusionType('temp_3')">
-                        <div class="icon" style="font-size:24px; margin-bottom:5px;">⏱️</div>
-                        <div class="title">3 Mois</div>
-                    </div>
-                    <div class="exclusion-type-option" id="opt-excl-def" onclick="selectExclusionType('definitive')">
-                        <div class="icon" style="font-size:24px; margin-bottom:5px;">🚫</div>
+                    <div class="exclusion-type-option" onclick="selectExclusionType('definitive')">
+                        <div class="icon">🚫</div>
                         <div class="title">Définitive</div>
+                        <div class="desc">Sans limite</div>
                     </div>
                 </div>
                 <div style="display:flex;gap:10px;margin-top:20px;">
@@ -742,18 +704,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
-        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
-        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
-        let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
-        let pendingExclusion = null, selectedExclusionType = null;
-        let controleursMdp = {};
-        let infractionsListenerSetup = false;
-        
-        let allPecheurs = []; // Utilisé pour l'autocomplétion
-
-        // BASE CENTRALE UNIQUE pour toutes les données
+        // BASE CENTRALE UNIQUE pour toutes les infractions
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
             authDomain: "appli-controleur-gunder.firebaseapp.com",
@@ -796,9 +747,11 @@
             document.getElementById('breitmattHeure').textContent = heure;
             document.getElementById('breitmattModal').classList.add('visible');
         }
+        
         function fermerModalBreitmatt() {
             document.getElementById('breitmattModal').classList.remove('visible');
         }
+        
         async function envoyerControleBreitmatt() {
             const controleur = getCurrentUser();
             const date = new Date().toLocaleDateString('fr-FR');
@@ -821,9 +774,11 @@
             document.getElementById('hardtJourneeHeure').textContent = heure;
             document.getElementById('hardtJourneeModal').classList.add('visible');
         }
+        
         function fermerModalHardtJournee() {
             document.getElementById('hardtJourneeModal').classList.remove('visible');
         }
+        
         async function envoyerControleHardtJournee() {
             const controleur = getCurrentUser();
             const date = new Date().toLocaleDateString('fr-FR');
@@ -838,88 +793,7 @@
             showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // ===== CONTRÔLE HARDT INDIVIDUEL (Avec Autocomplétion) =====
-        function ouvrirModalHardtIndiv() {
-            document.getElementById('hiNom').value = '';
-            document.getElementById('hiPrenom').value = '';
-            document.getElementById('hiTel').value = '';
-            document.getElementById('hiPoste').value = '';
-            document.getElementById('hardtIndivModal').classList.add('visible');
-        }
-        
-        function fermerModalHardtIndiv() {
-            document.getElementById('hardtIndivModal').classList.remove('visible');
-        }
-        
-        function filterPecheursIndiv() {
-            var input = document.getElementById('hiNom').value.trim().toUpperCase();
-            var box = document.getElementById('suggestionsBoxIndiv');
-            if (input.length < 2) { box.style.display = 'none'; return; }
-            
-            var matches = allPecheurs.filter(function(p) { 
-                return p.nom.indexOf(input) === 0; 
-            });
-            
-            if (matches.length === 0) { box.style.display = 'none'; return; }
-            
-            box.innerHTML = matches.slice(0, 8).map(function(p, i) {
-                return '<div onclick="selectPecheurIndiv(' + i + ')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;' + (i % 2 === 0 ? '' : 'background:#f8f9fa;') + '">' +
-                    '<strong>' + p.nom + '</strong> ' + (p.prenom || '') + '</div>';
-            }).join('');
-            box.style.display = 'block';
-            box._matches = matches.slice(0, 8);
-        }
-
-        function selectPecheurIndiv(idx) {
-            var box = document.getElementById('suggestionsBoxIndiv');
-            var p = box._matches[idx];
-            if (p) {
-                document.getElementById('hiNom').value = p.nom;
-                document.getElementById('hiPrenom').value = p.prenom || '';
-                document.getElementById('hiTel').value = p.telephone || '';
-            }
-            box.style.display = 'none';
-        }
-        
-        async function envoyerControleHardtIndiv() {
-            const nom = document.getElementById('hiNom').value.trim().toUpperCase();
-            const prenom = document.getElementById('hiPrenom').value.trim();
-            const tel = document.getElementById('hiTel').value.trim();
-            const poste = document.getElementById('hiPoste').value;
-            
-            if(!nom || !prenom || !poste) {
-                showAlert('❌ Veuillez remplir le nom, prénom et le poste.', 'error');
-                return;
-            }
-            
-            // Vérification dans la base existante
-            const prenomF = prenom.toLowerCase();
-            const exists = allPecheurs.some(p => p.nom === nom && (p.prenom || '').toLowerCase() === prenomF);
-            
-            if (!exists) {
-                if (confirm(`Le pêcheur ${nom} ${prenom} n'est pas dans la base de données.\n\nVoulez-vous l'ajouter pour de futurs contrôles ?`)) {
-                    try {
-                        await dbCentral.ref('contactsTickets').push({nom: nom, prenom: prenom, telephone: tel});
-                        allPecheurs.push({nom: nom, prenom: prenom, telephone: tel, source: 'ticket', key: ''});
-                    } catch(e) {
-                        console.error('Erreur ajout:', e);
-                    }
-                }
-            }
-            
-            const controleur = getCurrentUser();
-            const date = new Date().toLocaleDateString('fr-FR');
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const telText = tel ? `\n📞 ${tel}` : '';
-            
-            const message = `🐟 *CONTRÔLE HARDT INDIVIDUEL*\n📅 ${date}\n🕐 ${heure}\n📍 Étang de la Hardt — Poste ${poste}\n🎣 ${nom} ${prenom}${telText}\n👮 ${controleur}`;
-            
-            fermerModalHardtIndiv();
-            showAlert('⏳ Envoi en cours...', 'info');
-            await envoyerNotificationTelegram(message);
-            showAlert('✅ Contrôle individuel envoyé !', 'success');
-        }
-
+        // DEFAULT_REGLEMENTS - identiques au formulaire de renseignement
         const DEFAULT_REGLEMENTS = {
             carpodrome: {
                 horaires: "Sur réservation uniquement et 24h à l'avance\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés\n- Du 5 mai au 30 octobre : tous les jours\n- Pêche de 8h à 19h (début mars à fin avril et début septembre à fin octobre)\n- Pêche de 8h à 20h (début mai à fin août)\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté (manque d'eau, cyanobactéries, etc...)",
@@ -956,8 +830,10 @@
             }
         };
         
+        // Règlements chargés depuis Firebase (synchronisés avec formulaire de renseignement)
         let reglementsData = null;
         
+        // Charger les règlements depuis Firebase
         function loadReglementsFromFirebase() {
             dbCentral.ref('reglements_formulaire').on('value', (snapshot) => {
                 reglementsData = snapshot.exists() ? snapshot.val() : null;
@@ -965,23 +841,29 @@
             });
         }
         
+        // Obtenir un règlement (Firebase ou défaut)
         function getReglement(name) {
             if (reglementsData && reglementsData[name]) {
                 const fbData = reglementsData[name];
+                // Si Firebase contient le format par sections (horaires, tarifs, etc.), on l'utilise directement
                 if (fbData.horaires || fbData.tarifs || fbData.modalites) {
                     return fbData;
                 }
+                // Si Firebase contient un format "contenu" unique (nouveau format fiche de renseignement)
                 if (fbData.contenu) {
                     return { _contenuBrut: fbData.contenu };
                 }
+                // Si c'est une string directement
                 if (typeof fbData === 'string') {
                     return { _contenuBrut: fbData };
                 }
+                // Sinon on retourne tel quel
                 return fbData;
             }
             return DEFAULT_REGLEMENTS[name];
         }
         
+        // Formatter une section de règlement
         function formatReglementSection(text, isInterdit = false) {
             if (!text) return '';
             let html = '', inList = false;
@@ -1001,9 +883,11 @@
             return inList ? html + '</ul>' : html;
         }
         
+        // Formatter du contenu brut (nouveau format Firebase avec un seul champ "contenu")
         function formatContenuBrut(text) {
             if (!text) return '';
             let html = '';
+            // Séparer les sections par double saut de ligne ou par titres en majuscules
             const lines = text.split('\n');
             let inList = false;
             
@@ -1013,6 +897,7 @@
                     if (inList) { html += '</ul>'; inList = false; }
                     return;
                 }
+                // Détection des titres de sections (tout en majuscules ou avec emoji au début)
                 if (/^[A-ZÉÈÊËÀÂÙÛÎÏÔÖ\s\-:\/]{6,}$/.test(t) || /^(#{1,3})\s/.test(t)) {
                     if (inList) { html += '</ul>'; inList = false; }
                     const cleanTitle = t.replace(/^#{1,3}\s*/, '');
@@ -1033,16 +918,19 @@
             return html;
         }
         
+        // Générer le HTML complet d'un règlement
         function generateReglementHTML(name) {
             const reg = getReglement(name);
             const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
             let html = '';
             
+            // Si c'est du contenu brut (nouveau format Firebase), on le formate directement
             if (reg._contenuBrut) {
                 html = formatContenuBrut(reg._contenuBrut);
                 return { title: titles[name], content: html };
             }
             
+            // Format classique par sections
             if (reg.horaires) html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
             if (reg.tarifs) html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
             if (reg.modalites) html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
@@ -1054,6 +942,7 @@
             if (reg.dechets) html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
             if (reg.contacts) html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
             
+            // Si aucune section n'a été trouvée, afficher les données par défaut
             if (!html) {
                 const defReg = DEFAULT_REGLEMENTS[name];
                 if (defReg) {
@@ -1073,6 +962,14 @@
             return { title: titles[name], content: html };
         }
 
+        let currentPage = 'menu', pageHistory = [], allFiches = [], allFichesWithIndex = [], allInfractions = { avertissements: [], bannis: [], archives: [] };
+        let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
+        let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
+        let currentHistTab = 'avertissements';
+        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
+        let pendingExclusion = null, selectedExclusionType = null;
+
+        // BLOCAGE BOUTON RETOUR ANDROID
         function setupBackButtonBlock() {
             history.pushState({ page: 'app' }, '', '');
             window.addEventListener('popstate', function(e) {
@@ -1101,31 +998,12 @@
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
         document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
-        function checkSession() { 
-            dbCentral.ref('controleurs_mdp').on('value', snap => {
-                controleursMdp = snap.val() || {};
-            });
-            if (sessionStorage.getItem('logged') === 'true') { 
-                document.getElementById('loginPage').style.display = 'none'; 
-                document.getElementById('appContainer').style.display = 'block'; 
-                setupBackButtonBlock(); 
-                const savedUser = localStorage.getItem('controleurUser'); 
-                if (savedUser) { 
-                    updateMenuUser(savedUser); 
-                    setUserPresence(savedUser); 
-                } 
-                loadAllData(); 
-                listenOnlineUsers(); 
-                const savedPage = sessionStorage.getItem('currentPage'); 
-                if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); 
-            } 
-        }
+        function checkSession() { if (sessionStorage.getItem('logged') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; setupBackButtonBlock(); const savedUser = localStorage.getItem('controleurUser'); if (savedUser) { updateMenuUser(savedUser); setUserPresence(savedUser); } loadAllData(); listenOnlineUsers(); const savedPage = sessionStorage.getItem('currentPage'); if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); } }
         checkSession();
 
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
-        
-        async function login() { 
+        function login() { 
             const selectedUser = document.getElementById('loginUser').value;
             if (!selectedUser) { 
                 document.getElementById('loginError').textContent = '⚠️ Veuillez choisir votre nom'; 
@@ -1133,51 +1011,27 @@
                 setTimeout(() => { document.getElementById('loginError').style.display = 'none'; }, 3000); 
                 return; 
             }
-            const enteredCode = document.getElementById('loginCode').value;
-            
-            try {
-                const snap = await dbCentral.ref('controleurs_mdp/' + selectedUser).once('value');
-                const expectedCode = snap.val() || '911'; 
-                
-                if (enteredCode === expectedCode) { 
-                    localStorage.setItem('controleurUser', selectedUser);
-                    document.getElementById('loginPage').style.display = 'none'; 
-                    document.getElementById('appContainer').style.display = 'block'; 
-                    sessionStorage.setItem('logged', 'true'); 
-                    setupBackButtonBlock(); 
-                    updateMenuUser(selectedUser);
-                    setUserPresence(selectedUser);
-                    listenOnlineUsers();
-                    loadAllData();
-                    
-                    if (expectedCode === '911') {
-                        document.getElementById('setupPwdModal').classList.add('visible');
-                    }
-                } else { 
-                    document.getElementById('loginCode').classList.add('error'); 
-                    document.getElementById('loginError').textContent = '❌ Mot de passe incorrect';
-                    document.getElementById('loginError').style.display = 'block'; 
-                    setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
-                } 
-            } catch(e) {
-                console.error(e);
-            }
-        }
-        
-        function saveNewPwd() {
-            const pwd = document.getElementById('newPwdInput').value.trim();
-            if (pwd.length < 3) { alert('Le mot de passe doit faire au moins 3 caractères.'); return; }
-            const user = getCurrentUser();
-            dbCentral.ref('controleurs_mdp/' + user).set(pwd).then(() => {
-                document.getElementById('setupPwdModal').classList.remove('visible');
-                showAlert('✅ Mot de passe enregistré !', 'success');
-            }).catch(e => {
-                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
-            });
+            if (document.getElementById('loginCode').value === '911') { 
+                localStorage.setItem('controleurUser', selectedUser);
+                document.getElementById('loginPage').style.display = 'none'; 
+                document.getElementById('appContainer').style.display = 'block'; 
+                sessionStorage.setItem('logged', 'true'); 
+                setupBackButtonBlock(); 
+                updateMenuUser(selectedUser);
+                setUserPresence(selectedUser);
+                listenOnlineUsers();
+                loadAllData();
+            } else { 
+                document.getElementById('loginCode').classList.add('error'); 
+                document.getElementById('loginError').textContent = '❌ Code incorrect';
+                document.getElementById('loginError').style.display = 'block'; 
+                setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
+            } 
         }
         
         document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
         
+        // ===== SYSTÈME DE PRÉSENCE =====
         let pendingUserChange = null;
         
         function initLoginUserSelect() {
@@ -1206,9 +1060,11 @@
                 removeUserPresence();
                 localStorage.setItem('controleurUser', pendingUserChange);
                 document.getElementById('loginUser').value = pendingUserChange;
-                
-                sessionStorage.removeItem('logged');
-                location.reload();
+                if (sessionStorage.getItem('logged') === 'true') {
+                    setUserPresence(pendingUserChange);
+                    updateMenuUser(pendingUserChange);
+                }
+                pendingUserChange = null;
             }
             document.getElementById('changeUserModal').classList.remove('visible');
         }
@@ -1220,11 +1076,12 @@
             if (!current || !allControleurs.length) return;
             const newUser = prompt('Changer d\'utilisateur ?\nActuel: ' + current + '\n\nEntrez le nouveau nom:');
             if (newUser && newUser !== current && allControleurs.includes(newUser)) {
-                if (confirm('Changer de ' + current + ' à ' + newUser + ' ? Vous devrez vous reconnecter.')) {
+                if (confirm('Changer de ' + current + ' à ' + newUser + ' ?')) {
                     removeUserPresence();
                     localStorage.setItem('controleurUser', newUser);
-                    sessionStorage.removeItem('logged');
-                    location.reload();
+                    setUserPresence(newUser);
+                    updateMenuUser(newUser);
+                    showAlert('✅ Utilisateur changé: ' + newUser, 'success');
                 }
             } else if (newUser && !allControleurs.includes(newUser)) {
                 showAlert('❌ Utilisateur non trouvé', 'error');
@@ -1384,28 +1241,7 @@
             }
         }
         
-        // REINITIALISER MOT DE PASSE
-        window.resetPwdControleur = function(nom) {
-            if (confirm('Réinitialiser le mot de passe de ' + nom + ' à 911 ?')) {
-                dbCentral.ref('controleurs_mdp/' + nom).remove().then(() => {
-                    showAlert('Mot de passe réinitialisé pour ' + nom, 'success');
-                });
-            }
-        }
-
-        function renderControleurs() { 
-            const container = document.getElementById('controleursList'); 
-            if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } 
-            container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + 
-            allControleurs.map((nom, i) => 
-                '<div class="carte-item" style="border-left-color:#1565c0;">' +
-                '<div class="carte-item-name">👮 ' + nom + '</div>' +
-                '<div style="display:flex;gap:5px;">' +
-                '<button class="carte-delete-btn" style="background:#ff9800;color:white;" onclick="resetPwdControleur(\'' + nom + '\')" title="Réinitialiser le mot de passe">🔄 MDP</button>' +
-                '<button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button>' +
-                '</div></div>'
-            ).join(''); 
-        }
+        function renderControleurs() { const container = document.getElementById('controleursList'); if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + allControleurs.map((nom, i) => '<div class="carte-item" style="border-left-color:#1565c0;"><div class="carte-item-name">👮 ' + nom + '</div><button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button></div>').join(''); }
         
         async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
         
@@ -1414,42 +1250,7 @@
         async function saveControleurs() { await dbCentral.ref('controleurs').set(allControleurs); }
 
         function editFiche(index) { const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const f = item.fiche; document.getElementById('editFicheId').value = f.id || ''; document.getElementById('editFicheIndex').value = index; document.getElementById('editNom').value = f.nom || ''; document.getElementById('editPrenom').value = f.prenom || ''; document.getElementById('editAdresse').value = f.adresse || ''; document.getElementById('editCodePostal').value = f.codePostal || ''; document.getElementById('editVille').value = f.ville || ''; document.getElementById('editTelephone').value = f.telephone || ''; document.getElementById('editUrgenceNom').value = f.urgence?.nom || ''; document.getElementById('editUrgencePrenom').value = f.urgence?.prenom || ''; document.getElementById('editUrgenceTel').value = f.urgence?.telephone || ''; showPage('editFiche'); }
-        
-        document.getElementById('editFicheForm').addEventListener('submit', async e => { 
-            e.preventDefault(); 
-            const index = document.getElementById('editFicheIndex').value; 
-            const item = allFichesWithIndex.find(x => x.index === index); 
-            if (!item) return; 
-            
-            const updatedData = { 
-                ...item.fiche, 
-                nom: document.getElementById('editNom').value.toUpperCase().trim(), 
-                prenom: document.getElementById('editPrenom').value.trim(), 
-                adresse: document.getElementById('editAdresse').value.trim(), 
-                codePostal: document.getElementById('editCodePostal').value.trim(), 
-                ville: document.getElementById('editVille').value.trim(), 
-                telephone: document.getElementById('editTelephone').value.trim(), 
-                urgence: { 
-                    nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), 
-                    prenom: document.getElementById('editUrgencePrenom').value.trim(), 
-                    telephone: document.getElementById('editUrgenceTel').value.trim() 
-                } 
-            }; 
-            
-            try { 
-                await dbCentral.ref('fiches/' + item.fiche.id).set(updatedData); 
-                if (index !== item.fiche.id) {
-                    await dbCentral.ref('fiches/' + index).remove();
-                }
-                showAlert('✅ Modifié !', 'success'); 
-                await loadAllData(); 
-                loadAdminFiches(); 
-                pageHistory.pop(); 
-                showPage('admin'); 
-            } catch(e) { 
-                showAlert('❌ Erreur', 'error'); 
-            } 
-        });
+        document.getElementById('editFicheForm').addEventListener('submit', async e => { e.preventDefault(); const index = document.getElementById('editFicheIndex').value; const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const updatedData = { ...item.fiche, nom: document.getElementById('editNom').value.toUpperCase().trim(), prenom: document.getElementById('editPrenom').value.trim(), adresse: document.getElementById('editAdresse').value.trim(), codePostal: document.getElementById('editCodePostal').value.trim(), ville: document.getElementById('editVille').value.trim(), telephone: document.getElementById('editTelephone').value.trim(), urgence: { nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('editUrgencePrenom').value.trim(), telephone: document.getElementById('editUrgenceTel').value.trim() } }; try { await dbCentral.ref('fiches/' + index).set(updatedData); showAlert('✅ Modifié !', 'success'); await loadAllData(); loadAdminFiches(); pageHistory.pop(); showPage('admin'); } catch(e) { showAlert('❌ Erreur', 'error'); } });
 
         function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
         document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
@@ -1470,88 +1271,16 @@
         document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
 
         function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
-        
-        document.getElementById('ficheForm').addEventListener('submit', async e => { 
-            e.preventDefault(); 
-            const nom = document.getElementById('nom').value; 
-            const prenom = document.getElementById('prenom').value; 
-            
-            if (checkDuplicate(nom, prenom)) { 
-                showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); 
-                return; 
-            } 
-            
-            const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); 
-            const data = { 
-                nom: nom.toUpperCase().trim(), 
-                prenom: prenom.trim(), 
-                adresse: document.getElementById('adresse').value.trim(), 
-                codePostal: document.getElementById('codePostal').value.trim(), 
-                ville: document.getElementById('ville').value, 
-                telephone: document.getElementById('telephone').value.trim(), 
-                urgence: { 
-                    nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), 
-                    prenom: document.getElementById('urgencePrenom').value.trim(), 
-                    telephone: document.getElementById('urgenceTel').value.trim() 
-                }, 
-                reglements: checkedReglements, 
-                date: new Date().toLocaleString('fr-FR'), 
-                id: Date.now().toString() 
-            }; 
-            
-            try { 
-                await dbCentral.ref('fiches/' + data.id).set(data); 
-                showAlert('✅ Fiche enregistrée !', 'success'); 
-                document.getElementById('ficheForm').reset(); 
-                document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); 
-                document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); 
-                reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; 
-                document.getElementById('validateBtn').disabled = true; 
-                document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; 
-                document.getElementById('ville').disabled = true; 
-                loadAllData(); 
-            } catch(e) { 
-                showAlert('❌ Erreur: ' + e.message, 'error'); 
-            } 
-        });
+        document.getElementById('ficheForm').addEventListener('submit', async e => { e.preventDefault(); const nom = document.getElementById('nom').value; const prenom = document.getElementById('prenom').value; if (checkDuplicate(nom, prenom)) { showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); return; } const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const data = { nom: nom.toUpperCase().trim(), prenom: prenom.trim(), adresse: document.getElementById('adresse').value.trim(), codePostal: document.getElementById('codePostal').value.trim(), ville: document.getElementById('ville').value, telephone: document.getElementById('telephone').value.trim(), urgence: { nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), prenom: document.getElementById('urgencePrenom').value.trim(), telephone: document.getElementById('urgenceTel').value.trim() }, reglements: checkedReglements, date: new Date().toLocaleString('fr-FR'), id: Date.now().toString() }; try { const snap = await dbCentral.ref('fiches').once('value'); const idx = snap.val() ? Object.keys(snap.val()).length : 0; await dbCentral.ref('fiches/'+idx).set(data); showAlert('✅ Fiche enregistrée !', 'success'); document.getElementById('ficheForm').reset(); document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; document.getElementById('validateBtn').disabled = true; document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; document.getElementById('ville').disabled = true; loadAllData(); } catch(e) { showAlert('❌ Erreur: ' + e.message, 'error'); } });
 
-        // ==========================================
-        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
-        // ==========================================
+        let infractionsListenerSetup = false;
+        
         async function loadAllData() { 
             await loadFiches(); 
-            
             if (!infractionsListenerSetup) {
-                try {
-                    const banSnap = await dbCentral.ref('infractions/bannis').once('value');
-                    const dataBannis = banSnap.val();
-                    if (dataBannis) {
-                        let bannisArr = Array.isArray(dataBannis) ? dataBannis : Object.values(dataBannis);
-                        let needsUpdate = false;
-                        
-                        bannisArr.forEach(b => {
-                            if (b && b.nom && b.typeExclusion === 'temporaire' && !b.dureeMois) {
-                                b.dureeMois = 3;
-                                if (b.dateFin) {
-                                    let d = new Date(b.dateFin);
-                                    d.setMonth(d.getMonth() + 2);
-                                    b.dateFin = d.toISOString();
-                                }
-                                needsUpdate = true;
-                            }
-                        });
-                        
-                        if (needsUpdate) {
-                            await dbCentral.ref('infractions/bannis').set(bannisArr);
-                            console.log('🔄 Migration automatique : anciens bannissements mis à 3 mois.');
-                        }
-                    }
-                } catch(e) { console.error("Erreur lors de la migration:", e); }
-
                 setupInfractionsListener();
                 infractionsListenerSetup = true;
             }
-            
             await loadMailsSent();
             await loadSmsSent();
             await loadControleurs();
@@ -1562,59 +1291,36 @@
             updateMenuStats();
         }
         
-        // Ajout du listener global pour cacher les boîtes de suggestions
-        document.addEventListener('click', function(e) {
-            var sr = document.getElementById('searchResults');
-            if (sr && !e.target.closest('.search-container')) sr.style.display = 'none';
-            
-            var boxIndiv = document.getElementById('suggestionsBoxIndiv');
-            if (boxIndiv && e.target.id !== 'hiNom' && !boxIndiv.contains(e.target)) {
-                boxIndiv.style.display = 'none';
-            }
-        });
+        async function loadFiches() { allFiches = []; allFichesWithIndex = []; try { const s = await dbCentral.ref('fiches').once('value'); if (s.val()) { Object.entries(s.val()).forEach(([key, v]) => { if (v && v.nom) { allFiches.push(v); allFichesWithIndex.push({ index: key, fiche: v }); } }); } } catch(e) {} }
         
-        async function loadFiches() { 
-            allFiches = []; 
-            allFichesWithIndex = []; 
-            allPecheurs = []; // On réinitialise allPecheurs pour l'autocomplétion
-            var seen = {};
-
+        async function loadInfractions() { 
+            allInfractions = { avertissements: [], bannis: [], archives: [] }; 
             try { 
-                const s = await dbCentral.ref('fiches').once('value'); 
-                if (s.val()) { 
-                    Object.entries(s.val()).forEach(([key, v]) => { 
-                        if (v && v.nom) { 
-                            allFiches.push(v); 
-                            allFichesWithIndex.push({ index: key, fiche: v }); 
-                            
-                            // Ajout pour l'autocomplétion
-                            var nom = v.nom.toUpperCase();
-                            var prenom = v.prenom || '';
-                            var fKey = nom + ' ' + prenom.toLowerCase();
-                            if(!seen[fKey]) {
-                                seen[fKey] = true;
-                                allPecheurs.push({nom: nom, prenom: prenom, telephone: v.telephone || '', source: 'fiche'});
-                            }
+                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value'); 
+                if (avertSnap.val()) { 
+                    Object.entries(avertSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom && !v.archived) { 
+                            allInfractions.avertissements.push({ key, ...v }); 
                         } 
                     }); 
                 } 
-                
-                // Charger aussi les contactsTickets pour l'autocomplétion
-                const ctSnap = await dbCentral.ref('contactsTickets').once('value');
-                if (ctSnap.val()) {
-                    Object.values(ctSnap.val()).forEach(c => {
-                        if (c && c.nom) {
-                            var nom = c.nom.toUpperCase();
-                            var prenom = c.prenom || '';
-                            var cKey = nom + ' ' + prenom.toLowerCase();
-                            if(!seen[cKey]) {
-                                seen[cKey] = true;
-                                allPecheurs.push({nom: nom, prenom: prenom, telephone: c.telephone || '', source: 'ticket'});
-                            }
-                        }
-                    });
-                }
-            } catch(e) { console.error("Erreur chargement données:", e); } 
+                const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
+                if (banSnap.val()) { 
+                    Object.entries(banSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allInfractions.bannis.push({ key, ...v }); 
+                        } 
+                    }); 
+                } 
+                const archSnap = await dbCentral.ref('infractions/archives').once('value'); 
+                if (archSnap.val()) { 
+                    Object.entries(archSnap.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allInfractions.archives.push({ key, ...v }); 
+                        } 
+                    }); 
+                } 
+            } catch(e) { console.error(e); } 
         }
         
         function setupInfractionsListener() {
@@ -1690,8 +1396,7 @@
                     st.textContent = '✅ Exclusion expirée'; 
                     st.className = 'detail-status badge-expired'; 
                 } else { 
-                    let dureeText = inf.exclusion.dureeMois ? inf.exclusion.dureeMois + ' mois' : '3 mois';
-                    st.textContent = inf.exclusion.typeExclusion === 'temporaire' ? '⏱️ EXCLU TEMP. (' + dureeText + ')' : '🚫 EXCLU DÉFINITIF'; 
+                    st.textContent = inf.exclusion.typeExclusion === 'temporaire' ? '⏱️ EXCLU TEMP.' : '🚫 EXCLU DÉFINITIF'; 
                     st.className = 'detail-status badge-banned'; 
                 } 
                 is.style.display = 'block'; 
@@ -1704,8 +1409,7 @@
                 if (inf.exclusion.typeExclusion === 'temporaire' && inf.exclusion.dateFin) { 
                     finInfo = '<p style="color:#ff9800;font-weight:bold;">📅 Fin de l\'exclusion : ' + new Date(inf.exclusion.dateFin).toLocaleDateString('fr-FR') + '</p>'; 
                 } 
-                let dureeText2 = inf.exclusion.dureeMois ? inf.exclusion.dureeMois + ' mois' : '3 mois';
-                is.innerHTML = '<div class="infractions-header">🚫 EXCLU' + (inf.exclusion.typeExclusion === 'temporaire' ? ' TEMPORAIREMENT (' + dureeText2 + ')' : ' DÉFINITIVEMENT') + '</div>' + finInfo + (inf.exclusion.controleurSanction ? '<p>👮 Sanctionné par : <strong>' + inf.exclusion.controleurSanction + '</strong></p>' : '') + motifsHtml; 
+                is.innerHTML = '<div class="infractions-header">🚫 EXCLU' + (inf.exclusion.typeExclusion === 'temporaire' ? ' TEMPORAIREMENT' : ' DÉFINITIVEMENT') + '</div>' + finInfo + (inf.exclusion.controleurSanction ? '<p>👮 Sanctionné par : <strong>' + inf.exclusion.controleurSanction + '</strong></p>' : '') + motifsHtml; 
             } else if (inf.avertissement) { 
                 st.textContent = '⚠️ Avertissement'; 
                 st.className = 'detail-status badge-warning'; 
@@ -1719,20 +1423,90 @@
             } 
         }
 
-        // ===== SELECTION TYPE D'EXCLUSION =====
+        // FORMULAIRE INFRACTION - NOUVEAU SYSTÈME
+        document.getElementById('infractionForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const nom = document.getElementById('infNom').value.toUpperCase().trim(); 
+            const prenom = document.getElementById('infPrenom').value.trim(); 
+            const prenomF = prenom.charAt(0).toUpperCase() + prenom.slice(1).toLowerCase(); 
+            const motif = document.getElementById('infMotif').value.trim(); 
+            const lieu = document.getElementById('infLieu').value; 
+            const controleurSanction = getCurrentUser() || document.getElementById('infControleur').value; 
+            
+            if (!controleurSanction) { 
+                showAlert('❌ Sélectionnez un contrôleur', 'error'); 
+                return; 
+            } 
+            
+            try {
+                // Récupérer les données ACTUELLES depuis Firebase
+                const avertSnap = await dbCentral.ref('infractions/avertissements').once('value');
+                let currentAvert = [];
+                if (avertSnap.val()) {
+                    Object.entries(avertSnap.val()).forEach(([key, v]) => {
+                        if (v && v.nom) currentAvert.push({ key, ...v });
+                    });
+                }
+                
+                // Vérifier si la personne a déjà un avertissement
+                const existingAvert = currentAvert.find(a => 
+                    (a.nom || '').toUpperCase() === nom && 
+                    (a.prenom || '').toLowerCase() === prenomF.toLowerCase()
+                ); 
+                
+                if (existingAvert) { 
+                    // 2ème infraction → Ouvrir le modal d'exclusion
+                    pendingExclusion = { 
+                        nom, 
+                        prenom: prenomF, 
+                        motif, 
+                        lieu, 
+                        controleurSanction, 
+                        existingAvert 
+                    }; 
+                    selectedExclusionType = null; 
+                    document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
+                    document.getElementById('btnConfirmExclusion').disabled = true; 
+                    document.getElementById('exclusionInfo').innerHTML = '<strong>⚠️ 2ème INFRACTION détectée !</strong><br><br>📜 Selon le règlement, <strong>' + nom + ' ' + prenomF + '</strong> a déjà reçu un avertissement le ' + existingAvert.date + '.<br>Motif précédent : "' + existingAvert.motif + '"<br><br>👉 <strong>Une exclusion est obligatoire.</strong>'; 
+                    document.getElementById('exclusionModal').classList.add('visible'); 
+                } else { 
+                    // 1ère infraction → Avertissement
+                    const data = { 
+                        nom, 
+                        prenom: prenomF, 
+                        motif, 
+                        lieu, 
+                        controleurSanction, 
+                        date: new Date().toLocaleString('fr-FR'), 
+                        id: Date.now().toString() 
+                    }; 
+                    
+                    const idx = currentAvert.length; 
+                    await dbCentral.ref('infractions/avertissements/' + idx).set(data); 
+                    
+                    // Notification Telegram
+                    const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const dateTelegram = new Date().toLocaleDateString('fr-FR');
+                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n📅 ' + dateTelegram + '\n👤 ' + nom + ' ' + prenomF + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
+                    await envoyerNotificationTelegram(msgTelegram);
+                    
+                    showAlert('⚠️ 1er AVERTISSEMENT enregistré pour ' + nom + ' ' + prenomF + '<br>📜 Prochain écart = EXCLUSION<br>👮 Par: ' + controleurSanction, 'warning'); 
+                    document.getElementById('infractionForm').reset(); 
+                    await loadAllData(); 
+                    showPage('menu'); 
+                } 
+            } catch(e) { 
+                showAlert('❌ Erreur: ' + e.message, 'error'); 
+            } 
+        });
+        
         function selectExclusionType(type) { 
             selectedExclusionType = type; 
             document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected')); 
-            
-            let id = 'opt-excl-def';
-            if (type === 'temp_1') id = 'opt-excl-temp1';
-            if (type === 'temp_2') id = 'opt-excl-temp2';
-            if (type === 'temp_3') id = 'opt-excl-temp3';
-            
-            document.getElementById(id).classList.add('selected'); 
+            document.querySelector('.exclusion-type-option:' + (type === 'temporaire' ? 'first-child' : 'last-child')).classList.add('selected'); 
             document.getElementById('btnConfirmExclusion').disabled = false; 
         }
-
+        
         async function confirmerExclusion() { 
             if (!pendingExclusion || !selectedExclusionType) return; 
             
@@ -1742,17 +1516,10 @@
                 { motif: pendingExclusion.motif, date: dateNow, controleurSanction: pendingExclusion.controleurSanction } 
             ]; 
             
-            let dureeMois = null;
-            let finalType = selectedExclusionType;
-            if (selectedExclusionType.startsWith('temp_')) {
-                dureeMois = parseInt(selectedExclusionType.split('_')[1]);
-                finalType = 'temporaire';
-            }
-
             let dateFin = null; 
-            if (finalType === 'temporaire') { 
+            if (selectedExclusionType === 'temporaire') { 
                 dateFin = new Date(); 
-                dateFin.setMonth(dateFin.getMonth() + dureeMois); 
+                dateFin.setMonth(dateFin.getMonth() + 1); 
                 dateFin = dateFin.toISOString(); 
             } 
             
@@ -1764,20 +1531,18 @@
                 lieu: pendingExclusion.lieu, 
                 controleurSanction: pendingExclusion.controleurSanction, 
                 date: dateNow, 
-                typeExclusion: finalType, 
-                dureeMois: dureeMois,
+                typeExclusion: selectedExclusionType, 
                 dateFin, 
                 id: Date.now().toString() 
             }; 
             
             try { 
+                // Ajouter l'exclusion
                 const banSnap = await dbCentral.ref('infractions/bannis').once('value'); 
-                let currentBannis = banSnap.val() || [];
-                if (!Array.isArray(currentBannis)) currentBannis = Object.values(currentBannis);
+                const banIdx = banSnap.val() ? Object.keys(banSnap.val()).length : 0; 
+                await dbCentral.ref('infractions/bannis/' + banIdx).set(exclusionData); 
                 
-                currentBannis.push(exclusionData);
-                await dbCentral.ref('infractions/bannis').set(currentBannis);
-                
+                // Archiver proprement l'avertissement existant
                 const archiveData = {
                     ...pendingExclusion.existingAvert,
                     type: 'avertissement',
@@ -1788,18 +1553,19 @@
                 await dbCentral.ref('infractions/archives').push(archiveData);
                 await dbCentral.ref('infractions/avertissements/' + pendingExclusion.existingAvert.key).remove(); 
                 
-                const typeText = finalType === 'temporaire' ? `TEMPORAIRE (${dureeMois} mois)` : 'DÉFINITIVE'; 
-                const finText = finalType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
+                const typeText = selectedExclusionType === 'temporaire' ? 'TEMPORAIRE (1 mois)' : 'DÉFINITIVE'; 
+                const finText = selectedExclusionType === 'temporaire' ? '<br>📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : ''; 
                 
+                // Notification Telegram
                 const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                 const dateTelegram = new Date().toLocaleDateString('fr-FR');
-                const typeExclTelegram = finalType === 'temporaire' ? `⏱️ Temporaire (${dureeMois} mois)` : '🚫 Définitive';
-                const finTelegram = finalType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
+                const typeExclTelegram = selectedExclusionType === 'temporaire' ? '⏱️ Temporaire (1 mois)' : '🚫 Définitive';
+                const finTelegram = selectedExclusionType === 'temporaire' ? '\n📅 Fin: ' + new Date(dateFin).toLocaleDateString('fr-FR') : '';
                 const msgTelegram = '🚫 *EXCLUSION*\n📅 ' + dateTelegram + '\n👤 ' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + '\n' + typeExclTelegram + finTelegram + '\n📍 ' + pendingExclusion.lieu + '\n💬 ' + pendingExclusion.motif + '\n👮 ' + pendingExclusion.controleurSanction + '\n🕐 ' + heure;
                 await envoyerNotificationTelegram(msgTelegram);
                 
                 document.getElementById('exclusionModal').classList.remove('visible'); 
-                showAlert(`🚫 <strong>EXCLUSION ${typeText}</strong><br><br>${pendingExclusion.nom} ${pendingExclusion.prenom} est maintenant exclu(e).${finText}<br><br>👮 Par: ${pendingExclusion.controleurSanction}`, 'error'); 
+                showAlert('🚫 EXCLUSION ' + typeText + '<br>' + pendingExclusion.nom + ' ' + pendingExclusion.prenom + finText + '<br>👮 Par: ' + pendingExclusion.controleurSanction, 'error'); 
                 document.getElementById('infractionForm').reset(); 
                 pendingExclusion = null; 
                 selectedExclusionType = null; 
@@ -1833,8 +1599,7 @@
                 container.innerHTML = list.map(item => '<div class="hist-infraction-item"><div class="hist-infraction-header"><div><div class="hist-infraction-name">' + item.nom + ' ' + item.prenom + '</div><div class="hist-infraction-date">📅 ' + (item.date || '') + '</div>' + (item.lieu ? '<div style="font-size:11px;color:#666;">📍 ' + item.lieu + '</div>' : '') + (item.controleurSanction ? '<div style="color:#1565c0;font-size:11px;font-weight:bold;">👮 ' + item.controleurSanction + '</div>' : '') + '</div><button class="hist-delete-btn" onclick="archiverInfraction(\'' + item.key + '\', \'avertissements\')">📦 Archiver</button></div>' + (item.motif ? '<div class="hist-infraction-motif"><strong>Motif:</strong> ' + item.motif + '</div>' : '') + '</div>').join(''); 
             } else if (currentHistTab === 'bannis') { 
                 container.innerHTML = list.map(item => { 
-                    let dureeText = item.dureeMois ? item.dureeMois + ' mois' : '3 mois';
-                    let typeLabel = item.typeExclusion === 'temporaire' ? `<span class="badge badge-temp">⏱️ Temporaire (${dureeText})</span>` : `<span class="badge badge-banned">🚫 Définitive</span>`; 
+                    let typeLabel = item.typeExclusion === 'temporaire' ? '<span class="badge badge-temp">⏱️ Temporaire</span>' : '<span class="badge badge-banned">🚫 Définitive</span>'; 
                     let finInfo = ''; 
                     let itemClass = 'hist-infraction-item banned'; 
                     if (item.typeExclusion === 'temporaire' && item.dateFin) { 
@@ -1980,6 +1745,7 @@
             
             const message = "Bonjour,\n\nMerci de remplir votre fiche de renseignement AAPPMA Gundershoffen :\n" + FORMULAIRE_URL + "\n\nCordialement,\nL'équipe AAPPMA";
             
+            // Sauvegarder dans l'historique
             const smsEntry = {
                 nom: nom,
                 prenom: prenom,
@@ -1990,6 +1756,7 @@
             smsSent.push(smsEntry);
             await saveSmsSent();
             
+            // Ouvrir l'app SMS
             const smsLink = 'sms:' + numero + '?body=' + encodeURIComponent(message);
             window.location.href = smsLink;
             
@@ -2000,6 +1767,7 @@
             document.getElementById('smsNumero').value = '';
         }
 
+
         // ===== MODULE TICKETS - GESTION ACCÈS =====
         async function loadTicketModuleUsers() {
             try {
@@ -2007,6 +1775,7 @@
                 if (snap.val()) {
                     ticketModuleUsers = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val());
                 } else {
+                    // Initialisation par défaut : Patrice activé
                     ticketModuleUsers = ['Patrice'];
                     await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
                 }
@@ -2115,6 +1884,7 @@
             showAlert(enabled ? '👁️ Historique complet activé pour ' + nom : '❌ Historique complet désactivé pour ' + nom, enabled ? 'success' : 'warning');
         }
 
+        // Ouverture du module tickets
         document.getElementById('ticketMenuCard').addEventListener('click', function() {
             window.location.href = 'ticket_numerique_aappma.html';
         });
@@ -2141,8 +1911,10 @@
             const label = MOIS_FR[travMoisCourant.getMonth()] + ' ' + annee;
             document.getElementById('travMoisLabel').textContent = label;
 
+            // Show/hide add zone for Patrice only
             document.getElementById('travail-add-zone').style.display = isPatrice() ? 'block' : 'none';
 
+            // Set default date
             const today = new Date();
             const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             document.getElementById('travDate').value = todayStr;
@@ -2152,6 +1924,7 @@
             listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Chargement...</div>';
             statsEl.innerHTML = '';
 
+            // Load current month
             dbCentral.ref('journees_travail/' + moisKey).once('value').then(snapshot => {
                 const data = snapshot.val();
                 const entries = [];
@@ -2162,6 +1935,7 @@
                 }
                 entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
+                // Group by date
                 const grouped = {};
                 entries.forEach(e => {
                     const d = e.date || 'Sans date';
@@ -2172,6 +1946,7 @@
                 const nbJournees = Object.keys(grouped).length;
                 const nbParticipants = entries.length;
 
+                // Stats mois
                 statsEl.innerHTML =
                     '<div style="flex:1;min-width:100px;background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">' +
                     '<div style="font-size:22px;font-weight:700;color:#2e7d32;">' + nbJournees + '</div>' +
@@ -2204,6 +1979,8 @@
                     });
                     listEl.innerHTML = html;
                 }
+
+                // Load annual total
                 loadTravailAnnuel(annee);
             }).catch(err => {
                 listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
