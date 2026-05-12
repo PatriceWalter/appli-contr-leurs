@@ -131,6 +131,8 @@
         .search-result-address { font-size: 13px; color: #666; margin-top: 5px; }
         .search-result-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
         .search-result-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-send-form { background: #667eea; color: white; }
+        .btn-view-info { background: #17a2b8; color: white; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
         .badge-ok { background: #e8f5e9; color: #2e7d32; }
         .badge-warning { background: #fff3e0; color: #f57c00; }
@@ -162,6 +164,7 @@
         .btn-danger { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 13px; width: auto; }
         
+        /* STYLE POUR LE NOUVEAU CHOIX D'EXCLUSION MULTIPLE */
         .exclusion-type-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .exclusion-type-option { padding: 15px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: #f8f9fa; }
         .exclusion-type-option:hover { border-color: #dc3545; }
@@ -176,11 +179,22 @@
         .admin-fiche-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #2d5a3d; }
         .admin-fiche-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .admin-fiche-name { font-weight: 700; color: #1a472a; font-size: 16px; }
+        .admin-fiche-actions { display: flex; gap: 8px; }
+        .admin-fiche-info { font-size: 13px; color: #666; margin-top: 8px; }
         .admin-count { background: #e8f5e9; color: #2e7d32; padding: 5px 15px; border-radius: 20px; font-weight: 600; margin-bottom: 20px; display: inline-block; }
+        .etang-cards { display: flex; flex-direction: column; gap: 12px; }
+        .etang-card { display: flex; align-items: center; gap: 15px; background: #fff; border: 2px solid #e9ecef; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s; }
+        .etang-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .etang-icon { font-size: 32px; }
+        .etang-info { flex: 1; }
+        .etang-name { font-weight: 700; font-size: 18px; color: #1a472a; }
+        .etang-count { font-size: 13px; color: #666; margin-top: 4px; }
+        .etang-arrow { font-size: 24px; color: #999; }
         .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; }
         .tab-btn:hover { border-color: #2d5a3d; }
         .tab-btn.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
+        .tab-btn span { background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 12px; }
         .hist-infraction-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #ffc107; position: relative; }
         .hist-infraction-item.banned { border-left-color: #c62828; background: #ffebee; }
         .hist-infraction-item.temp-exclusion { border-left-color: #ff9800; background: #fff3e0; }
@@ -202,23 +216,43 @@
         .fiche-tab-content { display: none; }
         .fiche-tab-content.active { display: block; }
         .envoyer-container { text-align: center; padding: 20px 0; }
+        .envoyer-icon { font-size: 60px; margin-bottom: 15px; }
+        .envoyer-title { font-size: 20px; color: #1a472a; margin-bottom: 10px; }
+        .envoyer-desc { color: #666; line-height: 1.6; margin-bottom: 20px; font-size: 14px; }
+        .envoyer-status { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; }
+        .envoyer-status.success { display: block; background: #e8f5e9; color: #2e7d32; border: 2px solid #4caf50; }
+        .envoyer-status.error { display: block; background: #ffebee; color: #c62828; border: 2px solid #f44336; }
+        .envoyer-status.loading { display: block; background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
         .controle-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .controle-big-btn { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border: 2px solid #d5d8ce; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; min-height: 120px; justify-content: center; }
         .controle-big-btn.hardt { border-color: #d5d8ce; background: #fff; color: #333; }
         .controle-big-btn.carpodrome { border-color: #d5d8ce; background: #fff; color: #333; }
         .controle-big-btn:active { border-color: #e8a838; box-shadow: 0 4px 12px rgba(232,168,56,0.2); }
+        .controle-big-icon { font-size: 36px; margin-bottom: 8px; }
+        .controle-big-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1a472a; }
+        .controle-big-desc { font-size: 12px; color: #888; }
         .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .admin-tab { flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e9ecef; border-radius: 12px; background: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .admin-tab:hover { border-color: #2d5a3d; }
         .admin-tab.active { background: linear-gradient(135deg, #2d5a3d 0%, #4a8c5c 100%); color: #fff; border-color: transparent; }
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; }
-        
-        @media (max-width: 600px) { 
-            .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } 
-            .menu-page, .sub-menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } 
-            .exclusion-type-choice { flex-direction: column; } 
-        }
+        .cartes-header { margin-bottom: 20px; }
+        .add-carte-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .carte-input { flex: 1; min-width: 120px; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; }
+        .carte-input:focus { outline: none; border-color: #2d5a3d; }
+        .carte-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #4caf50; }
+        .carte-item-name { font-weight: 600; color: #333; }
+        .carte-delete-btn { background: #ffebee; color: #c62828; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .carte-delete-btn:hover { background: #c62828; color: white; }
+        .cartes-count { background: #e8f5e9; color: #2e7d32; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-weight: 600; text-align: center; }
+        .pecheurs-alpha-title { font-size: 16px; color: #1a472a; margin: 20px 0 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .pecheurs-alpha-count { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 15px; font-size: 12px; }
+        .reglement-info { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3; }
+        .reglement-info strong { color: #1565c0; }
+        @media (max-width: 600px) { .page { padding: 15px; padding-top: 70px; padding-bottom: 130px !important; } .menu-page { padding-top: 15px !important; padding-bottom: 130px !important; } .infraction-type-btns { flex-direction: column; } .admin-fiche-header { flex-direction: column; align-items: flex-start; } .tabs-container { flex-direction: column; } .fiche-tabs { flex-direction: column; } .admin-tabs { flex-direction: column; } .add-carte-form { flex-direction: column; } .search-result-actions { flex-direction: column; } .exclusion-type-choice { flex-direction: column; } }
 
+        /* --- Module Tickets --- */
         .tk-user-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .tk-user-item { display: flex; align-items: center; gap: 12px; background: #f8f9fa; border-radius: 10px; padding: 12px 15px; border-left: 4px solid #e0e0e0; }
         .tk-user-item.enabled { border-left-color: #2e7d32; background: #e8f5e9; }
@@ -615,18 +649,18 @@
     </div>
 
     <div class="modal-overlay" id="hardtIndivModal">
-        <div class="modal-content" style="max-width:400px; overflow:visible;">
+        <div class="modal-content" style="max-width:400px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);">
                 <h2>👤 Contrôle Hardt Individuel</h2>
                 <button class="modal-close" onclick="fermerModalHardtIndiv()">&times;</button>
             </div>
-            <div class="modal-body" style="overflow:visible;">
+            <div class="modal-body">
                 <p style="margin-bottom:15px;text-align:center;color:#666;">Renseignez les informations du pêcheur contrôlé.</p>
                 
                 <div class="form-group required" style="position:relative;">
                     <label>Nom</label>
                     <input type="text" id="hiNom" oninput="filterPecheursIndiv()" placeholder="NOM" autocomplete="off">
-                    <div id="suggestionsBoxIndiv" style="display:none; position:absolute; top:100%; left:0; right:0; max-height:180px; overflow-y:auto; border:2px solid #d5d8ce; border-top:none; border-radius:0 0 8px 8px; background:#fff; z-index:100; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
+                    <div id="suggestionsBoxIndiv" style="display:none; max-height:180px; overflow-y:auto; border:2px solid #d5d8ce; border-radius:8px; background:#fff; margin:-8px 0 8px;"></div>
                 </div>
                 
                 <div class="form-group required"><label>Prénom</label><input type="text" id="hiPrenom" placeholder="Prénom"></div>
@@ -715,9 +749,11 @@
         let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
         let controleursMdp = {};
+        let infractionsListenerSetup = false;
         
-        let allPecheurs = []; 
+        let allPecheurs = []; // Utilisé pour l'autocomplétion
 
+        // BASE CENTRALE UNIQUE pour toutes les données
         const appCentral = firebase.initializeApp({ 
             apiKey: "AIzaSyCJk0Tfn4IU4DUEKCRVZmI-90s4cAnbyGA",
             authDomain: "appli-controleur-gunder.firebaseapp.com",
@@ -736,6 +772,7 @@
         const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
         emailjs.init(EMAILJS_PUBLIC_KEY);
         
+        // ===== NOTIFICATIONS TELEGRAM =====
         const TELEGRAM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec";
         
         async function envoyerNotificationTelegram(message) {
@@ -746,67 +783,881 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message })
                 });
-            } catch (error) {}
+                console.log('✅ Notification Telegram envoyée');
+            } catch (error) {
+                console.error('❌ Erreur notification Telegram:', error);
+            }
+        }
+        
+        function ouvrirModalBreitmatt() {
+            const controleur = getCurrentUser();
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('breitmattControleur').textContent = controleur;
+            document.getElementById('breitmattHeure').textContent = heure;
+            document.getElementById('breitmattModal').classList.add('visible');
+        }
+        function fermerModalBreitmatt() {
+            document.getElementById('breitmattModal').classList.remove('visible');
+        }
+        async function envoyerControleBreitmatt() {
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const message = '🐠 *CONTRÔLE BREITMATT*\n📅 ' + date + '\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
+            
+            fermerModalBreitmatt();
+            showAlert('⏳ Envoi en cours...', 'info');
+            
+            await envoyerNotificationTelegram(message);
+            
+            showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
+        }
+        
+        // ===== CONTRÔLE HARDT JOURNÉE =====
+        function ouvrirModalHardtJournee() {
+            const controleur = getCurrentUser();
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('hardtJourneeControleur').textContent = controleur;
+            document.getElementById('hardtJourneeHeure').textContent = heure;
+            document.getElementById('hardtJourneeModal').classList.add('visible');
+        }
+        function fermerModalHardtJournee() {
+            document.getElementById('hardtJourneeModal').classList.remove('visible');
+        }
+        async function envoyerControleHardtJournee() {
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
+            
+            fermerModalHardtJournee();
+            showAlert('⏳ Envoi en cours...', 'info');
+            
+            await envoyerNotificationTelegram(message);
+            
+            showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
         }
 
-        // ==========================================
-        // RECHERCHE D'ORIGINE - INTACTE !
-        // ==========================================
-        function renderPecheursAlphabetique(filter = '') { 
-            const container = document.getElementById('searchResults'); 
-            const countEl = document.getElementById('pecheursCount'); 
-            let sorted = [...allFiches].sort((a, b) => { 
-                const nomA = (a.nom || '').toLowerCase(); 
-                const nomB = (b.nom || '').toLowerCase(); 
-                if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); 
-                return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); 
-            }); 
-            if (filter.length >= 2) { 
-                const q = filter.toLowerCase(); 
-                sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); 
-            } 
-            countEl.textContent = sorted.length; 
-            if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } 
-            container.innerHTML = sorted.map((f, i) => { 
-                const inf = getInfractionsForUser(f.nom, f.prenom); 
-                const exclusion = inf.exclusion; 
-                const avert = inf.avertissement; 
-                let badge = '<span class="badge badge-ok">✅ OK</span>'; 
-                if (exclusion) { 
-                    if (exclusion.typeExclusion === 'temporaire' && exclusion.dateFin) { 
-                        const now = new Date(); 
-                        const fin = new Date(exclusion.dateFin); 
-                        if (now > fin) { 
-                            badge = '<span class="badge badge-expired">✅ Exclusion expirée</span>'; 
-                        } else { 
-                            badge = '<span class="badge badge-temp">⏱️ EXCLU TEMP.</span>'; 
-                        } 
-                    } else { 
-                        badge = '<span class="badge badge-banned">🚫 EXCLU</span>'; 
-                    } 
-                } else if (avert) { 
-                    badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; 
+        // ===== CONTRÔLE HARDT INDIVIDUEL (Avec Autocomplétion) =====
+        function ouvrirModalHardtIndiv() {
+            document.getElementById('hiNom').value = '';
+            document.getElementById('hiPrenom').value = '';
+            document.getElementById('hiTel').value = '';
+            document.getElementById('hiPoste').value = '';
+            document.getElementById('hardtIndivModal').classList.add('visible');
+        }
+        
+        function fermerModalHardtIndiv() {
+            document.getElementById('hardtIndivModal').classList.remove('visible');
+        }
+        
+        function filterPecheursIndiv() {
+            var input = document.getElementById('hiNom').value.trim().toUpperCase();
+            var box = document.getElementById('suggestionsBoxIndiv');
+            if (input.length < 2) { box.style.display = 'none'; return; }
+            
+            var matches = allPecheurs.filter(function(p) { 
+                return p.nom.indexOf(input) === 0; 
+            });
+            
+            if (matches.length === 0) { box.style.display = 'none'; return; }
+            
+            box.innerHTML = matches.slice(0, 8).map(function(p, i) {
+                return '<div onclick="selectPecheurIndiv(' + i + ')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;' + (i % 2 === 0 ? '' : 'background:#f8f9fa;') + '">' +
+                    '<strong>' + p.nom + '</strong> ' + (p.prenom || '') + '</div>';
+            }).join('');
+            box.style.display = 'block';
+            box._matches = matches.slice(0, 8);
+        }
+
+        function selectPecheurIndiv(idx) {
+            var box = document.getElementById('suggestionsBoxIndiv');
+            var p = box._matches[idx];
+            if (p) {
+                document.getElementById('hiNom').value = p.nom;
+                document.getElementById('hiPrenom').value = p.prenom || '';
+                document.getElementById('hiTel').value = p.telephone || '';
+            }
+            box.style.display = 'none';
+        }
+        
+        async function envoyerControleHardtIndiv() {
+            const nom = document.getElementById('hiNom').value.trim().toUpperCase();
+            const prenom = document.getElementById('hiPrenom').value.trim();
+            const tel = document.getElementById('hiTel').value.trim();
+            const poste = document.getElementById('hiPoste').value;
+            
+            if(!nom || !prenom || !poste) {
+                showAlert('❌ Veuillez remplir le nom, prénom et le poste.', 'error');
+                return;
+            }
+            
+            // Vérification dans la base existante
+            const prenomF = prenom.toLowerCase();
+            const exists = allPecheurs.some(p => p.nom === nom && (p.prenom || '').toLowerCase() === prenomF);
+            
+            if (!exists) {
+                if (confirm(`Le pêcheur ${nom} ${prenom} n'est pas dans la base de données.\n\nVoulez-vous l'ajouter pour de futurs contrôles ?`)) {
+                    try {
+                        await dbCentral.ref('contactsTickets').push({nom: nom, prenom: prenom, telephone: tel});
+                        allPecheurs.push({nom: nom, prenom: prenom, telephone: tel, source: 'ticket', key: ''});
+                    } catch(e) {
+                        console.error('Erreur ajout:', e);
+                    }
+                }
+            }
+            
+            const controleur = getCurrentUser();
+            const date = new Date().toLocaleDateString('fr-FR');
+            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const telText = tel ? `\n📞 ${tel}` : '';
+            
+            const message = `🐟 *CONTRÔLE HARDT INDIVIDUEL*\n📅 ${date}\n🕐 ${heure}\n📍 Étang de la Hardt — Poste ${poste}\n🎣 ${nom} ${prenom}${telText}\n👮 ${controleur}`;
+            
+            fermerModalHardtIndiv();
+            showAlert('⏳ Envoi en cours...', 'info');
+            await envoyerNotificationTelegram(message);
+            showAlert('✅ Contrôle individuel envoyé !', 'success');
+        }
+
+        const DEFAULT_REGLEMENTS = {
+            carpodrome: {
+                horaires: "Sur réservation uniquement et 24h à l'avance\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés\n- Du 5 mai au 30 octobre : tous les jours\n- Pêche de 8h à 19h (début mars à fin avril et début septembre à fin octobre)\n- Pêche de 8h à 20h (début mai à fin août)\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté (manque d'eau, cyanobactéries, etc...)",
+                tarifs: "- Carte journalière : 10 € / Titulaires carte annuelle AAPPMA : 5 €\n- Carte demi-journée : 6 € / Titulaires carte annuelle AAPPMA : 3 €\n- Jours d'événements : pêche payante pour tous (10 €)\n- Réservation obligatoire 24h avant le jour de pêche via formulaire en ligne\n- Contact en cas de problème : Patrice – 06.37.70.37.31 ou gundershoffenaappma@gmail.com\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact. L'association ne peut assurer la disponibilité de monnaie.",
+                modalites: "- Pêche No Kill obligatoire\n- Canne au coup uniquement, longueur max : 13 m\n- 1 ligne par pêcheur (pêcheur désigné lors de la réservation)\n- Max 2 pêcheurs par poste (à préciser lors de la réservation)\n- Pêche sous la canne, dans la zone du poste réservé\n- Amorçage : uniquement à la coupelle ou fronde\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini)\n- Hameçon taille max nº10 obligatoirement sans ardillon (pincé/limé interdit)\n- Bourriche autorisée pour poisson blanc uniquement\n- Carpes et tanches : relâchées immédiatement\n- Esches autorisées : végétales, vers de terre, asticots\n- Pellets et baby corn autorisés\n- Graines cuites uniquement\n- Kit de soins conseillé",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans",
+                sanctions: "- Carte de pêche à présenter\n- Contrôles réguliers et imprévus\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol et barbecues\n❌ Pêche de nuit\n❌ Camping (seuls parapluies autorisés)\n❌ Baignade, canotage\n❌ Mutilation ou marquage des poissons\n❌ Faire pêcher une autre personne qui n'a pas réservé le poste\n❌ Franglaise, Feeder\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Pêche en surface",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Problème sur réservations : Patrice Walter – 06.37.70.37.31\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
+            },
+            hardt: {
+                horaires: "30 minutes avant le lever du soleil → 30 minutes après le coucher\n- Du 1er mars au 26 avril : samedis, dimanches et jours fériés uniquement\n- Du 5 mai au 30 octobre : tous les jours\n- Du 1er novembre au 31 décembre : samedis, dimanches et jours fériés uniquement\n- Pêche de nuit : 20h → 8h (réservation obligatoire)\nPêche aux carnassiers autorisée :\n- Du 1er novembre au 31 décembre, samedi, dimanche et jours fériés uniquement\n- Carte annuelle AAPPMA Gundershoffen obligatoire\n- Carte journalière refusée\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté",
+                tarifs: "- Carte journalière : 10 €\n- Carte demi-journée : 6 €\n- Carte pêche de nuit : 10 € (réservation 24h à l'avance par SMS au 06.76.57.85.03)\n- Carte annuelle : obligatoire pour la pêche aux carnassiers\n- Jours d'événements : pêche payante pour tous (10 €)\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact",
+                modalites: "- Pêche No Kill obligatoire\n- Amorçage et pêche depuis le poste\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée\n- Kit de soins conseillé\n- Graines cuites uniquement\n- Esches autorisées : végétales, vers, asticots, teignes, vers de lune…\n- Canne toujours sous surveillance\n- Respect des zones de pêche (voir plan) et des autres pêcheurs\n- 2 lignes maximum par pêcheur\n- 12 postes carpistes (n°1 à 12)\n- 3 postes pêche au coup (lettres)\n- Poste 4 réservé aux contrôleurs\n- 1 véhicule par pêcheur autorisé autour de l'étang\n- Véhicules visiteurs à stationner en dehors de l'enceinte\n- Circulation interdite après 22h (sauf urgence après avoir prévenu un contrôleur)",
+                nuit: "Horaire : 20h jusqu'à 8h le lendemain\n- Sur réservation obligatoire 24h à l'avance par SMS au 06.76.57.85.03\n- Une pêche de présentation est obligatoire avant l'obtention d'une autorisation annuelle accordée par un des contrôleurs désignés",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans en journée uniquement\n- Pêche de nuit autorisée uniquement en présence continue d'une personne majeure et sous responsabilité parentale",
+                sanctions: "- Il pourra vous être demandé de présenter votre titre de pêche lors des contrôles\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol (barbecue lors des périodes de sécheresse ou arrêtés préfectoraux)\n❌ Consommation d'alcool excessive\n❌ Camping (hors pêcheurs)\n❌ Baignade, canotage, accès aux îles\n❌ Mutilation ou marquage des poissons\n❌ Canne laissée sans surveillance\n❌ Pêche en dehors des postes\n❌ Sacs de conservation\n❌ Bateau amorceur\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Bas de ligne en tresse (sauf corps de ligne)\n❌ Pêche en surface\n❌ Stationnement sur le chemin et ailleurs que derrière son poste\n❌ Véhicules visiteurs autour de l'étang",
+                carnassiers: "Interdictions spécifiques :\n❌ Carte journalière (non autorisée)\n❌ Filets, nasses, pêche à la main ou sous glace\n❌ Troubler l'eau, fouiller\n❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)\n❌ Appâts à base d'œufs de poissons\n- Quota : 3 carnassiers/jour max, dont 2 brochets (min. 50 cm)",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Réservation pêche de nuit : Jean François Klein – 06.76.57.85.03\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
+            },
+            breitmatt: {
+                horaires: "Pêche possible uniquement dans le grand étang, sauf dérogation spécifique\n30 minutes avant le lever du soleil → 30 minutes après le coucher\n- Du 1er mars au 4 mai : samedis, dimanches et jours fériés uniquement\n- Du 5 mai au 30 octobre : tous les jours\n- Du 1er novembre au 31 décembre : samedis, dimanches et jours fériés uniquement\nPêche aux carnassiers autorisée :\n- Du 1er novembre au 31 décembre, samedi, dimanche et jours fériés uniquement\n- Carte annuelle AAPPMA Gundershoffen obligatoire\n- Carte journalière refusée\n⚠️ L'AAPPMA se réserve le droit de fermer les étangs en cas d'événement indépendant de sa volonté",
+                tarifs: "- Carte journalière : 10 €\n- Carte demi-journée : 6 €\n- Carte annuelle : obligatoire pour la pêche aux carnassiers\n- Jours d'événements : pêche payante pour tous (10 €)\n⚠️ Pour l'achat d'une carte journalière, merci de prévoir le montant exact",
+                modalites: "- Pêche No Kill obligatoire (sauf truites et perches soleil)\n- Amorçage et pêche depuis le poste obligatoire\n- Matériel obligatoire : bassine ou tapis de réception épais avec rebord (5cm mini) + filoche adaptée\n- Kit de soins conseillé\n- Graines cuites uniquement\n- Esches autorisées : végétales, vers, asticots, teignes, vers de lune…\n- Canne toujours sous surveillance\n- Respect des zones de pêche et des autres pêcheurs\n- 2 lignes maximum par pêcheur",
+                mineurs: "- Moins de 12 ans : accompagnement obligatoire d'une personne majeure et sous responsabilité parentale\n- Autorisée sans accompagnant à partir de 12 ans, en journée uniquement",
+                sanctions: "- Il pourra vous être demandé de présenter votre titre de pêche lors des contrôles\nSanctions :\n- 1ère infraction → avertissement\n- 2ème infraction → exclusion temporaire ou définitive\n- Aucun remboursement du titre de pêche en cas d'exclusion",
+                interdictions: "❌ Feux au sol et barbecues\n❌ Camping (seuls parapluies ou demi-tentes autorisés)\n❌ Baignade, canotage\n❌ Mutilation ou marquage des poissons\n❌ Canne laissée sans surveillance\n❌ Pêche en dehors des postes et dans la frayère\n❌ Sacs de conservation\n❌ Bateau amorceur\n❌ Poisson posé au sol ou tenu avec un chiffon\n❌ Graines crues\n❌ Pêche au pain\n❌ Hameçons avec ardillons\n❌ Bas de ligne en tresse (sauf corps de ligne)\n❌ Pêche en surface\n❌ Stationnement sur le chemin et la berge côté étang",
+                carnassiers: "Interdictions spécifiques :\n❌ Carte journalière (non autorisée)\n❌ Filets, nasses, pêche à la main ou sous glace\n❌ Troubler l'eau, fouiller\n❌ Utilisation de poissons protégés ou nuisibles (perche soleil, goujon asiatique...)\n❌ Appâts à base d'œufs de poissons\n- Quota : 3 carnassiers/jour max, dont 2 brochets (min. 50 cm)",
+                dechets: "- Le poste de pêche devra être propre en fin de session\n- Vous devez emporter vos déchets sous peine d'une amende de 150€ (art. 632-1 du code pénal)",
+                contacts: "- Président : René Rahm – 06.50.76.59.34\n- Garde pêche : Raymond Ledig – 06.95.24.90.84 (gpp67110@free.fr)\n- Urgences : POMPIERS 18 – POLICE 17 – SAMU 15\n🌐 www.aappma-gundershoffen.fr"
+            }
+        };
+        
+        let reglementsData = null;
+        
+        function loadReglementsFromFirebase() {
+            dbCentral.ref('reglements_formulaire').on('value', (snapshot) => {
+                reglementsData = snapshot.exists() ? snapshot.val() : null;
+                console.log('📜 Règlements synchronisés depuis Firebase', reglementsData ? 'OK' : 'défaut');
+            });
+        }
+        
+        function getReglement(name) {
+            if (reglementsData && reglementsData[name]) {
+                const fbData = reglementsData[name];
+                if (fbData.horaires || fbData.tarifs || fbData.modalites) {
+                    return fbData;
+                }
+                if (fbData.contenu) {
+                    return { _contenuBrut: fbData.contenu };
+                }
+                if (typeof fbData === 'string') {
+                    return { _contenuBrut: fbData };
+                }
+                return fbData;
+            }
+            return DEFAULT_REGLEMENTS[name];
+        }
+        
+        function formatReglementSection(text, isInterdit = false) {
+            if (!text) return '';
+            let html = '', inList = false;
+            text.split('\n').filter(l => l.trim()).forEach(line => {
+                const t = line.trim();
+                if (t.startsWith('-') || t.startsWith('❌')) {
+                    if (!inList) { html += '<ul' + (isInterdit ? ' style="color:#c62828;"' : '') + '>'; inList = true; }
+                    html += '<li>' + t.replace(/^-\s*/, '').replace(/^❌\s*/, '❌ ') + '</li>';
+                } else if (t.startsWith('⚠️')) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p class="warning">' + t + '</p>';
+                } else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p>' + t + '</p>';
+                }
+            });
+            return inList ? html + '</ul>' : html;
+        }
+        
+        function formatContenuBrut(text) {
+            if (!text) return '';
+            let html = '';
+            const lines = text.split('\n');
+            let inList = false;
+            
+            lines.forEach(line => {
+                const t = line.trim();
+                if (!t) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    return;
+                }
+                if (/^[A-ZÉÈÊËÀÂÙÛÎÏÔÖ\s\-:\/]{6,}$/.test(t) || /^(#{1,3})\s/.test(t)) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    const cleanTitle = t.replace(/^#{1,3}\s*/, '');
+                    html += '<h3>' + cleanTitle + '</h3>';
+                } else if (t.startsWith('-') || t.startsWith('❌') || t.startsWith('•') || t.startsWith('*')) {
+                    if (!inList) { html += '<ul>'; inList = true; }
+                    html += '<li>' + t.replace(/^[-❌•*]\s*/, '') + '</li>';
+                } else if (t.startsWith('⚠️')) {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p class="warning">' + t + '</p>';
+                } else {
+                    if (inList) { html += '</ul>'; inList = false; }
+                    html += '<p>' + t + '</p>';
+                }
+            });
+            
+            if (inList) html += '</ul>';
+            return html;
+        }
+        
+        function generateReglementHTML(name) {
+            const reg = getReglement(name);
+            const titles = { carpodrome: '🎣 RÈGLEMENT CARPODROME 2026', hardt: '🐟 RÈGLEMENT HARDT 2026', breitmatt: '🌊 RÈGLEMENT BREITMATT 2026' };
+            let html = '';
+            
+            if (reg._contenuBrut) {
+                html = formatContenuBrut(reg._contenuBrut);
+                return { title: titles[name], content: html };
+            }
+            
+            if (reg.horaires) html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(reg.horaires);
+            if (reg.tarifs) html += '<h3>💰 TARIFS</h3>' + formatReglementSection(reg.tarifs);
+            if (reg.modalites) html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(reg.modalites);
+            if (reg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(reg.nuit);
+            if (reg.mineurs) html += '<h3>👶 MINEURS</h3>' + formatReglementSection(reg.mineurs);
+            if (reg.sanctions) html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(reg.sanctions);
+            if (reg.interdictions) html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(reg.interdictions, true);
+            if (reg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(reg.carnassiers);
+            if (reg.dechets) html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(reg.dechets);
+            if (reg.contacts) html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(reg.contacts) + '</div>';
+            
+            if (!html) {
+                const defReg = DEFAULT_REGLEMENTS[name];
+                if (defReg) {
+                    html += '<h3>🗓️ PÉRIODES ET HORAIRES</h3>' + formatReglementSection(defReg.horaires);
+                    html += '<h3>💰 TARIFS</h3>' + formatReglementSection(defReg.tarifs);
+                    html += '<h3>🎣 MODALITÉS DE PÊCHE</h3>' + formatReglementSection(defReg.modalites);
+                    if (defReg.nuit) html += '<h3>🌙 PÊCHE DE NUIT</h3>' + formatReglementSection(defReg.nuit);
+                    html += '<h3>👶 MINEURS</h3>' + formatReglementSection(defReg.mineurs);
+                    html += '<h3>⚠️ CONTRÔLES ET SANCTIONS</h3>' + formatReglementSection(defReg.sanctions);
+                    html += '<h3>❌ INTERDICTIONS</h3>' + formatReglementSection(defReg.interdictions, true);
+                    if (defReg.carnassiers) html += '<h3>🐟 PÊCHE AUX CARNASSIERS</h3>' + formatReglementSection(defReg.carnassiers);
+                    html += '<h3>🗑️ DÉCHETS</h3>' + formatReglementSection(defReg.dechets);
+                    html += '<div class="info"><h3>📞 CONTACTS</h3>' + formatReglementSection(defReg.contacts) + '</div>';
+                }
+            }
+            
+            return { title: titles[name], content: html };
+        }
+
+        function setupBackButtonBlock() {
+            history.pushState({ page: 'app' }, '', '');
+            window.addEventListener('popstate', function(e) {
+                if (sessionStorage.getItem('logged') === 'true') {
+                    history.pushState({ page: 'app' }, '', '');
+                    showAlert('🔒 Utilisez "Déconnexion" pour quitter', 'warning');
+                }
+            });
+        }
+
+        function showPage(id) { 
+            if (currentPage !== id) pageHistory.push(currentPage); 
+            currentPage = id; 
+            sessionStorage.setItem('currentPage', id);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+            document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
+            document.getElementById('navButtons').classList.toggle('visible', id !== 'menu');
+            if (id === 'recherche') renderPecheursAlphabetique();
+            if (id === 'historique') renderHistorique();
+            if (id === 'travail') renderTravail();
+        }
+        
+        document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'menu'); } });
+        document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('menu'); });
+        document.querySelectorAll('.menu-card[data-page], .menu-grid-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
+        document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
+        document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
+
+        function checkSession() { 
+            dbCentral.ref('controleurs_mdp').on('value', snap => {
+                controleursMdp = snap.val() || {};
+            });
+            if (sessionStorage.getItem('logged') === 'true') { 
+                document.getElementById('loginPage').style.display = 'none'; 
+                document.getElementById('appContainer').style.display = 'block'; 
+                setupBackButtonBlock(); 
+                const savedUser = localStorage.getItem('controleurUser'); 
+                if (savedUser) { 
+                    updateMenuUser(savedUser); 
+                    setUserPresence(savedUser); 
                 } 
-                const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; 
-                return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; 
-            }).join(''); 
-        }
-
-        function showDetailFromList(index, filter) { 
-            let sorted = [...allFiches].sort((a, b) => { 
-                const nomA = (a.nom || '').toLowerCase(); 
-                const nomB = (b.nom || '').toLowerCase(); 
-                if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); 
-                return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); 
-            }); 
-            if (filter && filter.length >= 2) { 
-                const q = filter.toLowerCase(); 
-                sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); 
+                loadAllData(); 
+                listenOnlineUsers(); 
+                const savedPage = sessionStorage.getItem('currentPage'); 
+                if (savedPage && savedPage !== 'menu') setTimeout(() => showPage(savedPage), 100); 
             } 
-            if (sorted[index]) showDetail(sorted[index]); 
+        }
+        checkSession();
+
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        
+        async function login() { 
+            const selectedUser = document.getElementById('loginUser').value;
+            if (!selectedUser) { 
+                document.getElementById('loginError').textContent = '⚠️ Veuillez choisir votre nom'; 
+                document.getElementById('loginError').style.display = 'block'; 
+                setTimeout(() => { document.getElementById('loginError').style.display = 'none'; }, 3000); 
+                return; 
+            }
+            const enteredCode = document.getElementById('loginCode').value;
+            
+            try {
+                const snap = await dbCentral.ref('controleurs_mdp/' + selectedUser).once('value');
+                const expectedCode = snap.val() || '911'; 
+                
+                if (enteredCode === expectedCode) { 
+                    localStorage.setItem('controleurUser', selectedUser);
+                    document.getElementById('loginPage').style.display = 'none'; 
+                    document.getElementById('appContainer').style.display = 'block'; 
+                    sessionStorage.setItem('logged', 'true'); 
+                    setupBackButtonBlock(); 
+                    updateMenuUser(selectedUser);
+                    setUserPresence(selectedUser);
+                    listenOnlineUsers();
+                    loadAllData();
+                    
+                    if (expectedCode === '911') {
+                        document.getElementById('setupPwdModal').classList.add('visible');
+                    }
+                } else { 
+                    document.getElementById('loginCode').classList.add('error'); 
+                    document.getElementById('loginError').textContent = '❌ Mot de passe incorrect';
+                    document.getElementById('loginError').style.display = 'block'; 
+                    setTimeout(() => { document.getElementById('loginCode').classList.remove('error'); document.getElementById('loginError').style.display = 'none'; }, 2000); 
+                } 
+            } catch(e) {
+                console.error(e);
+            }
+        }
+        
+        function saveNewPwd() {
+            const pwd = document.getElementById('newPwdInput').value.trim();
+            if (pwd.length < 3) { alert('Le mot de passe doit faire au moins 3 caractères.'); return; }
+            const user = getCurrentUser();
+            dbCentral.ref('controleurs_mdp/' + user).set(pwd).then(() => {
+                document.getElementById('setupPwdModal').classList.remove('visible');
+                showAlert('✅ Mot de passe enregistré !', 'success');
+            }).catch(e => {
+                showAlert('❌ Erreur lors de l\'enregistrement', 'error');
+            });
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+        
+        let pendingUserChange = null;
+        
+        function initLoginUserSelect() {
+            const select = document.getElementById('loginUser');
+            const savedUser = localStorage.getItem('controleurUser');
+            dbCentral.ref('controleurs').once('value').then(snapshot => {
+                const data = snapshot.val();
+                const liste = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+                select.innerHTML = '<option value="">-- Choisir votre nom --</option>';
+                liste.forEach(c => { if (c) select.innerHTML += '<option value="' + c + '"' + (savedUser === c ? ' selected' : '') + '>' + c + '</option>'; });
+            });
+            select.addEventListener('change', function() {
+                const savedUser = localStorage.getItem('controleurUser');
+                if (savedUser && this.value && this.value !== savedUser) {
+                    pendingUserChange = this.value;
+                    document.getElementById('changeUserFrom').textContent = savedUser;
+                    document.getElementById('changeUserTo').textContent = this.value;
+                    document.getElementById('changeUserModal').classList.add('visible');
+                    this.value = savedUser;
+                }
+            });
+        }
+        
+        function confirmChangeUser() {
+            if (pendingUserChange) {
+                removeUserPresence();
+                localStorage.setItem('controleurUser', pendingUserChange);
+                document.getElementById('loginUser').value = pendingUserChange;
+                
+                sessionStorage.removeItem('logged');
+                location.reload();
+            }
+            document.getElementById('changeUserModal').classList.remove('visible');
+        }
+        
+        function cancelChangeUser() { pendingUserChange = null; document.getElementById('changeUserModal').classList.remove('visible'); }
+        
+        function promptChangeUser() {
+            const current = localStorage.getItem('controleurUser');
+            if (!current || !allControleurs.length) return;
+            const newUser = prompt('Changer d\'utilisateur ?\nActuel: ' + current + '\n\nEntrez le nouveau nom:');
+            if (newUser && newUser !== current && allControleurs.includes(newUser)) {
+                if (confirm('Changer de ' + current + ' à ' + newUser + ' ? Vous devrez vous reconnecter.')) {
+                    removeUserPresence();
+                    localStorage.setItem('controleurUser', newUser);
+                    sessionStorage.removeItem('logged');
+                    location.reload();
+                }
+            } else if (newUser && !allControleurs.includes(newUser)) {
+                showAlert('❌ Utilisateur non trouvé', 'error');
+            }
+        }
+        
+        function setUserPresence(userName) {
+            if (!userName) return;
+            const presenceRef = dbCentral.ref('presence/controleur/' + userName);
+            const connectedRef = dbCentral.ref('.info/connected');
+            connectedRef.on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    presenceRef.set({ online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP, user: userName });
+                    presenceRef.onDisconnect().remove();
+                }
+            });
+        }
+        
+        function removeUserPresence() {
+            const userName = localStorage.getItem('controleurUser');
+            if (userName) dbCentral.ref('presence/controleur/' + userName).remove();
+        }
+        
+        function listenOnlineUsers() {
+            dbCentral.ref('presence/controleur').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('onlineUsers');
+                const currentUser = localStorage.getItem('controleurUser');
+                if (!data) { container.style.display = 'none'; return; }
+                const users = Object.keys(data).filter(u => data[u] && data[u].online);
+                var so = document.getElementById('statOnline'); if (so) so.textContent = users.length;
+                const otherUsers = users.filter(u => u !== currentUser);
+                if (otherUsers.length > 0) {
+                    container.innerHTML = '👥 Également connecté(s): ' + otherUsers.map(u => '<strong>' + u + '</strong>').join(', ');
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+        
+        function getCurrentUser() { return localStorage.getItem('controleurUser') || ''; }
+        function updateMenuUser(userName) {
+            document.getElementById('currentUserDisplay').textContent = '👤 ' + userName;
+            var el = document.getElementById('menuWelcomeName');
+            if (el) el.textContent = 'Bienvenue ' + userName;
+            var dateEl = document.getElementById('menuWelcomeDate');
+            if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            var adminBtn = document.getElementById('btnMenuAdmin');
+            if (adminBtn) adminBtn.style.display = (userName.toLowerCase().indexOf('patrice') !== -1) ? '' : 'none';
+        }
+        function updateMenuStats() {
+            try {
+                var sf = document.getElementById('statFiches');
+                if (sf) sf.textContent = allFiches ? allFiches.length : '0';
+                var sa = document.getElementById('statAlertes');
+                if (sa) {
+                    var nbAvert = (allInfractions && allInfractions.avertissements) ? allInfractions.avertissements.length : 0;
+                    var nbBannis = (allInfractions && allInfractions.bannis) ? allInfractions.bannis.length : 0;
+                    sa.textContent = nbAvert + nbBannis;
+                }
+                dbCentral.ref('ticketsVente').once('value').then(function(snap){
+                    var d = snap.val()||{};
+                    var st = document.getElementById('statTickets');
+                    if(st) st.textContent = Object.keys(d).length;
+                });
+            } catch(e) {}
+        }
+        
+        function openHardt() {
+            const user = getCurrentUser();
+            const url = 'https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
+            window.open(url, '_blank');
+        }
+        
+        function openCarpodrome() {
+            const user = getCurrentUser();
+            const url = 'https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
+            window.open(url, '_blank');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() { initLoginUserSelect(); });
+        window.addEventListener('beforeunload', function() { removeUserPresence(); });
+
+        document.getElementById('adminBtn').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
+        document.getElementById('adminModalClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('visible'));
+        document.getElementById('closePageBtn').addEventListener('click', () => window.close());
+        document.getElementById('adminModal').addEventListener('click', e => { if (e.target.id === 'adminModal') e.target.classList.remove('visible'); });
+        document.getElementById('adminSubmitBtn').addEventListener('click', checkAdminPassword);
+        document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
+        
+        function checkAdminPassword() { if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { document.getElementById('adminModal').classList.remove('visible'); loadAdminFiches(); showPage('admin'); } else { showAlert('❌ Mot de passe incorrect', 'error'); } }
+
+        function loadAdminFiches() { const container = document.getElementById('adminFichesList'); const sorted = [...allFichesWithIndex].sort((a, b) => (a.fiche.nom || '').localeCompare(b.fiche.nom || '')); if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucune fiche</div>'; return; } container.innerHTML = '<div class="admin-count">📋 ' + sorted.length + ' fiche(s)</div>' + sorted.map(item => '<div class="admin-fiche-item"><div class="admin-fiche-header"><span class="admin-fiche-name">' + item.fiche.nom + ' ' + item.fiche.prenom + '</span><div class="admin-fiche-actions"><button class="btn btn-primary btn-small" onclick="editFiche(\'' + item.index + '\')">✏️</button><button class="btn btn-danger btn-small" onclick="confirmDelete(\'' + item.index + '\', \'' + item.fiche.nom + ' ' + item.fiche.prenom + '\')">🗑️</button></div></div><div class="admin-fiche-info">📍 ' + item.fiche.codePostal + ' ' + item.fiche.ville + ' | 📅 ' + (item.fiche.date || '') + '</div></div>').join(''); }
+
+        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); renderTicketViewAllSettings(); } }
+
+        async function loadCartesValides() { 
+            const container = document.getElementById('cartesValidesList'); 
+            container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
+            allCartesValides = []; 
+            try { 
+                const snap = await dbCentral.ref('validUsers').once('value'); 
+                const data = snap.val(); 
+                if (data) { 
+                    const users = Array.isArray(data) ? data : Object.values(data); 
+                    users.forEach(u => { 
+                        if (u && u.nom) { 
+                            allCartesValides.push({ nom: u.nom, prenom: u.prenom || '' }); 
+                        } 
+                    }); 
+                } 
+            } catch(e) {} 
+            allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); 
+            renderCartesValides(); 
+        }
+        
+        function renderCartesValides() { const container = document.getElementById('cartesValidesList'); if (allCartesValides.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur</div>'; return; } container.innerHTML = '<div class="cartes-count">🎫 ' + allCartesValides.length + ' pêcheur(s)</div>' + allCartesValides.map((u, i) => '<div class="carte-item"><div class="carte-item-name">' + u.nom + ' ' + u.prenom + '</div><button class="carte-delete-btn" onclick="removeCarteValide(' + i + ')">🗑️</button></div>').join(''); }
+        
+        async function addCarteValide() { const nom = document.getElementById('newCarteNom').value.trim(); const prenom = document.getElementById('newCartePrenom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allCartesValides.some(u => u.nom.toUpperCase() === nom.toUpperCase() && (u.prenom || '').toUpperCase() === prenom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allCartesValides.push({ nom: nom.toUpperCase(), prenom }); allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); await saveCartesValides(); document.getElementById('newCarteNom').value = ''; document.getElementById('newCartePrenom').value = ''; renderCartesValides(); showAlert('✅ Ajouté', 'success'); }
+        
+        async function removeCarteValide(i) { if (!confirm('Retirer ' + allCartesValides[i].nom + ' ?')) return; allCartesValides.splice(i, 1); await saveCartesValides(); renderCartesValides(); showAlert('✅ Retiré', 'success'); }
+        
+        async function saveCartesValides() { 
+            const usersObj = {}; 
+            allCartesValides.forEach((u, i) => { usersObj['user_' + i] = u; }); 
+            await dbCentral.ref('validUsers').set(usersObj); 
         }
 
-        document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
+        async function loadControleurs() { 
+            const container = document.getElementById('controleursList'); 
+            container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
+            allControleurs = []; 
+            try { 
+                const snap = await dbCentral.ref('controleurs').once('value'); 
+                if (snap.val()) allControleurs = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val()); 
+            } catch(e) {} 
+            if (allControleurs.length === 0) { 
+                allControleurs = ['René', 'Patrice', 'Christophe', 'Jean-François', 'Eric', 'Garde pêche Raymond']; 
+                await saveControleurs(); 
+            } 
+            renderControleurs(); 
+            updateInfControleurSelect(); 
+        }
+        
+        function updateInfControleurSelect() { 
+            const select = document.getElementById('infControleur'); 
+            if (!select) return; 
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+                select.innerHTML = '<option value="' + currentUser + '">' + currentUser + '</option>';
+                select.value = currentUser;
+                select.disabled = true;
+            } else {
+                select.innerHTML = '<option value="">-- Choisir le contrôleur --</option>' + allControleurs.map(c => '<option value="' + c + '">' + c + '</option>').join(''); 
+                select.disabled = false;
+            }
+        }
+        
+        // REINITIALISER MOT DE PASSE
+        window.resetPwdControleur = function(nom) {
+            if (confirm('Réinitialiser le mot de passe de ' + nom + ' à 911 ?')) {
+                dbCentral.ref('controleurs_mdp/' + nom).remove().then(() => {
+                    showAlert('Mot de passe réinitialisé pour ' + nom, 'success');
+                });
+            }
+        }
+
+        function renderControleurs() { 
+            const container = document.getElementById('controleursList'); 
+            if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } 
+            container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + 
+            allControleurs.map((nom, i) => 
+                '<div class="carte-item" style="border-left-color:#1565c0;">' +
+                '<div class="carte-item-name">👮 ' + nom + '</div>' +
+                '<div style="display:flex;gap:5px;">' +
+                '<button class="carte-delete-btn" style="background:#ff9800;color:white;" onclick="resetPwdControleur(\'' + nom + '\')" title="Réinitialiser le mot de passe">🔄 MDP</button>' +
+                '<button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button>' +
+                '</div></div>'
+            ).join(''); 
+        }
+        
+        async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
+        
+        async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleurs(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
+        
+        async function saveControleurs() { await dbCentral.ref('controleurs').set(allControleurs); }
+
+        function editFiche(index) { const item = allFichesWithIndex.find(x => x.index === index); if (!item) return; const f = item.fiche; document.getElementById('editFicheId').value = f.id || ''; document.getElementById('editFicheIndex').value = index; document.getElementById('editNom').value = f.nom || ''; document.getElementById('editPrenom').value = f.prenom || ''; document.getElementById('editAdresse').value = f.adresse || ''; document.getElementById('editCodePostal').value = f.codePostal || ''; document.getElementById('editVille').value = f.ville || ''; document.getElementById('editTelephone').value = f.telephone || ''; document.getElementById('editUrgenceNom').value = f.urgence?.nom || ''; document.getElementById('editUrgencePrenom').value = f.urgence?.prenom || ''; document.getElementById('editUrgenceTel').value = f.urgence?.telephone || ''; showPage('editFiche'); }
+        
+        document.getElementById('editFicheForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const index = document.getElementById('editFicheIndex').value; 
+            const item = allFichesWithIndex.find(x => x.index === index); 
+            if (!item) return; 
+            
+            const updatedData = { 
+                ...item.fiche, 
+                nom: document.getElementById('editNom').value.toUpperCase().trim(), 
+                prenom: document.getElementById('editPrenom').value.trim(), 
+                adresse: document.getElementById('editAdresse').value.trim(), 
+                codePostal: document.getElementById('editCodePostal').value.trim(), 
+                ville: document.getElementById('editVille').value.trim(), 
+                telephone: document.getElementById('editTelephone').value.trim(), 
+                urgence: { 
+                    nom: document.getElementById('editUrgenceNom').value.toUpperCase().trim(), 
+                    prenom: document.getElementById('editUrgencePrenom').value.trim(), 
+                    telephone: document.getElementById('editUrgenceTel').value.trim() 
+                } 
+            }; 
+            
+            try { 
+                await dbCentral.ref('fiches/' + item.fiche.id).set(updatedData); 
+                if (index !== item.fiche.id) {
+                    await dbCentral.ref('fiches/' + index).remove();
+                }
+                showAlert('✅ Modifié !', 'success'); 
+                await loadAllData(); 
+                loadAdminFiches(); 
+                pageHistory.pop(); 
+                showPage('admin'); 
+            } catch(e) { 
+                showAlert('❌ Erreur', 'error'); 
+            } 
+        });
+
+        function confirmDelete(index, nom) { deleteTarget = index; document.getElementById('deleteNom').textContent = nom; document.getElementById('deleteModal').classList.add('visible'); }
+        document.getElementById('deleteModalClose').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
+        document.getElementById('deleteCancelBtn').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('visible'));
+        document.getElementById('deleteConfirmBtn').addEventListener('click', async () => { if (!deleteTarget) return; try { await dbCentral.ref('fiches/' + deleteTarget).remove(); document.getElementById('deleteModal').classList.remove('visible'); showAlert('✅ Supprimé !', 'success'); await loadAllData(); loadAdminFiches(); } catch(e) { showAlert('❌ Erreur', 'error'); } deleteTarget = null; });
+
+        document.getElementById('codePostal').addEventListener('input', async function() { const cp = this.value.trim(), sel = document.getElementById('ville'); if (cp.length === 5) { sel.innerHTML = '<option>🔄 Recherche...</option>'; sel.disabled = true; try { const r = await fetch('https://geo.api.gouv.fr/communes?codePostal='+cp+'&fields=nom&format=json'); const v = await r.json(); if (v.length === 0) sel.innerHTML = '<option value="">❌ Aucune</option>'; else { sel.innerHTML = '<option value="">-- Sélectionnez --</option>' + v.map(x => '<option value="'+x.nom+'">'+x.nom+'</option>').join(''); sel.disabled = false; if (v.length === 1) sel.value = v[0].nom; } updateValidateBtn(); } catch(e) { sel.innerHTML = '<option value="">❌ Erreur</option>'; } } else { sel.innerHTML = '<option value="">Entrez le code postal</option>'; sel.disabled = true; } });
+        document.getElementById('ville').addEventListener('change', updateValidateBtn);
+
+        document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.addEventListener('change', function() { const item = this.closest('.reglement-item'); const reglement = item.dataset.reglement; const readBtn = item.querySelector('.reglement-read-btn'); item.classList.toggle('checked', this.checked); readBtn.disabled = !this.checked; if (!this.checked) { reglementsRead[reglement] = false; readBtn.textContent = '📖 Lire'; readBtn.classList.remove('read'); } updateValidateBtn(); }); });
+        document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.addEventListener('click', function() { const reglement = this.dataset.for; currentReglementReading = reglement; const regData = generateReglementHTML(reglement); document.getElementById('modalTitle').textContent = regData.title; document.getElementById('modalBody').innerHTML = regData.content; document.getElementById('readConfirmCheckbox').checked = false; document.getElementById('modalValidateBtn').classList.remove('enabled'); document.getElementById('reglementModal').classList.add('visible'); }); });
+        document.getElementById('modalClose').addEventListener('click', () => document.getElementById('reglementModal').classList.remove('visible'));
+        document.getElementById('reglementModal').addEventListener('click', e => { if (e.target.id === 'reglementModal') e.target.classList.remove('visible'); });
+        document.getElementById('readConfirmCheckbox').addEventListener('change', function() { document.getElementById('modalValidateBtn').classList.toggle('enabled', this.checked); });
+        document.getElementById('modalValidateBtn').addEventListener('click', () => { if (document.getElementById('readConfirmCheckbox').checked && currentReglementReading) { reglementsRead[currentReglementReading] = true; const btn = document.querySelector('.reglement-read-btn[data-for="' + currentReglementReading + '"]'); btn.textContent = '✅ Lu'; btn.classList.add('read'); document.getElementById('reglementModal').classList.remove('visible'); updateValidateBtn(); } });
+
+        function updateValidateBtn() { const formValid = document.getElementById('ficheForm').checkValidity() && document.getElementById('ville').value; const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); const allCheckedRead = checkedReglements.length > 0 && checkedReglements.every(r => reglementsRead[r]); document.getElementById('validateBtn').disabled = !(formValid && allCheckedRead); }
+        document.getElementById('ficheForm').addEventListener('input', updateValidateBtn);
+
+        function checkDuplicate(nom, prenom) { const nomUpper = nom.toUpperCase().trim(); const prenomLower = prenom.toLowerCase().trim(); return allFiches.some(f => (f.nom || '').toUpperCase().trim() === nomUpper && (f.prenom || '').toLowerCase().trim() === prenomLower); }
+        
+        document.getElementById('ficheForm').addEventListener('submit', async e => { 
+            e.preventDefault(); 
+            const nom = document.getElementById('nom').value; 
+            const prenom = document.getElementById('prenom').value; 
+            
+            if (checkDuplicate(nom, prenom)) { 
+                showAlert('⚠️ Ce pêcheur existe déjà !', 'warning'); 
+                return; 
+            } 
+            
+            const checkedReglements = Array.from(document.querySelectorAll('.reglement-checkbox:checked')).map(cb => cb.closest('.reglement-item').dataset.reglement); 
+            const data = { 
+                nom: nom.toUpperCase().trim(), 
+                prenom: prenom.trim(), 
+                adresse: document.getElementById('adresse').value.trim(), 
+                codePostal: document.getElementById('codePostal').value.trim(), 
+                ville: document.getElementById('ville').value, 
+                telephone: document.getElementById('telephone').value.trim(), 
+                urgence: { 
+                    nom: document.getElementById('urgenceNom').value.toUpperCase().trim(), 
+                    prenom: document.getElementById('urgencePrenom').value.trim(), 
+                    telephone: document.getElementById('urgenceTel').value.trim() 
+                }, 
+                reglements: checkedReglements, 
+                date: new Date().toLocaleString('fr-FR'), 
+                id: Date.now().toString() 
+            }; 
+            
+            try { 
+                await dbCentral.ref('fiches/' + data.id).set(data); 
+                showAlert('✅ Fiche enregistrée !', 'success'); 
+                document.getElementById('ficheForm').reset(); 
+                document.querySelectorAll('.reglement-checkbox').forEach(cb => { cb.checked = false; cb.closest('.reglement-item').classList.remove('checked'); }); 
+                document.querySelectorAll('.reglement-read-btn').forEach(btn => { btn.disabled = true; btn.textContent = '📖 Lire'; btn.classList.remove('read'); }); 
+                reglementsRead = { carpodrome: false, hardt: false, breitmatt: false }; 
+                document.getElementById('validateBtn').disabled = true; 
+                document.getElementById('ville').innerHTML = '<option value="">Entrez le code postal</option>'; 
+                document.getElementById('ville').disabled = true; 
+                loadAllData(); 
+            } catch(e) { 
+                showAlert('❌ Erreur: ' + e.message, 'error'); 
+            } 
+        });
+
+        // ==========================================
+        // MIGRATION AUTOMATIQUE (1 mois -> 3 mois)
+        // ==========================================
+        async function loadAllData() { 
+            await loadFiches(); 
+            
+            if (!infractionsListenerSetup) {
+                try {
+                    const banSnap = await dbCentral.ref('infractions/bannis').once('value');
+                    const dataBannis = banSnap.val();
+                    if (dataBannis) {
+                        let bannisArr = Array.isArray(dataBannis) ? dataBannis : Object.values(dataBannis);
+                        let needsUpdate = false;
+                        
+                        bannisArr.forEach(b => {
+                            if (b && b.nom && b.typeExclusion === 'temporaire' && !b.dureeMois) {
+                                b.dureeMois = 3;
+                                if (b.dateFin) {
+                                    let d = new Date(b.dateFin);
+                                    d.setMonth(d.getMonth() + 2);
+                                    b.dateFin = d.toISOString();
+                                }
+                                needsUpdate = true;
+                            }
+                        });
+                        
+                        if (needsUpdate) {
+                            await dbCentral.ref('infractions/bannis').set(bannisArr);
+                            console.log('🔄 Migration automatique : anciens bannissements mis à 3 mois.');
+                        }
+                    }
+                } catch(e) { console.error("Erreur lors de la migration:", e); }
+
+                setupInfractionsListener();
+                infractionsListenerSetup = true;
+            }
+            
+            await loadMailsSent();
+            await loadSmsSent();
+            await loadControleurs();
+            loadReglementsFromFirebase();
+            updateHistoriqueCounts();
+            await loadTicketModuleUsers(); 
+            await loadTicketViewAllUsers();
+            updateMenuStats();
+        }
+        
+        // Ajout du listener global pour cacher les boîtes de suggestions
+        document.addEventListener('click', function(e) {
+            var sr = document.getElementById('searchResults');
+            if (sr && !e.target.closest('.search-container')) sr.style.display = 'none';
+            
+            var boxIndiv = document.getElementById('suggestionsBoxIndiv');
+            if (boxIndiv && e.target.id !== 'hiNom' && !boxIndiv.contains(e.target)) {
+                boxIndiv.style.display = 'none';
+            }
+        });
+        
+        async function loadFiches() { 
+            allFiches = []; 
+            allFichesWithIndex = []; 
+            allPecheurs = []; // On réinitialise allPecheurs pour l'autocomplétion
+            var seen = {};
+
+            try { 
+                const s = await dbCentral.ref('fiches').once('value'); 
+                if (s.val()) { 
+                    Object.entries(s.val()).forEach(([key, v]) => { 
+                        if (v && v.nom) { 
+                            allFiches.push(v); 
+                            allFichesWithIndex.push({ index: key, fiche: v }); 
+                            
+                            // Ajout pour l'autocomplétion
+                            var nom = v.nom.toUpperCase();
+                            var prenom = v.prenom || '';
+                            var fKey = nom + ' ' + prenom.toLowerCase();
+                            if(!seen[fKey]) {
+                                seen[fKey] = true;
+                                allPecheurs.push({nom: nom, prenom: prenom, telephone: v.telephone || '', source: 'fiche'});
+                            }
+                        } 
+                    }); 
+                } 
+                
+                // Charger aussi les contactsTickets pour l'autocomplétion
+                const ctSnap = await dbCentral.ref('contactsTickets').once('value');
+                if (ctSnap.val()) {
+                    Object.values(ctSnap.val()).forEach(c => {
+                        if (c && c.nom) {
+                            var nom = c.nom.toUpperCase();
+                            var prenom = c.prenom || '';
+                            var cKey = nom + ' ' + prenom.toLowerCase();
+                            if(!seen[cKey]) {
+                                seen[cKey] = true;
+                                allPecheurs.push({nom: nom, prenom: prenom, telephone: c.telephone || '', source: 'ticket'});
+                            }
+                        }
+                    });
+                }
+            } catch(e) { console.error("Erreur chargement données:", e); } 
+        }
+        
+        function setupInfractionsListener() {
+            dbCentral.ref('infractions').on('value', (snapshot) => {
+                allInfractions = { avertissements: [], bannis: [], archives: [] };
+                const data = snapshot.val();
+                if (data) {
+                    if (data.avertissements) {
+                        Object.entries(data.avertissements).forEach(([key, v]) => {
+                            if (v && v.nom && !v.archived) {
+                                allInfractions.avertissements.push({ key, ...v });
+                            }
+                        });
+                    }
+                    if (data.bannis) {
+                        Object.entries(data.bannis).forEach(([key, v]) => {
+                            if (v && v.nom) {
+                                allInfractions.bannis.push({ key, ...v });
+                            }
+                        });
+                    }
+                    if (data.archives) {
+                        Object.entries(data.archives).forEach(([key, v]) => {
+                            if (v && v.nom) {
+                                allInfractions.archives.push({ key, ...v });
+                            }
+                        });
+                    }
+                }
+                updateHistoriqueCounts();
+                if (document.getElementById('pageHistorique').classList.contains('active')) {
+                    renderHistorique();
+                }
+            });
+        }
+
+        function updateHistoriqueCounts() { 
+            document.getElementById('tabCountAvert').textContent = allInfractions.avertissements.length; 
+            document.getElementById('tabCountBan').textContent = allInfractions.bannis.length; 
+            document.getElementById('tabCountArchives').textContent = allInfractions.archives.length; 
+        }
+
+        function renderPecheursAlphabetique(filter = '') { const container = document.getElementById('searchResults'); const countEl = document.getElementById('pecheursCount'); let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } countEl.textContent = sorted.length; if (sorted.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur trouvé</div>'; return; } container.innerHTML = sorted.map((f, i) => { const inf = getInfractionsForUser(f.nom, f.prenom); const exclusion = inf.exclusion; const avert = inf.avertissement; let badge = '<span class="badge badge-ok">✅ OK</span>'; if (exclusion) { if (exclusion.typeExclusion === 'temporaire' && exclusion.dateFin) { const now = new Date(); const fin = new Date(exclusion.dateFin); if (now > fin) { badge = '<span class="badge badge-expired">✅ Exclusion expirée</span>'; } else { badge = '<span class="badge badge-temp">⏱️ EXCLU TEMP.</span>'; } } else { badge = '<span class="badge badge-banned">🚫 EXCLU</span>'; } } else if (avert) { badge = '<span class="badge badge-warning">⚠️ AVERT.</span>'; } const email = f.email ? '<div style="font-size:12px;color:#667eea;margin-top:3px;">📧 ' + f.email + '</div>' : ''; return '<div class="search-result-item" onclick="showDetailFromList(' + i + ', \'' + filter + '\')"><div class="search-result-name">' + f.nom + ' ' + f.prenom + ' ' + badge + '</div><div class="search-result-address">📍 ' + (f.codePostal || '') + ' ' + (f.ville || '') + '</div>' + email + '</div>'; }).join(''); }
         
         function getInfractionsForUser(nom, prenom) { 
             const nomUpper = (nom || '').toUpperCase(); 
@@ -815,7 +1666,11 @@
             const exclusion = allInfractions.bannis.find(b => (b.nom || '').toUpperCase() === nomUpper && (b.prenom || '').toLowerCase() === prenomLower); 
             return { avertissement, exclusion }; 
         }
+        
+        function showDetailFromList(index, filter) { let sorted = [...allFiches].sort((a, b) => { const nomA = (a.nom || '').toLowerCase(); const nomB = (b.nom || '').toLowerCase(); if (nomA !== nomB) return nomA.localeCompare(nomB, 'fr'); return (a.prenom || '').toLowerCase().localeCompare((b.prenom || '').toLowerCase(), 'fr'); }); if (filter && filter.length >= 2) { const q = filter.toLowerCase(); sorted = sorted.filter(f => (f.nom || '').toLowerCase().includes(q) || (f.prenom || '').toLowerCase().includes(q)); } if (sorted[index]) showDetail(sorted[index]); }
 
+        document.getElementById('searchInput').addEventListener('input', function() { renderPecheursAlphabetique(this.value.toLowerCase().trim()); });
+        
         async function showDetail(f) { 
             document.getElementById('detailName').textContent = f.nom + ' ' + f.prenom; 
             const st = document.getElementById('detailStatus'); 
@@ -948,6 +1803,7 @@
                 document.getElementById('infractionForm').reset(); 
                 pendingExclusion = null; 
                 selectedExclusionType = null; 
+                await loadAllData(); 
                 showPage('menu'); 
             } catch(e) { 
                 showAlert('❌ Erreur: ' + e.message, 'error'); 
@@ -1351,6 +2207,7 @@
                 loadTravailAnnuel(annee);
             }).catch(err => {
                 listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;">❌ Erreur de chargement</div>';
+                console.error(err);
             });
         }
 
@@ -1433,214 +2290,6 @@
         document.getElementById('btnAddTravail').addEventListener('click', ajouterTravail);
 
         function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = msg; a.className = 'alert visible alert-' + type; setTimeout(() => a.classList.remove('visible'), 5000); }
-
-        // ===== RÉPARATION DES BOUTONS DE CONTRÔLE (Breitmatt / Hardt Journée) =====
-        function ouvrirModalBreitmatt() {
-            const controleur = getCurrentUser();
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('breitmattControleur').textContent = controleur;
-            document.getElementById('breitmattHeure').textContent = heure;
-            document.getElementById('breitmattModal').classList.add('visible');
-        }
-        function fermerModalBreitmatt() {
-            document.getElementById('breitmattModal').classList.remove('visible');
-        }
-        async function envoyerControleBreitmatt() {
-            const controleur = getCurrentUser();
-            const date = new Date().toLocaleDateString('fr-FR');
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const message = '🐠 *CONTRÔLE BREITMATT*\n📅 ' + date + '\n📍 Étang de la Breitmatt\n👮 ' + controleur + '\n🕐 ' + heure;
-            
-            fermerModalBreitmatt();
-            showAlert('⏳ Envoi en cours...', 'info');
-            try {
-                await fetch('https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec', {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
-                });
-            } catch(e) {}
-            showAlert('✅ Contrôle Breitmatt envoyé !', 'success');
-        }
-        
-        function ouvrirModalHardtJournee() {
-            const controleur = getCurrentUser();
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('hardtJourneeControleur').textContent = controleur;
-            document.getElementById('hardtJourneeHeure').textContent = heure;
-            document.getElementById('hardtJourneeModal').classList.add('visible');
-        }
-        function fermerModalHardtJournee() {
-            document.getElementById('hardtJourneeModal').classList.remove('visible');
-        }
-        async function envoyerControleHardtJournee() {
-            const controleur = getCurrentUser();
-            const date = new Date().toLocaleDateString('fr-FR');
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const message = '🐟 *CONTRÔLE HARDT JOURNÉE*\n📅 ' + date + '\n📍 Étang de la Hardt\n👮 ' + controleur + '\n🕐 ' + heure;
-            
-            fermerModalHardtJournee();
-            showAlert('⏳ Envoi en cours...', 'info');
-            try {
-                await fetch('https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec', {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
-                });
-            } catch(e) {}
-            showAlert('✅ Contrôle Hardt journée envoyé !', 'success');
-        }
-
-        // ===== BOUTON HARDT INDIVIDUEL ET AUTOCOMPLETION ISOLÉE =====
-        let allPecheursIndiv = [];
-        
-        function refreshPecheursIndiv() {
-            allPecheursIndiv = [];
-            const seen = {};
-            if (typeof allFiches !== 'undefined') {
-                allFiches.forEach(v => {
-                    if(!v || !v.nom) return;
-                    const key = v.nom.toUpperCase() + " " + (v.prenom||"").toLowerCase();
-                    seen[key] = true;
-                    allPecheursIndiv.push({nom: v.nom.toUpperCase(), prenom: v.prenom || '', telephone: v.telephone || ''});
-                });
-            }
-            dbCentral.ref('contactsTickets').once('value').then(snap => {
-                const data = snap.val() || {};
-                Object.values(data).forEach(c => {
-                    if (c && c.nom) {
-                        const key = c.nom.toUpperCase() + " " + (c.prenom||"").toLowerCase();
-                        if (!seen[key]) {
-                            seen[key] = true;
-                            allPecheursIndiv.push({nom: c.nom.toUpperCase(), prenom: c.prenom || '', telephone: c.telephone || ''});
-                        }
-                    }
-                });
-            });
-        }
-
-        // On appelle le rafraîchissement au démarrage pour préparer la liste
-        setTimeout(refreshPecheursIndiv, 3000);
-
-        function ouvrirModalHardtIndiv() {
-            refreshPecheursIndiv();
-            document.getElementById('hiNom').value = '';
-            document.getElementById('hiPrenom').value = '';
-            document.getElementById('hiTel').value = '';
-            document.getElementById('hiPoste').value = '';
-            document.getElementById('hardtIndivModal').classList.add('visible');
-        }
-        
-        function fermerModalHardtIndiv() {
-            document.getElementById('hardtIndivModal').classList.remove('visible');
-        }
-
-        function filterPecheursIndiv() {
-            var input = document.getElementById('hiNom').value.trim().toUpperCase();
-            var box = document.getElementById('suggestionsBoxIndiv');
-            if (input.length < 2) { box.style.display = 'none'; return; }
-            
-            var matches = allPecheursIndiv.filter(function(p) { 
-                return p.nom.indexOf(input) === 0; 
-            });
-            
-            if (matches.length === 0) { box.style.display = 'none'; return; }
-            
-            box.innerHTML = matches.slice(0, 8).map(function(p, i) {
-                return '<div onclick="selectPecheurIndivTemp(' + i + ')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;' + (i % 2 === 0 ? '' : 'background:#f8f9fa;') + '">' +
-                    '<strong>' + p.nom + '</strong> ' + p.prenom + '</div>';
-            }).join('');
-            box.style.display = 'block';
-            box._matches = matches.slice(0, 8);
-        }
-
-        window.selectPecheurIndivTemp = function(idx) {
-            var box = document.getElementById('suggestionsBoxIndiv');
-            var p = box._matches[idx];
-            if (p) {
-                document.getElementById('hiNom').value = p.nom;
-                document.getElementById('hiPrenom').value = p.prenom;
-                document.getElementById('hiTel').value = p.telephone;
-            }
-            box.style.display = 'none';
-        };
-
-        document.addEventListener('click', function(e) {
-            var boxIndiv = document.getElementById('suggestionsBoxIndiv');
-            if (boxIndiv && e.target.id !== 'hiNom' && !boxIndiv.contains(e.target)) {
-                boxIndiv.style.display = 'none';
-            }
-        });
-
-        async function envoyerControleHardtIndiv() {
-            const nom = document.getElementById('hiNom').value.trim().toUpperCase();
-            const prenom = document.getElementById('hiPrenom').value.trim();
-            const tel = document.getElementById('hiTel').value.trim();
-            const poste = document.getElementById('hiPoste').value;
-            
-            if(!nom || !prenom || !poste) {
-                showAlert('❌ Veuillez remplir le nom, prénom et le poste.', 'error');
-                return;
-            }
-            
-            const prenomF = prenom.toLowerCase();
-            const exists = allPecheursIndiv.some(p => p.nom === nom && p.prenom.toLowerCase() === prenomF);
-            
-            let sendSmsForm = false;
-
-            if (!exists) {
-                if (confirm(`Le pêcheur ${nom} ${prenom} n'est pas dans la base de données.\n\nVoulez-vous l'ajouter pour de futurs contrôles ?`)) {
-                    try {
-                        await dbCentral.ref('contactsTickets').push({nom: nom, prenom: prenom, telephone: tel});
-                        if (tel) sendSmsForm = true;
-                    } catch(e) {}
-                }
-            }
-            
-            const controleur = getCurrentUser();
-            const date = new Date().toLocaleDateString('fr-FR');
-            const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const telText = tel ? `\n📞 ${tel}` : '';
-            
-            const message = `🐟 *CONTRÔLE HARDT INDIVIDUEL*\n📅 ${date}\n🕐 ${heure}\n📍 Étang de la Hardt — Poste ${poste}\n🎣 ${nom} ${prenom}${telText}\n👮 ${controleur}`;
-            
-            fermerModalHardtIndiv();
-            showAlert('⏳ Envoi en cours...', 'info');
-            try {
-                await fetch('https://script.google.com/macros/s/AKfycbxn4ymLy30fj78YW67XyiXecKaV-gb3HfLlMqHojcGSbufhiUUFe2APmuX7hwKV7oRk/exec', {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
-                });
-            } catch(e) {}
-            showAlert('✅ Contrôle individuel envoyé !', 'success');
-
-            if (sendSmsForm) {
-                setTimeout(async () => {
-                    if (confirm(`Voulez-vous envoyer le lien de la fiche de renseignement par SMS au ${tel} ?`)) {
-                        let numero = tel.replace(/[\s\.\-]/g, '');
-                        if (!/^(0|\+33|0033)[1-9][0-9]{8}$/.test(numero)) {
-                            showAlert('❌ Format de téléphone invalide.', 'error');
-                            return;
-                        }
-                        if (numero.startsWith('0')) numero = '+33' + numero.substring(1);
-                        else if (numero.startsWith('0033')) numero = '+33' + numero.substring(4);
-                        
-                        const msgSms = "Bonjour,\n\nMerci de remplir votre fiche de renseignement AAPPMA Gundershoffen :\nhttps://patricewalter.github.io/fiche-de-renseignement/\n\nCordialement,\nL'équipe AAPPMA";
-                        
-                        try {
-                            const smsEntry = { nom: nom, prenom: prenom, numero: tel, dateEnvoi: new Date().toLocaleString('fr-FR'), id: Date.now().toString() };
-                            const snap = await dbCentral.ref('smsSent').once('value');
-                            const currentSms = snap.val() ? (Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val())) : [];
-                            currentSms.push(smsEntry);
-                            await dbCentral.ref('smsSent').set(currentSms);
-                        } catch(e){}
-                        
-                        window.location.href = 'sms:' + numero + '?body=' + encodeURIComponent(msgSms);
-                    }
-                }, 800);
-            }
-        }
-        
-        window.filterPecheursIndiv = filterPecheursIndiv;
-        window.ouvrirModalHardtIndiv = ouvrirModalHardtIndiv;
     </script>
 </body>
 </html>
