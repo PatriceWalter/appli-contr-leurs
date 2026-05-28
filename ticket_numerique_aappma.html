@@ -1036,6 +1036,39 @@ try{(function(){
     dbAdd(tk);
     lastTicket=tk;
 
+    // ===== AUTO-VALIDATION TELEGRAM =====
+    (function(tkAv){
+      var now=new Date();
+      var heure=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      var dateFr=now.toLocaleDateString('fr-FR');
+      var typeLblAv='';
+      for(var i=0;i<TARIFS_FLAT.length;i++){if(TARIFS_FLAT[i][0]===tkAv.type)typeLblAv=TARIFS_FLAT[i][1];}
+      var posteTgAv=tkAv.poste?'\n📍 Poste n°'+tkAv.poste:'';
+      var offPartsAv=[];
+      if(tkAv.offJournees>0)offPartsAv.push(tkAv.offJournees+' journée'+(tkAv.offJournees>1?'s':''));
+      if(tkAv.offDemis>0)offPartsAv.push(tkAv.offDemis+' demi-j.');
+      if(tkAv.offNuits>0)offPartsAv.push(tkAv.offNuits+' nuit'+(tkAv.offNuits>1?'s':''));
+      var offertTgAv=(tkAv.type&&tkAv.type.indexOf('_off')!==-1)?'\n🎁 TICKET OFFERT':offPartsAv.length>0?'\n🎁 Offert : '+offPartsAv.join(', '):'';
+      var prixTgAv=tkAv.prix===0?'Gratuit':tkAv.prix+'€';
+      var validiteAv='';
+      if(tkAv.sejour&&tkAv.dateDebut&&tkAv.dateFin){
+        validiteAv='\n📆 Validité : du '+new Date(tkAv.dateDebut).toLocaleDateString('fr-FR')+' au '+new Date(tkAv.dateFin).toLocaleDateString('fr-FR');
+      } else if(tkAv.dateDebut){
+        validiteAv='\n📆 Valable le '+new Date(tkAv.dateDebut).toLocaleDateString('fr-FR');
+      }
+      var nomAv=((tkAv.nom||'')+' '+(tkAv.prenom||'')).trim();
+      var nomLigneAv=nomAv?'\n👤 '+nomAv:'';
+      var msgAutoValid='🎫 *CONTRÔLE TICKET VALIDÉ*\n'+
+        '📅 '+dateFr+' à '+heure+'\n'+
+        '📍 '+(LIEUX[tkAv.lieu]||tkAv.lieu)+posteTgAv+'\n'+
+        '🎟️ '+tkAv.id+offertTgAv+nomLigneAv+'\n'+
+        '⏱️ '+(typeLblAv||'Ticket')+' — '+prixTgAv+validiteAv+'\n'+
+        '✅ Auto-validation à l\'émission\n'+
+        '👮 Vendeur : '+(currentVendeur||'Inconnu');
+      envoyerTelegram(msgAutoValid);
+    })(tk);
+    // ===== FIN AUTO-VALIDATION =====
+
     if(tk.poste&&tk.dateDebut&&(tk.lieu==='carpodrome'||tk.lieu==='hardt')){
       var syncRef=tk.lieu==='carpodrome'?fbCarpoDb:fbHardtDb;
       var syncDate=tk.dateDebut;
