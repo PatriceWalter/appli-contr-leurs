@@ -395,7 +395,7 @@
                     • 2ème infraction → Exclusion (temporaire 1 à 3 mois ou définitive)
                 </div>
                 <form id="infractionForm">
-                    <div class="form-group required"><label for="infNom">Nom</label><input type="text" id="infNom" required></div>
+                    <div class="form-group required" style="position:relative;"><label for="infNom">Nom</label><input type="text" id="infNom" required autocomplete="off"><div id="infNomResults" style="display:none;position:absolute;left:0;right:0;top:100%;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-height:220px;overflow-y:auto;z-index:50;"></div></div>
                     <div class="form-group required"><label for="infPrenom">Prénom</label><input type="text" id="infPrenom" required></div>
                     <div class="form-group required"><label for="infMotif">Motif de l'infraction</label><textarea id="infMotif" rows="3" required placeholder="Décrivez l'infraction..."></textarea></div>
                     <div class="form-group required"><label for="infLieu">Lieu de l'infraction</label><select id="infLieu" required><option value="Breitmatt">🌊 Breitmatt</option><option value="Carpodrome">🎣 Carpodrome</option><option value="Hardt">🐟 Hardt</option></select></div>
@@ -1279,6 +1279,123 @@
             } catch(e) { 
                 showAlert('❌ Erreur: ' + e.message, 'error'); 
             } 
+        });
+
+
+        let infPecheursCache = null;
+        async function getPecheursCacheInfraction() {
+            if (infPecheursCache) return infPecheursCache;
+            const list = [];
+            const seen = {};
+            try {
+                const fichesSnap = await dbCentral.ref('fiches').once('value');
+                const fichesData = fichesSnap.val() || {};
+                Object.values(fichesData).forEach(f => {
+                    if (f && f.nom) {
+                        const key = (f.nom || '').toUpperCase() + ' ' + (f.prenom || '').toLowerCase();
+                        if (!seen[key]) { seen[key] = true; list.push({ nom: (f.nom || '').toUpperCase(), prenom: f.prenom || '' }); }
+                    }
+                });
+            } catch (e) {}
+            try {
+                const contactsSnap = await dbCentral.ref('contactsTickets').once('value');
+                const contactsData = contactsSnap.val() || {};
+                Object.values(contactsData).forEach(c => {
+                    if (c && c.nom) {
+                        const key = (c.nom || '').toUpperCase() + ' ' + (c.prenom || '').toLowerCase();
+                        if (!seen[key]) { seen[key] = true; list.push({ nom: (c.nom || '').toUpperCase(), prenom: c.prenom || '' }); }
+                    }
+                });
+            } catch (e) {}
+            list.sort((a, b) => (a.nom + a.prenom).localeCompare(b.nom + b.prenom));
+            infPecheursCache = list;
+            return list;
+        }
+
+        const infNomInput = document.getElementById('infNom');
+        const infNomResults = document.getElementById('infNomResults');
+
+        infNomInput.addEventListener('input', async function() {
+            const query = this.value.trim().toLowerCase();
+            if (query.length < 2) { infNomResults.style.display = 'none'; return; }
+
+            const pecheurs = await getPecheursCacheInfraction();
+            const matches = pecheurs.filter(p => (p.nom + ' ' + p.prenom).toLowerCase().includes(query)).slice(0, 8);
+
+            if (matches.length === 0) { infNomResults.style.display = 'none'; return; }
+
+            infNomResults.innerHTML = matches.map((p, i) =>
+                '<div data-idx="' + i + '" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;font-size:14px;"><b>' + p.nom + ' ' + p.prenom + '</b></div>'
+            ).join('');
+            infNomResults.style.display = 'block';
+
+            infNomResults.querySelectorAll('[data-idx]').forEach(el => {
+                el.addEventListener('click', function() {
+                    const p = matches[parseInt(this.dataset.idx)];
+                    document.getElementById('infNom').value = p.nom;
+                    document.getElementById('infPrenom').value = p.prenom;
+                    infNomResults.style.display = 'none';
+                });
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#infNom') && !e.target.closest('#infNomResults')) {
+                infNomResults.style.display = 'none';
+            }
+        });
+        document.getElementById('infractionForm').addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const nom = document.getElementById('infNom').value.toUpperCase().trim();
+            const prenom = document.getElementById('infPrenom').value.trim();
+            const motif = document.getElementById('infMotif').value.trim();
+            const lieu = document.getElementById('infLieu').value;
+            const controleurSanction = document.getElementById('infControleur').value;
+
+            if (!controleurSanction) {
+                showAlert('⚠️ Veuillez choisir le contrôleur !', 'warning');
+                return;
+            }
+
+            const inf = getInfractionsForUser(nom, prenom);
+
+            if (inf.exclusion) {
+                showAlert(`🚫 <strong>${nom} ${prenom}</strong> est déjà exclu(e). Aucune nouvelle infraction ne peut être ajoutée.`, 'error');
+                return;
+            }
+
+            const dateNow = new Date().toLocaleString('fr-FR');
+
+            try {
+                if (inf.avertissement) {
+                    pendingExclusion = {
+                        nom, prenom, motif, lieu, controleurSanction,
+                        existingAvert: inf.avertissement
+                    };
+                    selectedExclusionType = null;
+                    document.querySelectorAll('.exclusion-type-option').forEach(o => o.classList.remove('selected'));
+                    document.getElementById('btnConfirmExclusion').disabled = true;
+                    document.getElementById('exclusionInfo').innerHTML =
+                        `<strong>${nom} ${prenom}</strong> a déjà un avertissement du ${inf.avertissement.date || ''}.<br>` +
+                        `Nouveau motif : ${motif}<br>📍 ${lieu}`;
+                    document.getElementById('exclusionModal').classList.add('visible');
+                } else {
+                    const avertData = { nom, prenom, motif, lieu, controleurSanction, date: dateNow, id: Date.now().toString() };
+                    await dbCentral.ref('infractions/avertissements/' + avertData.id).set(avertData);
+
+                    const heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                    const msgTelegram = '⚠️ *AVERTISSEMENT*\n📅 ' + dateNow.split(' ')[0] + '\n👤 ' + nom + ' ' + prenom + '\n📍 ' + lieu + '\n💬 ' + motif + '\n👮 ' + controleurSanction + '\n🕐 ' + heure;
+                    await envoyerNotificationTelegram(msgTelegram);
+
+                    showAlert(`⚠️ <strong>AVERTISSEMENT</strong><br><br>${nom} ${prenom} a reçu un avertissement.<br>📜 Prochain écart = EXCLUSION<br><br>👮 Par: ${controleurSanction}`, 'warning');
+                    document.getElementById('infractionForm').reset();
+                    await loadAllData();
+                    showPage('menu');
+                }
+            } catch (e) {
+                showAlert('❌ Erreur: ' + e.message, 'error');
+            }
         });
 
         async function loadAllData() { 
