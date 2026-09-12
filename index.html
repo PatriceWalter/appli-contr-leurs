@@ -422,7 +422,15 @@
                     </div><div id="cartesValidesList"></div>
                 </div>
                 <div id="adminTabControleurs" class="admin-tab-content">
-                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Liste des contrôleurs</p>
+                    <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:15px;margin-bottom:18px;">
+                        <p style="font-weight:700;color:#7a5b00;margin-bottom:8px;">🔔 Alertes de connexion révoquée</p>
+                        <p style="color:#666;font-size:13px;margin-bottom:10px;">Un e-mail est envoyé si un contrôleur dont l'accès est révoqué tente de se connecter.</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <input type="email" id="securityAlertEmail" value="walterpatrice67@gmail.fr" placeholder="Adresse e-mail de l'administrateur" class="carte-input" style="flex:1;min-width:220px;">
+                            <button class="btn btn-primary" onclick="saveSecurityAlertEmail()">💾 Enregistrer</button>
+                        </div>
+                    </div>
+                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Liste des contrôleurs — la révocation conserve toutes les données, ventes et tickets.</p>
                         <div class="add-carte-form"><input type="text" id="newControleurNom" placeholder="Nom" class="carte-input"><button class="btn btn-primary" onclick="addControleur()">➕</button></div>
                     </div><div id="controleursList"></div>
                 </div>
@@ -664,7 +672,8 @@
         let currentHistTab = 'avertissements';
         let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
-        let controleursMdp = {};
+        let controleursMdp = {}, controleursAccess = {};
+        let accessGuardRef = null, accessGuardCallback = null;
         let infractionsListenerSetup = false;
         
         const appCentral = firebase.initializeApp({ 
@@ -682,6 +691,7 @@
         const EMAILJS_PUBLIC_KEY = "JbyCmsMLDLD4d9W7G";
         const EMAILJS_SERVICE_ID = "service_9i4es0p";
         const EMAILJS_TEMPLATE_ID = "template_v6461vd";
+        const DEFAULT_SECURITY_ALERT_EMAIL = "walterpatrice67@gmail.fr";
         const FORMULAIRE_URL = "https://patricewalter.github.io/fiche-de-renseignement/";
         emailjs.init(EMAILJS_PUBLIC_KEY);
         
@@ -852,18 +862,118 @@
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
         document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
-        function checkSession() { 
+        function isAdminUserName(userName) {
+            return (userName || '').toLowerCase().indexOf('patrice') !== -1;
+        }
+
+        function accessIsRevoked(accessValue, userName) {
+            if (isAdminUserName(userName)) return false;
+            return accessValue === false || (accessValue && accessValue.revoked === true);
+        }
+
+        function stopAccessGuard() {
+            if (accessGuardRef && accessGuardCallback) accessGuardRef.off('value', accessGuardCallback);
+            accessGuardRef = null;
+            accessGuardCallback = null;
+        }
+
+        function showRevokedLoginMessage() {
+            const error = document.getElementById('loginError');
+            error.textContent = '🚫 Votre accès a été révoqué. Contactez l’administrateur.';
+            error.style.display = 'block';
+        }
+
+        function forceLogoutRevoked() {
+            stopAccessGuard();
+            removeUserPresence();
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginCode').value = '';
+            sessionStorage.removeItem('logged');
+            sessionStorage.removeItem('currentPage');
+            pageHistory = [];
+            showRevokedLoginMessage();
+        }
+
+        function startAccessGuard(userName) {
+            stopAccessGuard();
+            if (!userName || isAdminUserName(userName)) return;
+            accessGuardRef = dbCentral.ref('controleurs_access/' + userName);
+            accessGuardCallback = function(snapshot) {
+                if (accessIsRevoked(snapshot.val(), userName) && sessionStorage.getItem('logged') === 'true') {
+                    forceLogoutRevoked();
+                }
+            };
+            accessGuardRef.on('value', accessGuardCallback);
+        }
+
+        async function getSecurityAlertEmail() {
+            try {
+                const snap = await dbCentral.ref('admin_settings/security_alert_email').once('value');
+                return (snap.val() || DEFAULT_SECURITY_ALERT_EMAIL).trim();
+            } catch(e) {
+                return DEFAULT_SECURITY_ALERT_EMAIL;
+            }
+        }
+
+        async function notifyRevokedLoginAttempt(userName) {
+            const now = new Date();
+            const dateFr = now.toLocaleString('fr-FR');
+            const email = await getSecurityAlertEmail();
+            const message = 'Tentative de connexion bloquée pour le contrôleur « ' + userName + ' » le ' + dateFr + '.';
+            let eventRef = null;
+            try {
+                eventRef = dbCentral.ref('security/revoked_login_attempts').push();
+                await eventRef.set({
+                    user: userName,
+                    date: now.toISOString(),
+                    dateFr: dateFr,
+                    emailDestinataire: email,
+                    emailEnvoye: false,
+                    navigateur: navigator.userAgent || ''
+                });
+            } catch(e) {}
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                    to_email: email,
+                    email: email,
+                    subject: 'ALERTE — Tentative de connexion révoquée',
+                    message: message,
+                    formulaire_url: message,
+                    date_envoi: dateFr,
+                    nom: userName,
+                    controleur: userName
+                });
+                if (eventRef) await eventRef.update({ emailEnvoye: true });
+            } catch(e) {
+                if (eventRef) await eventRef.update({ emailErreur: true }).catch(function() {});
+            }
+        }
+
+        async function checkSession() { 
             dbCentral.ref('controleurs_mdp').on('value', snap => {
                 controleursMdp = snap.val() || {};
             });
             if (sessionStorage.getItem('logged') === 'true') { 
+                const savedUser = localStorage.getItem('controleurUser');
+                if (!savedUser) {
+                    sessionStorage.removeItem('logged');
+                    return;
+                }
+                try {
+                    const accessSnap = await dbCentral.ref('controleurs_access/' + savedUser).once('value');
+                    if (accessIsRevoked(accessSnap.val(), savedUser)) {
+                        forceLogoutRevoked();
+                        return;
+                    }
+                } catch(e) {}
                 document.getElementById('loginPage').style.display = 'none'; 
                 document.getElementById('appContainer').style.display = 'block'; 
                 setupBackButtonBlock(); 
-                const savedUser = localStorage.getItem('controleurUser'); 
                 if (savedUser) { 
                     updateMenuUser(savedUser); 
                     setUserPresence(savedUser); 
+                    startAccessGuard(savedUser);
                 } 
                 loadAllData(); 
                 listenOnlineUsers(); 
@@ -887,6 +997,13 @@
             const enteredCode = document.getElementById('loginCode').value;
             
             try {
+                const accessSnap = await dbCentral.ref('controleurs_access/' + selectedUser).once('value');
+                if (accessIsRevoked(accessSnap.val(), selectedUser)) {
+                    document.getElementById('loginCode').value = '';
+                    showRevokedLoginMessage();
+                    notifyRevokedLoginAttempt(selectedUser);
+                    return;
+                }
                 const snap = await dbCentral.ref('controleurs_mdp/' + selectedUser).once('value');
                 const expectedCode = snap.val() || '911'; 
                 
@@ -898,6 +1015,7 @@
                     setupBackButtonBlock(); 
                     updateMenuUser(selectedUser);
                     setUserPresence(selectedUser);
+                    startAccessGuard(selectedUser);
                     listenOnlineUsers();
                     loadAllData();
                     
@@ -925,7 +1043,7 @@
             });
         }
         
-        document.getElementById('logoutBtn').addEventListener('click', () => { removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { stopAccessGuard(); removeUserPresence(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; document.getElementById('loginCode').value = ''; sessionStorage.removeItem('logged'); sessionStorage.removeItem('currentPage'); pageHistory = []; showPage('menu'); });
         
         let pendingUserChange = null;
         
@@ -1023,7 +1141,7 @@
             var dateEl = document.getElementById('menuWelcomeDate');
             if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             var adminBtn = document.getElementById('btnMenuAdmin');
-            if (adminBtn) adminBtn.style.display = (userName.toLowerCase().indexOf('patrice') !== -1) ? '' : 'none';
+            if (adminBtn) adminBtn.style.display = isAdminUserName(userName) ? '' : 'none';
         }
         function updateMenuStats() {
             try {
@@ -1066,6 +1184,11 @@
         document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
         
         function checkAdminPassword() { 
+            if (!isAdminUserName(getCurrentUser())) {
+                document.getElementById('adminModal').classList.remove('visible');
+                showAlert('❌ Accès réservé à l’administrateur', 'error');
+                return;
+            }
             if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) { 
                 document.getElementById('adminModal').classList.remove('visible'); 
                 loadAdminFiches(); 
@@ -1087,7 +1210,7 @@
             }).join(''); 
         }
 
-        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); renderTicketViewAllSettings(); } }
+        function switchAdminTab(tab) { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'fiches') { document.querySelectorAll('.admin-tab')[0].classList.add('active'); document.getElementById('adminTabFiches').classList.add('active'); } else if (tab === 'cartes') { document.querySelectorAll('.admin-tab')[1].classList.add('active'); document.getElementById('adminTabCartes').classList.add('active'); loadCartesValides(); } else if (tab === 'controleurs') { document.querySelectorAll('.admin-tab')[2].classList.add('active'); document.getElementById('adminTabControleurs').classList.add('active'); loadControleurs(); loadSecuritySettings(); } else if (tab === 'tickets') { document.querySelectorAll('.admin-tab')[3].classList.add('active'); document.getElementById('adminTabTickets').classList.add('active'); renderTicketModuleSettings(); renderTicketViewAllSettings(); } }
 
         async function loadCartesValides() { 
             const container = document.getElementById('cartesValidesList'); 
@@ -1125,9 +1248,12 @@
             const container = document.getElementById('controleursList'); 
             container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
             allControleurs = []; 
+            controleursAccess = {};
             try { 
                 const snap = await dbCentral.ref('controleurs').once('value'); 
                 if (snap.val()) allControleurs = Array.isArray(snap.val()) ? snap.val() : Object.values(snap.val()); 
+                const accessSnap = await dbCentral.ref('controleurs_access').once('value');
+                controleursAccess = accessSnap.val() || {};
             } catch(e) {} 
             if (allControleurs.length === 0) { 
                 allControleurs = ['René', 'Patrice', 'Christophe', 'Jean-François', 'Eric', 'Garde pêche Raymond']; 
@@ -1159,18 +1285,89 @@
             }
         }
 
+        function isControleurRevoked(nom) {
+            return accessIsRevoked(controleursAccess[nom], nom);
+        }
+
+        window.toggleControleurAccess = async function(index) {
+            const nom = allControleurs[index];
+            if (!nom) return;
+            if (isAdminUserName(nom)) {
+                showAlert('🛡️ Le compte administrateur ne peut pas être révoqué', 'warning');
+                return;
+            }
+            const currentlyRevoked = isControleurRevoked(nom);
+            const action = currentlyRevoked ? 'réactiver' : 'révoquer';
+            const detail = currentlyRevoked
+                ? 'La personne pourra de nouveau se connecter.'
+                : 'La personne sera immédiatement déconnectée et ne pourra plus se connecter. Ses tickets, ventes et historiques seront conservés.';
+            if (!confirm((currentlyRevoked ? 'Réactiver' : 'Révoquer') + ' l’accès de ' + nom + ' ?\n\n' + detail)) return;
+            try {
+                const now = new Date();
+                const accessData = {
+                    revoked: !currentlyRevoked,
+                    updatedAt: now.toISOString(),
+                    updatedBy: getCurrentUser()
+                };
+                if (currentlyRevoked) accessData.reactivatedAt = now.toISOString();
+                else accessData.revokedAt = now.toISOString();
+                await dbCentral.ref('controleurs_access/' + nom).set(accessData);
+                await dbCentral.ref('security/access_changes').push({
+                    user: nom,
+                    action: currentlyRevoked ? 'reactivated' : 'revoked',
+                    by: getCurrentUser(),
+                    date: now.toISOString()
+                });
+                controleursAccess[nom] = accessData;
+                if (!currentlyRevoked) await dbCentral.ref('presence/controleur/' + nom).remove();
+                renderControleurs();
+                showAlert(currentlyRevoked ? '✅ Accès réactivé pour ' + nom : '🚫 Accès révoqué pour ' + nom, currentlyRevoked ? 'success' : 'warning');
+            } catch(e) {
+                showAlert('❌ Impossible de modifier l’accès', 'error');
+            }
+        };
+
+        async function loadSecuritySettings() {
+            const input = document.getElementById('securityAlertEmail');
+            if (!input) return;
+            input.value = await getSecurityAlertEmail();
+        }
+
+        window.saveSecurityAlertEmail = async function() {
+            const input = document.getElementById('securityAlertEmail');
+            const email = (input.value || '').trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAlert('❌ Adresse e-mail invalide', 'error');
+                return;
+            }
+            try {
+                await dbCentral.ref('admin_settings/security_alert_email').set(email);
+                showAlert('✅ Adresse d’alerte enregistrée', 'success');
+            } catch(e) {
+                showAlert('❌ Impossible d’enregistrer l’adresse', 'error');
+            }
+        };
+
         function renderControleurs() { 
             const container = document.getElementById('controleursList'); 
             if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } 
             container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + 
-            allControleurs.map((nom, i) => 
-                '<div class="carte-item" style="border-left-color:#1565c0;">' +
-                '<div class="carte-item-name">👮 ' + nom + '</div>' +
-                '<div style="display:flex;gap:5px;">' +
+            allControleurs.map((nom, i) => {
+                const admin = isAdminUserName(nom);
+                const revoked = isControleurRevoked(nom);
+                const status = admin
+                    ? '<span style="background:#e3f2fd;color:#1565c0;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">🛡️ ADMIN</span>'
+                    : revoked
+                        ? '<span style="background:#ffebee;color:#c62828;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">ACCÈS RÉVOQUÉ</span>'
+                        : '<span style="background:#e8f5e9;color:#2e7d32;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">ACCÈS ACTIF</span>';
+                return '<div class="carte-item" style="border-left-color:#1565c0;">' +
+                '<div class="carte-item-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">👮 ' + nom + status + '</div>' +
+                '<div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;">' +
                 '<button class="carte-delete-btn" style="background:#ff9800;color:white;" onclick="resetPwdControleur(\'' + nom + '\')" title="Réinitialiser le mot de passe">🔄 MDP</button>' +
+                (admin ? '' : '<button class="carte-delete-btn" style="background:' + (revoked ? '#2e7d32' : '#c62828') + ';color:white;" onclick="toggleControleurAccess(' + i + ')" title="' + (revoked ? 'Réactiver l’accès' : 'Révoquer l’accès') + '">' + (revoked ? '✅ Réactiver' : '🚫 Révoquer') + '</button>') +
                 '<button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button>' +
-                '</div></div>'
-            ).join(''); 
+                '</div></div>';
+            }).join(''); 
         }
         
         async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
@@ -1902,6 +2099,11 @@
             } catch(e) {
                 ticketModuleUsers = ['Patrice'];
             }
+            let ticketAdminAdded = false;
+            allControleurs.filter(isAdminUserName).forEach(function(nom) {
+                if (!ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); })) { ticketModuleUsers.push(nom); ticketAdminAdded = true; }
+            });
+            if (ticketAdminAdded) await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
             updateTicketMenuVisibility();
         }
 
@@ -1914,7 +2116,7 @@
             const user = getCurrentUser();
             const card = document.getElementById('ticketMenuCard');
             if (card) {
-                const isEnabled = ticketModuleUsers.some(u => u.toLowerCase() === user.toLowerCase());
+                const isEnabled = isAdminUserName(user) || ticketModuleUsers.some(u => u.toLowerCase() === user.toLowerCase());
                 card.classList.toggle('visible', isEnabled);
             }
         }
@@ -1926,10 +2128,11 @@
                 return;
             }
             container.innerHTML = allControleurs.map(function(nom, idx) {
-                var checked = ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
+                var admin = isAdminUserName(nom);
+                var checked = admin || ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
                 var cls = checked ? ' enabled' : '';
                 var safeId = 'tkchk_' + idx;
-                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + '><label for="' + safeId + '">' + '👤 ' + nom + '</label></div>';
+                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + (admin ? ' disabled' : '') + '><label for="' + safeId + '">' + (admin ? '🛡️ ' : '👤 ') + nom + (admin ? ' — accès permanent' : '') + '</label></div>';
             }).join('');
             container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
                 cb.addEventListener('change', function() {
@@ -1940,6 +2143,7 @@
         }
 
         async function toggleTicketUser(nom, enabled) {
+            if (isAdminUserName(nom) && !enabled) return;
             if (enabled) {
                 if (!ticketModuleUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
                     ticketModuleUsers.push(nom);
@@ -1965,6 +2169,11 @@
             } catch(e) {
                 ticketViewAllUsers = ['Patrice'];
             }
+            let viewAdminAdded = false;
+            allControleurs.filter(isAdminUserName).forEach(function(nom) {
+                if (!ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); })) { ticketViewAllUsers.push(nom); viewAdminAdded = true; }
+            });
+            if (viewAdminAdded) await dbCentral.ref('ticketViewAllUsers').set(ticketViewAllUsers);
         }
 
         async function saveTicketViewAllUsers() {
@@ -1978,10 +2187,11 @@
                 return;
             }
             container.innerHTML = allControleurs.map(function(nom, idx) {
-                var checked = ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
+                var admin = isAdminUserName(nom);
+                var checked = admin || ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
                 var cls = checked ? ' enabled' : '';
                 var safeId = 'tkview_' + idx;
-                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + '><label for="' + safeId + '">👁️ ' + nom + '</label></div>';
+                return '<div class="tk-user-item' + cls + '"><input type="checkbox" id="' + safeId + '" data-idx="' + idx + '" ' + (checked ? 'checked' : '') + (admin ? ' disabled' : '') + '><label for="' + safeId + '">' + (admin ? '🛡️ ' : '👁️ ') + nom + (admin ? ' — historique permanent' : '') + '</label></div>';
             }).join('');
             container.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
                 cb.addEventListener('change', function() {
@@ -1992,6 +2202,7 @@
         }
 
         async function toggleTicketViewAll(nom, enabled) {
+            if (isAdminUserName(nom) && !enabled) return;
             if (enabled) {
                 if (!ticketViewAllUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
                     ticketViewAllUsers.push(nom);
