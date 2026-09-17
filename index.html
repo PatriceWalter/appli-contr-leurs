@@ -82,6 +82,17 @@
         .info-section-meta { color: #888; font-size: 11px; margin-top: 13px; text-align: right; }
         .admin-info-section { background: #f8f9fa; border: 1px solid #d5d8ce; border-radius: 12px; padding: 15px; margin-bottom: 14px; }
         .admin-info-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .calendar-event-box { background: #eef6ff; border: 1px solid #bbdefb; border-radius: 12px; padding: 14px; margin-top: 12px; }
+        .calendar-event-details { margin-top: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .calendar-event-details .form-group { margin-bottom: 0; }
+        .calendar-event-details .full-width { grid-column: 1 / -1; }
+        .info-calendar-date { margin: 12px 0 4px; padding: 10px 12px; border-radius: 10px; background: #e3f2fd; color: #0d47a1; font-weight: 700; font-size: 14px; }
+        .google-calendar-add { display: inline-flex; align-items: center; justify-content: center; gap: 7px; margin-top: 12px; padding: 10px 14px; border-radius: 9px; background: #1565c0; color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .login-history-summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .login-history-item { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 13px 14px; margin-bottom: 9px; background: #f8f9fa; border: 1px solid #dfe3dc; border-radius: 10px; }
+        .login-history-user { color: #1a472a; font-weight: 700; overflow-wrap: anywhere; }
+        .login-history-date { color: #666; font-size: 13px; text-align: right; white-space: nowrap; }
+        @media (max-width: 600px) { .calendar-event-details { grid-template-columns: 1fr; } .calendar-event-details .full-width { grid-column: auto; } }
         @media (max-width: 600px) { .portal-choice-grid { grid-template-columns: 1fr; } .portal-choice-card { min-height: 170px; } }
         .page-content { max-width: 800px; margin: 0 auto; padding: 16px; }
         .page-card { background: white; border-radius: 14px; padding: 20px; border: 1px solid #d5d8ce; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
@@ -476,6 +487,7 @@
                     <button class="admin-tab" onclick="switchAdminTab('controleurs')">👮 Contrôleurs</button>
                     <button class="admin-tab" onclick="switchAdminTab('tickets')">🎫 Tickets</button>
                     <button class="admin-tab" onclick="switchAdminTab('info')">ℹ️ Infos</button>
+                    <button class="admin-tab" onclick="switchAdminTab('connections')">🕒 Connexions</button>
                 </div>
                 <div id="adminTabFiches" class="admin-tab-content active"><div id="adminFichesList"></div></div>
                 <div id="adminTabCartes" class="admin-tab-content">
@@ -510,10 +522,30 @@
                         <p style="color:#666;font-size:13px;margin-bottom:12px;">Chaque section est indépendante : vous pourrez ensuite la modifier ou la supprimer.</p>
                         <div class="form-group" style="margin-bottom:10px;"><input type="text" id="newInfoTitle" placeholder="Titre de la section"></div>
                         <div class="form-group" style="margin-bottom:12px;"><textarea id="newInfoText" rows="6" placeholder="Texte de l'information..." style="resize:vertical;"></textarea></div>
-                        <button class="btn btn-primary" type="button" onclick="addInfoSection()" style="width:100%;">➕ Ajouter et publier cette section</button>
+                        <div class="calendar-event-box">
+                            <label style="display:flex;align-items:center;gap:10px;font-weight:700;color:#0d47a1;cursor:pointer;"><input type="checkbox" id="newInfoIsCalendarEvent" onchange="toggleNewInfoCalendarFields()" style="width:20px;height:20px;"> Afficher le bouton « Ajouter à Google Agenda »</label>
+                            <div id="newInfoCalendarFields" class="calendar-event-details" style="display:none;">
+                                <div class="form-group"><label for="newInfoEventDate">Date</label><input type="date" id="newInfoEventDate"></div>
+                                <div class="form-group"><label style="display:flex;align-items:center;gap:8px;margin-top:30px;"><input type="checkbox" id="newInfoAllDay" onchange="toggleNewInfoCalendarFields()" style="width:18px;height:18px;"> Journée entière</label></div>
+                                <div class="form-group new-info-time"><label for="newInfoStartTime">Heure de début</label><input type="time" id="newInfoStartTime"></div>
+                                <div class="form-group new-info-time"><label for="newInfoEndTime">Heure de fin</label><input type="time" id="newInfoEndTime"></div>
+                                <div class="form-group full-width"><label for="newInfoLocation">Lieu</label><input type="text" id="newInfoLocation" placeholder="Salle, étang, adresse..."></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="button" onclick="addInfoSection()" style="width:100%;margin-top:12px;">➕ Ajouter et publier cette section</button>
                     </div>
                     <div class="form-section-title">ℹ️ Sections publiées</div>
                     <div id="adminInfoSectionsList"></div>
+                </div>
+                <div id="adminTabConnections" class="admin-tab-content">
+                    <div class="login-history-summary">
+                        <p style="color:#666;font-size:13px;line-height:1.5;">Historique des connexions réussies, avec le nom de l’utilisateur, la date et l’heure.</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-primary btn-small" type="button" onclick="loadLoginHistory()">🔄 Actualiser</button>
+                            <button class="btn btn-danger btn-small" type="button" onclick="clearLoginHistory()">🗑️ Vider</button>
+                        </div>
+                    </div>
+                    <div id="loginHistoryList"><div style="text-align:center;padding:20px;color:#777;">Chargement...</div></div>
                 </div>
             </div></div>
         </div>
@@ -935,7 +967,9 @@
             if (id === 'recherche') renderPecheursAlphabetique();
             if (id === 'historique') renderHistorique();
             if (id === 'travail') renderTravail();
-            if (id === 'info') renderInfoSections();
+            if (id === 'info') {
+                renderInfoSections();
+            }
         }
         
         document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'portal'); } });
@@ -1134,6 +1168,80 @@
 
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+
+        async function recordSuccessfulLogin(userName) {
+            if (!userName) return;
+            try {
+                await dbCentral.ref('security/login_history').push().set({
+                    user: userName,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    dateIso: new Date().toISOString()
+                });
+            } catch(e) {}
+        }
+
+        async function loadLoginHistory() {
+            const container = document.getElementById('loginHistoryList');
+            if (!container) return;
+            if (!isAdminUserName(getCurrentUser())) {
+                container.innerHTML = '<div class="no-results">Accès réservé à l’administrateur</div>';
+                return;
+            }
+            container.innerHTML = '<div style="text-align:center;padding:20px;color:#777;">⏳ Chargement...</div>';
+            try {
+                const snapshot = await dbCentral.ref('security/login_history').once('value');
+                const entries = [];
+                snapshot.forEach(function(child) {
+                    const value = child.val() || {};
+                    const timestamp = Number(value.timestamp) || Date.parse(value.dateIso || '') || 0;
+                    entries.push({ key: child.key, user: value.user || 'Utilisateur inconnu', timestamp: timestamp });
+                });
+                entries.sort(function(a, b) { return b.timestamp - a.timestamp; });
+                container.innerHTML = '';
+                if (entries.length === 0) {
+                    container.innerHTML = '<div class="no-results">Aucune connexion enregistrée</div>';
+                    return;
+                }
+                const count = document.createElement('div');
+                count.className = 'admin-count';
+                count.textContent = '🕒 ' + entries.length + ' connexion' + (entries.length > 1 ? 's' : '') + ' enregistrée' + (entries.length > 1 ? 's' : '');
+                container.appendChild(count);
+                entries.forEach(function(entry) {
+                    const row = document.createElement('div');
+                    row.className = 'login-history-item';
+                    const user = document.createElement('div');
+                    user.className = 'login-history-user';
+                    user.textContent = '👤 ' + entry.user;
+                    const date = document.createElement('div');
+                    date.className = 'login-history-date';
+                    if (entry.timestamp) {
+                        const instant = new Date(entry.timestamp);
+                        const dateText = instant.toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris', day: '2-digit', month: '2-digit', year: 'numeric' });
+                        const timeText = instant.toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        date.textContent = '📅 ' + dateText + ' à ' + timeText;
+                    } else {
+                        date.textContent = 'Date inconnue';
+                    }
+                    row.appendChild(user);
+                    row.appendChild(date);
+                    container.appendChild(row);
+                });
+            } catch(e) {
+                container.innerHTML = '<div class="no-results">Impossible de charger l’historique</div>';
+            }
+        }
+
+        async function clearLoginHistory() {
+            if (!isAdminUserName(getCurrentUser())) { showAlert('❌ Accès réservé à l’administrateur', 'error'); return; }
+            if (!confirm('Vider définitivement tout l’historique des connexions ?')) return;
+            try {
+                await dbCentral.ref('security/login_history').remove();
+                await loadLoginHistory();
+                showAlert('✅ Historique des connexions vidé', 'success');
+            } catch(e) {
+                showAlert('❌ Impossible de vider l’historique', 'error');
+            }
+        }
         
         async function login() { 
             const selectedUser = document.getElementById('loginUser').value;
@@ -1162,6 +1270,7 @@
                     document.getElementById('loginPage').style.display = 'none'; 
                     document.getElementById('appContainer').style.display = 'block'; 
                     sessionStorage.setItem('logged', 'true'); 
+                    recordSuccessfulLogin(selectedUser);
                     setupBackButtonBlock(); 
                     pageHistory = [];
                     showPage('portal');
@@ -1385,8 +1494,8 @@
         function switchAdminTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
-            const tabs = { fiches: 0, cartes: 1, controleurs: 2, tickets: 3, info: 4 };
-            const panels = { fiches: 'adminTabFiches', cartes: 'adminTabCartes', controleurs: 'adminTabControleurs', tickets: 'adminTabTickets', info: 'adminTabInfo' };
+            const tabs = { fiches: 0, cartes: 1, controleurs: 2, tickets: 3, info: 4, connections: 5 };
+            const panels = { fiches: 'adminTabFiches', cartes: 'adminTabCartes', controleurs: 'adminTabControleurs', tickets: 'adminTabTickets', info: 'adminTabInfo', connections: 'adminTabConnections' };
             if (tabs[tab] === undefined) return;
             document.querySelectorAll('.admin-tab')[tabs[tab]].classList.add('active');
             document.getElementById(panels[tab]).classList.add('active');
@@ -1394,6 +1503,7 @@
             if (tab === 'controleurs') { loadControleurs(); loadSecuritySettings(); }
             if (tab === 'tickets') { renderTicketModuleSettings(); renderTicketViewAllSettings(); }
             if (tab === 'info') renderAdminInfoSections();
+            if (tab === 'connections') loadLoginHistory();
         }
 
         function normalizeInfoSections(value) {
@@ -1406,7 +1516,13 @@
                     text: item.text || '',
                     createdAt: item.createdAt || '',
                     updatedAt: item.updatedAt || item.createdAt || '',
-                    updatedBy: item.updatedBy || ''
+                    updatedBy: item.updatedBy || '',
+                    calendarEvent: item.calendarEvent === true,
+                    eventDate: item.eventDate || '',
+                    allDay: item.allDay === true,
+                    startTime: item.startTime || '',
+                    endTime: item.endTime || '',
+                    location: item.location || ''
                 };
             }).filter(function(item) { return item.title || item.text; }).sort(function(a, b) {
                 return (b.createdAt || b.updatedAt || '').localeCompare(a.createdAt || a.updatedAt || '');
@@ -1418,6 +1534,61 @@
             const date = new Date(section.updatedAt);
             if (isNaN(date.getTime())) return '';
             return 'Mis à jour le ' + date.toLocaleString('fr-FR') + (section.updatedBy ? ' par ' + section.updatedBy : '');
+        }
+
+        function formatCalendarEventLabel(section) {
+            if (!section || !section.calendarEvent || !section.eventDate) return '';
+            const date = new Date(section.eventDate + 'T12:00:00');
+            const dateText = isNaN(date.getTime()) ? section.eventDate : date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            let label = '📅 ' + dateText;
+            if (section.allDay) label += ' — journée entière';
+            else if (section.startTime) label += ' — ' + section.startTime + (section.endTime ? ' à ' + section.endTime : '');
+            if (section.location) label += '\n📍 ' + section.location;
+            return label;
+        }
+
+        function nextCalendarDate(dateText) {
+            const date = new Date(dateText + 'T12:00:00');
+            date.setDate(date.getDate() + 1);
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+        }
+
+        function compactCalendarDate(dateText) {
+            return (dateText || '').replace(/-/g, '');
+        }
+
+        function buildGoogleCalendarLink(section) {
+            if (!section || !section.calendarEvent || !section.eventDate) return '';
+            let dates = '';
+            if (section.allDay) {
+                dates = compactCalendarDate(section.eventDate) + '/' + compactCalendarDate(nextCalendarDate(section.eventDate));
+            } else {
+                if (!section.startTime || !section.endTime) return '';
+                const start = compactCalendarDate(section.eventDate) + 'T' + section.startTime.replace(':', '') + '00';
+                const end = compactCalendarDate(section.eventDate) + 'T' + section.endTime.replace(':', '') + '00';
+                dates = start + '/' + end;
+            }
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: section.title || 'Information AAPPMA',
+                dates: dates,
+                details: (section.text || '') + '\n\nAAPPMA Gundershoffen',
+                location: section.location || '',
+                ctz: 'Europe/Paris'
+            });
+            return 'https://calendar.google.com/calendar/render?' + params.toString();
+        }
+
+        function createGoogleCalendarButton(section) {
+            const url = buildGoogleCalendarLink(section);
+            if (!url) return null;
+            const link = document.createElement('a');
+            link.className = 'google-calendar-add';
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = '📅 Ajouter à Google Agenda';
+            return link;
         }
 
         function renderInfoSections() {
@@ -1441,9 +1612,19 @@
                 const content = document.createElement('div');
                 content.className = 'info-section-text';
                 content.textContent = section.text || '';
+                const calendarLabel = formatCalendarEventLabel(section);
                 const metaText = formatInfoUpdate(section);
                 card.appendChild(title);
+                if (calendarLabel) {
+                    const calendarDate = document.createElement('div');
+                    calendarDate.className = 'info-calendar-date';
+                    calendarDate.style.whiteSpace = 'pre-wrap';
+                    calendarDate.textContent = calendarLabel;
+                    card.appendChild(calendarDate);
+                }
                 card.appendChild(content);
+                const calendarButton = createGoogleCalendarButton(section);
+                if (calendarButton) card.appendChild(calendarButton);
                 if (metaText) {
                     const meta = document.createElement('div');
                     meta.className = 'info-section-meta';
@@ -1490,6 +1671,78 @@
             });
         }
 
+        function createCalendarField(labelText, type, value, fullWidth) {
+            const group = document.createElement('div');
+            group.className = 'form-group' + (fullWidth ? ' full-width' : '');
+            const label = document.createElement('label');
+            label.textContent = labelText;
+            const input = document.createElement('input');
+            input.type = type;
+            input.value = value || '';
+            group.appendChild(label);
+            group.appendChild(input);
+            return { group: group, input: input };
+        }
+
+        function createAdminInfoCalendarEditor(section) {
+            const box = document.createElement('div');
+            box.className = 'calendar-event-box';
+            const enableLabel = document.createElement('label');
+            enableLabel.style.cssText = 'display:flex;align-items:center;gap:10px;font-weight:700;color:#0d47a1;cursor:pointer;';
+            const enable = document.createElement('input');
+            enable.type = 'checkbox';
+            enable.checked = section.calendarEvent === true;
+            enable.style.cssText = 'width:20px;height:20px;';
+            enableLabel.appendChild(enable);
+            enableLabel.appendChild(document.createTextNode(' Afficher le bouton « Ajouter à Google Agenda »'));
+            const details = document.createElement('div');
+            details.className = 'calendar-event-details';
+            const dateField = createCalendarField('Date', 'date', section.eventDate, false);
+            const allDayGroup = document.createElement('div');
+            allDayGroup.className = 'form-group';
+            const allDayLabel = document.createElement('label');
+            allDayLabel.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:30px;';
+            const allDay = document.createElement('input');
+            allDay.type = 'checkbox';
+            allDay.checked = section.allDay === true;
+            allDay.style.cssText = 'width:18px;height:18px;';
+            allDayLabel.appendChild(allDay);
+            allDayLabel.appendChild(document.createTextNode(' Journée entière'));
+            allDayGroup.appendChild(allDayLabel);
+            const startField = createCalendarField('Heure de début', 'time', section.startTime, false);
+            const endField = createCalendarField('Heure de fin', 'time', section.endTime, false);
+            const locationField = createCalendarField('Lieu', 'text', section.location, true);
+            locationField.input.placeholder = 'Salle, étang, adresse...';
+            details.appendChild(dateField.group);
+            details.appendChild(allDayGroup);
+            details.appendChild(startField.group);
+            details.appendChild(endField.group);
+            details.appendChild(locationField.group);
+            function refresh() {
+                details.style.display = enable.checked ? 'grid' : 'none';
+                startField.group.style.display = enable.checked && !allDay.checked ? '' : 'none';
+                endField.group.style.display = enable.checked && !allDay.checked ? '' : 'none';
+            }
+            enable.onchange = refresh;
+            allDay.onchange = refresh;
+            refresh();
+            box.appendChild(enableLabel);
+            box.appendChild(details);
+            return {
+                element: box,
+                getData: function() {
+                    return {
+                        calendarEvent: enable.checked,
+                        eventDate: enable.checked ? dateField.input.value : '',
+                        allDay: enable.checked && allDay.checked,
+                        startTime: enable.checked && !allDay.checked ? startField.input.value : '',
+                        endTime: enable.checked && !allDay.checked ? endField.input.value : '',
+                        location: enable.checked ? locationField.input.value.trim() : ''
+                    };
+                }
+            };
+        }
+
         function renderAdminInfoSections() {
             const container = document.getElementById('adminInfoSectionsList');
             if (!container) return;
@@ -1522,6 +1775,7 @@
                 textArea.value = section.text;
                 textGroup.appendChild(textLabel);
                 textGroup.appendChild(textArea);
+                const calendarEditor = createAdminInfoCalendarEditor(section);
                 const meta = document.createElement('div');
                 meta.className = 'info-section-meta';
                 meta.textContent = formatInfoUpdate(section);
@@ -1532,7 +1786,7 @@
                 saveBtn.className = 'btn btn-primary';
                 saveBtn.style.flex = '1';
                 saveBtn.textContent = '💾 Enregistrer';
-                saveBtn.onclick = function() { saveInfoSection(section.key, titleInput.value, textArea.value); };
+                saveBtn.onclick = function() { saveInfoSection(section.key, titleInput.value, textArea.value, calendarEditor.getData()); };
                 const deleteBtn = document.createElement('button');
                 deleteBtn.type = 'button';
                 deleteBtn.className = 'btn btn-danger';
@@ -1542,10 +1796,40 @@
                 actions.appendChild(deleteBtn);
                 wrapper.appendChild(titleGroup);
                 wrapper.appendChild(textGroup);
+                wrapper.appendChild(calendarEditor.element);
                 wrapper.appendChild(meta);
                 wrapper.appendChild(actions);
                 container.appendChild(wrapper);
             });
+        }
+
+        window.toggleNewInfoCalendarFields = function() {
+            const enabled = document.getElementById('newInfoIsCalendarEvent').checked;
+            const allDay = document.getElementById('newInfoAllDay').checked;
+            const fields = document.getElementById('newInfoCalendarFields');
+            fields.style.display = enabled ? 'grid' : 'none';
+            fields.querySelectorAll('.new-info-time').forEach(function(group) { group.style.display = enabled && !allDay ? '' : 'none'; });
+        };
+
+        function getNewInfoCalendarData() {
+            const enabled = document.getElementById('newInfoIsCalendarEvent').checked;
+            const allDay = enabled && document.getElementById('newInfoAllDay').checked;
+            return {
+                calendarEvent: enabled,
+                eventDate: enabled ? document.getElementById('newInfoEventDate').value : '',
+                allDay: allDay,
+                startTime: enabled && !allDay ? document.getElementById('newInfoStartTime').value : '',
+                endTime: enabled && !allDay ? document.getElementById('newInfoEndTime').value : '',
+                location: enabled ? document.getElementById('newInfoLocation').value.trim() : ''
+            };
+        }
+
+        function validateInfoCalendarData(data) {
+            if (!data || !data.calendarEvent) return '';
+            if (!data.eventDate) return 'Indiquez la date de l’événement.';
+            if (!data.allDay && (!data.startTime || !data.endTime)) return 'Indiquez les heures de début et de fin.';
+            if (!data.allDay && data.endTime <= data.startTime) return 'L’heure de fin doit être après l’heure de début.';
+            return '';
         }
 
         window.addInfoSection = async function() {
@@ -1555,21 +1839,33 @@
             const title = (titleInput.value || '').trim();
             const text = (textInput.value || '').trim();
             if (!title || !text) { showAlert('⚠️ Indiquez un titre et un texte', 'warning'); return; }
+            const calendarData = getNewInfoCalendarData();
+            const calendarError = validateInfoCalendarData(calendarData);
+            if (calendarError) { showAlert('⚠️ ' + calendarError, 'warning'); return; }
             const now = new Date().toISOString();
             try {
-                await dbCentral.ref('infos_sections').push().set({ title: title, text: text, createdAt: now, updatedAt: now, updatedBy: getCurrentUser() });
+                await dbCentral.ref('infos_sections').push().set({ title: title, text: text, createdAt: now, updatedAt: now, updatedBy: getCurrentUser(), ...calendarData });
                 titleInput.value = '';
                 textInput.value = '';
+                document.getElementById('newInfoIsCalendarEvent').checked = false;
+                document.getElementById('newInfoEventDate').value = '';
+                document.getElementById('newInfoAllDay').checked = false;
+                document.getElementById('newInfoStartTime').value = '';
+                document.getElementById('newInfoEndTime').value = '';
+                document.getElementById('newInfoLocation').value = '';
+                toggleNewInfoCalendarFields();
                 showAlert('✅ Nouvelle section publiée', 'success');
             } catch(e) { showAlert('❌ Impossible d’ajouter la section', 'error'); }
         };
 
-        window.saveInfoSection = async function(key, titleValue, textValue) {
+        window.saveInfoSection = async function(key, titleValue, textValue, calendarData) {
             if (!isAdminUserName(getCurrentUser())) { showAlert('❌ Accès réservé à l’administrateur', 'error'); return; }
             const title = (titleValue || '').trim(), text = (textValue || '').trim();
             if (!title || !text) { showAlert('⚠️ Le titre et le texte sont obligatoires', 'warning'); return; }
+            const calendarError = validateInfoCalendarData(calendarData);
+            if (calendarError) { showAlert('⚠️ ' + calendarError, 'warning'); return; }
             try {
-                await dbCentral.ref('infos_sections/' + key).update({ title: title, text: text, updatedAt: new Date().toISOString(), updatedBy: getCurrentUser() });
+                await dbCentral.ref('infos_sections/' + key).update({ title: title, text: text, updatedAt: new Date().toISOString(), updatedBy: getCurrentUser(), ...calendarData });
                 showAlert('✅ Section mise à jour', 'success');
             } catch(e) { showAlert('❌ Impossible de modifier la section', 'error'); }
         };
