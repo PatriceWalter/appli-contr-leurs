@@ -25,7 +25,7 @@
     try {
       const r=await fetch(config.scriptUrl,{method:'POST',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(data),signal:abort.signal});
       if(!r.ok)throw new Error('Service indisponible (HTTP '+r.status+').');
-      const v=await r.json();if(!v.ok)throw new Error(v.error||'Échec du service.');return v;
+      const v=await r.json();if(!v.ok)throw new Error(v.error==='Action inconnue.'?'Le déploiement Google utilise encore une ancienne version. Mettez à jour le déploiement existant avec le dernier Code.gs.':v.error||'Échec du service.');return v;
     } catch(e) {
       if(e.name==='AbortError'||e instanceof TypeError)throw new Error('Réponse non reçue. L’envoi a peut-être été effectué : vérifiez avant de recommencer.');
       throw e;
@@ -167,7 +167,15 @@
   }
   window.transmettreNotificationInfos=async function(testOnly,announcement){
     if(busy)return;
-    const report=text=>{if(announcement?.result)announcement.result.textContent=text;else status('pushStatus',text);};
+    const report=text=>{
+      if(announcement?.result)announcement.result.textContent=text;
+      let banner=document.getElementById('pushSendFeedback');
+      if(!banner){
+        const host=document.querySelector('#pageInfo .page-content');
+        if(host){banner=document.createElement('p');banner.id='pushSendFeedback';banner.setAttribute('role','status');banner.style.cssText='padding:12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#253347;line-height:1.5;';host.prepend(banner);}
+      }
+      if(banner)banner.textContent=text;else status('pushStatus',text);
+    };
     try {
       const user=connected();if(!isAdminUserName(user))throw new Error('Accès réservé à l’administrateur.');
       if(!config.scriptUrl)throw new Error('Configurez d’abord le service de notifications.');
@@ -182,6 +190,7 @@
         const entered=prompt('Configuration unique sur votre appareil personnel : collez votre clé PUSH_ADMIN_SECRET. Après validation, elle sera conservée ici pour vos prochains envois. Toute personne ayant accès à votre session pourra envoyer des notifications.');
         if(!entered||!entered.trim())return;
         secret=entered.trim();
+        rememberAdminKey(user,secret);
       }
       busy=true;document.querySelectorAll('[data-push-send]').forEach(b=>b.disabled=true);
       report('Transmission en cours…');
@@ -198,7 +207,7 @@
       const persisted=rememberAdminKey(user,secret);
       pendingRequest=null;
       report(r.accepted+' notification(s) acceptée(s) par le service pour '+r.users+' contrôleur(s), '+r.failed+' échec(s) ou résultat(s) incertain(s). La réception sur chaque téléphone reste à vérifier.'+(persisted?'':' Le navigateur bloque la mémorisation : la clé reste disponible uniquement tant que cette page est ouverte.'));
-    }catch(e){report(e.message);}finally{busy=false;document.querySelectorAll('[data-push-send]').forEach(b=>b.disabled=false);}
+    }catch(e){report(e.message);if(typeof showAlert==='function')showAlert(e.message,'error');else alert(e.message);}finally{busy=false;document.querySelectorAll('[data-push-send]').forEach(b=>b.disabled=false);}
   };
   // Initialiser l’écoute au premier plan sans demander d’autorisation.
   if('Notification' in window&&Notification.permission==='granted')initMessaging().catch(()=>{});
