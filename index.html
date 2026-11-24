@@ -218,7 +218,35 @@
         .exclusion-type-option:hover { border-color: #dc3545; }
         .exclusion-type-option.selected { border-color: #dc3545; background: #ffebee; }
         .exclusion-type-option .title { font-weight: 700; color: #333; font-size:15px; }
-    </style>
+    
+        .push-info-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+        .push-info-heading h1{min-width:0;overflow-wrap:anywhere;}
+        .push-settings{position:relative;flex:0 0 auto;z-index:10;}
+        .push-settings summary{position:relative;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #dce3e8;border-radius:50%;background:white;cursor:pointer;list-style:none;font-size:21px;}
+        .push-settings summary::-webkit-details-marker{display:none;}
+        .push-settings summary:focus-visible,.push-switch-row:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}
+        .push-bell-dot{position:absolute;right:4px;top:4px;width:9px;height:9px;border-radius:50%;background:#9ca3af;border:2px solid white;box-sizing:content-box;}
+        .push-bell-dot.is-on{background:#168044;}
+        .push-settings-panel{position:absolute;right:0;top:52px;width:280px;max-width:calc(100vw - 48px);box-sizing:border-box;padding:16px;background:white;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 28px #0002;color:#253347;}
+        .push-settings-title{font-size:16px;font-weight:700;margin-bottom:12px;}
+        .push-switch-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:44px;border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-weight:600;color:#606b78;}
+        .push-switch-track{display:flex;align-items:center;flex-shrink:0;width:48px;height:28px;padding:3px;box-sizing:border-box;border-radius:20px;background:#9ca3af;}
+        .push-switch-track span{width:22px;height:22px;background:white;border-radius:50%;box-shadow:0 1px 3px #0003;transition:transform .15s;}
+        .push-switch-row[aria-checked="true"]{color:#146c3a;}
+        .push-switch-row[aria-checked="true"] .push-switch-track{background:#168044;}
+        .push-switch-row[aria-checked="true"] .push-switch-track span{transform:translateX(20px);}
+        .push-switch-row:disabled{opacity:.6;cursor:wait;}
+        #pushStatus{font-size:12px;line-height:1.5;margin:10px 0 0;color:#596575;overflow-wrap:anywhere;}
+
+        .push-announcement{margin-top:18px;padding-top:14px;border-top:1px solid #e2e8f0;}
+        .push-announcement-controls{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+        .push-recipient-menu{flex:1 1 190px;min-width:0;}
+        .push-recipient-menu summary{cursor:pointer;padding:11px 13px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;font-weight:600;}
+        .push-recipient-list{max-height:230px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-top:6px;}
+        .push-recipient-list label{display:flex;align-items:center;gap:10px;min-height:40px;cursor:pointer;overflow-wrap:anywhere;}
+        .push-recipient-list input{width:18px;height:18px;flex-shrink:0;}
+        .push-announcement-status{font-size:13px;line-height:1.5;margin-top:10px;color:#526173;}
+</style>
 </head>
 <body>
     <div class="alert" id="alert"></div>
@@ -308,11 +336,18 @@
         <div class="page" id="pageInfo">
             <div class="page-topbar"><span class="page-topbar-icon">ℹ️</span><span class="page-topbar-title">INFORMATIONS</span></div>
             <div class="page-content">
-                <h1 class="page-title" style="margin-bottom:16px;">ℹ️ Informations</h1>
-                <div class="page-card" style="margin-bottom:16px;">
-                    <button id="pushEnable" type="button" class="btn btn-primary" onclick="activerNotificationsInfos()">🔔 Activer les notifications</button>
-                    <button type="button" class="btn" onclick="desactiverNotificationsInfos()" style="margin-top:8px;">Désactiver sur cet appareil</button>
-                    <p id="pushStatus" role="status" style="margin-top:12px;line-height:1.5;">Recevez une notification quand une nouvelle information est annoncée. Sur iPhone, ajoutez d’abord le site à l’écran d’accueil et ouvrez-le depuis cette icône.</p>
+                <div class="push-info-heading">
+                    <h1 class="page-title" style="margin:0;">ℹ️ Informations</h1>
+                    <details id="pushSettings" class="push-settings">
+                        <summary aria-label="Réglages des notifications" title="Notifications"><span aria-hidden="true">🔔</span><span id="pushBellDot" class="push-bell-dot" aria-hidden="true"></span></summary>
+                        <div class="push-settings-panel">
+                            <div class="push-settings-title">Notifications</div>
+                            <button id="pushEnable" class="push-switch-row" type="button" role="switch" aria-checked="false" aria-label="Notifications sur cet appareil" onclick="basculerNotificationsInfos()">
+                                <span id="pushSwitchLabel">Désactivées</span><span class="push-switch-track" aria-hidden="true"><span></span></span>
+                            </button>
+                            <p id="pushStatus" role="status">Activez les notifications pour être prévenu des nouvelles informations.</p>
+                        </div>
+                    </details>
                 </div>
                 <div id="infoSectionsDisplay"><div class="page-card">Chargement des informations...</div></div>
             </div>
@@ -526,19 +561,6 @@
                     </div>
                 </div>
                 <div id="adminTabInfo" class="admin-tab-content">
-                    <div class="page-card" style="margin-bottom:18px;">
-                        <p style="margin-bottom:12px;">Enregistrez vos informations, puis prévenez les contrôleurs ayant activé les notifications.</p>
-                        <button type="button" class="btn" onclick="chargerDestinatairesPush()">Choisir les destinataires</button>
-                        <fieldset style="margin:12px 0;padding:12px;border:1px solid #ddd;border-radius:8px;">
-                            <legend>Destinataires de la notification</legend>
-                            <label><input id="pushSelectAll" type="checkbox" disabled onchange="selectionnerTousPush(this.checked)"> Tout le monde</label>
-                            <div id="pushRecipients" style="display:grid;gap:10px;margin-top:12px;">Cliquez sur « Choisir les destinataires » pour charger les utilisateurs.</div>
-                            <p>Seuls les appareils ayant autorisé les notifications pourront recevoir le message.</p>
-                        </fieldset>
-                        <button type="button" data-push-send class="btn btn-primary" onclick="transmettreNotificationInfos(false)">🔔 Transmettre</button>
-                        <button type="button" data-push-send class="btn" onclick="transmettreNotificationInfos(true)">Tester sur mes appareils</button>
-                        <p id="pushAdminStatus" role="status" style="margin-top:12px;line-height:1.5;"></p>
-                    </div>
                     <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:15px;margin-bottom:18px;">
                         <p style="font-weight:700;color:#7a5b00;margin-bottom:8px;">➕ Ajouter une nouvelle section d'information</p>
                         <p style="color:#666;font-size:13px;margin-bottom:12px;">Chaque section est indépendante : vous pourrez ensuite la modifier ou la supprimer.</p>
@@ -1657,6 +1679,10 @@
                     meta.className = 'info-section-meta';
                     meta.textContent = metaText;
                     card.appendChild(meta);
+                }
+                if (window.creerEnvoiAnnoncePush) {
+                    const sending = window.creerEnvoiAnnoncePush(section);
+                    if (sending) card.appendChild(sending);
                 }
                 container.appendChild(card);
             });
