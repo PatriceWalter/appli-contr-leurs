@@ -2,6 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="theme-color" content="#1a472a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎣 Comité / Garde Pêche - AAPPMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -305,6 +309,11 @@
             <div class="page-topbar"><span class="page-topbar-icon">ℹ️</span><span class="page-topbar-title">INFORMATIONS</span></div>
             <div class="page-content">
                 <h1 class="page-title" style="margin-bottom:16px;">ℹ️ Informations</h1>
+                <div class="page-card" style="margin-bottom:16px;">
+                    <button id="pushEnable" type="button" class="btn btn-primary" onclick="activerNotificationsInfos()">🔔 Activer les notifications</button>
+                    <button type="button" class="btn" onclick="desactiverNotificationsInfos()" style="margin-top:8px;">Désactiver sur cet appareil</button>
+                    <p id="pushStatus" role="status" style="margin-top:12px;line-height:1.5;">Recevez une notification quand une nouvelle information est annoncée. Sur iPhone, ajoutez d’abord le site à l’écran d’accueil et ouvrez-le depuis cette icône.</p>
+                </div>
                 <div id="infoSectionsDisplay"><div class="page-card">Chargement des informations...</div></div>
             </div>
         </div>
@@ -517,6 +526,19 @@
                     </div>
                 </div>
                 <div id="adminTabInfo" class="admin-tab-content">
+                    <div class="page-card" style="margin-bottom:18px;">
+                        <p style="margin-bottom:12px;">Enregistrez vos informations, puis prévenez les contrôleurs ayant activé les notifications.</p>
+                        <button type="button" class="btn" onclick="chargerDestinatairesPush()">Choisir les destinataires</button>
+                        <fieldset style="margin:12px 0;padding:12px;border:1px solid #ddd;border-radius:8px;">
+                            <legend>Destinataires de la notification</legend>
+                            <label><input id="pushSelectAll" type="checkbox" disabled onchange="selectionnerTousPush(this.checked)"> Tout le monde</label>
+                            <div id="pushRecipients" style="display:grid;gap:10px;margin-top:12px;">Cliquez sur « Choisir les destinataires » pour charger les utilisateurs.</div>
+                            <p>Seuls les appareils ayant autorisé les notifications pourront recevoir le message.</p>
+                        </fieldset>
+                        <button type="button" data-push-send class="btn btn-primary" onclick="transmettreNotificationInfos(false)">🔔 Transmettre</button>
+                        <button type="button" data-push-send class="btn" onclick="transmettreNotificationInfos(true)">Tester sur mes appareils</button>
+                        <p id="pushAdminStatus" role="status" style="margin-top:12px;line-height:1.5;"></p>
+                    </div>
                     <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:15px;margin-bottom:18px;">
                         <p style="font-weight:700;color:#7a5b00;margin-bottom:8px;">➕ Ajouter une nouvelle section d'information</p>
                         <p style="color:#666;font-size:13px;margin-bottom:12px;">Chaque section est indépendante : vous pourrez ensuite la modifier ou la supprimer.</p>
@@ -953,6 +975,11 @@
 
         function showPage(id) { 
             if (id === 'rdvReunions') id = 'info';
+            if (sessionStorage.getItem('logged') === 'true' && new URLSearchParams(location.search).get('push') === 'info') {
+                id = 'info';
+                const pushUrl = new URL(location.href); pushUrl.searchParams.delete('push');
+                history.replaceState(history.state, '', pushUrl.pathname + pushUrl.search + pushUrl.hash);
+            }
             if (isControllerModulePage(id) && !currentControllerModuleAllowed) {
                 showAlert('🚫 Vous n’avez pas l’autorisation d’accéder au Module Contrôleur', 'warning');
                 updateControllerModuleCard();
@@ -1160,7 +1187,7 @@
                 } 
                 loadAllData(); 
                 listenOnlineUsers(); 
-                const savedPage = sessionStorage.getItem('currentPage'); 
+                const savedPage = new URLSearchParams(location.search).get('push') === 'info' ? 'info' : sessionStorage.getItem('currentPage'); 
                 if (savedPage && savedPage !== 'portal') setTimeout(() => showPage(savedPage), 100); 
             } 
         }
@@ -3246,5 +3273,7 @@
         styleMobile.innerHTML = '@media (max-width: 600px) { .page, .menu-page, .sub-menu-page { padding-bottom: 130px !important; } }';
         document.head.appendChild(styleMobile);
     </script>
+    <script src="./push-config.js"></script>
+    <script src="./push-infos.js"></script>
 </body>
 </html>
