@@ -81,6 +81,12 @@
         .portal-choice-card h2 { color: #1a472a; font-size: 19px; margin-bottom: 8px; }
         .portal-choice-card p { color: #777; font-size: 13px; line-height: 1.5; }
         .info-section-card { background: #fff; border: 1px solid #d5d8ce; border-left: 5px solid #e8a838; border-radius: 14px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+        .visit-history { flex-basis:100%; overflow-wrap:anywhere }
+        .visit-history div { margin-top:6px; font-size:13px }
+        .login-history-item { flex-wrap:wrap }
+        .visit-history summary, .info-section-card > summary { cursor:pointer }
+        .info-section-card > summary { font-weight:700; color:#1a472a; font-size:19px }
+        .info-section-card[open] > summary { margin-bottom:12px }
         .info-section-card h2 { color: #1a472a; font-size: 19px; margin-bottom: 10px; }
         .info-section-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 16px; line-height: 1.7; color: #333; }
         .info-section-meta { color: #888; font-size: 11px; margin-top: 13px; text-align: right; }
@@ -260,6 +266,7 @@
                 <option value="">-- Choisir votre nom --</option>
             </select>
             <input type="password" class="login-input" id="loginCode" placeholder="Mot de passe" autocomplete="off">
+            <p style="font-size:12px;margin:8px 0">Les pages consultées et les annonces ouvertes figurent dans l’historique accessible à l’administrateur.</p>
             <button class="login-btn" id="loginBtn">🔐 Se connecter</button>
             <p class="login-error" id="loginError"></p>
         </div>
@@ -583,7 +590,7 @@
                 </div>
                 <div id="adminTabConnections" class="admin-tab-content">
                     <div class="login-history-summary">
-                        <p style="color:#666;font-size:13px;line-height:1.5;">Historique des connexions réussies, avec le nom de l’utilisateur, la date et l’heure.</p>
+                        <p style="color:#666;font-size:13px;line-height:1.5;">Ouvrez l’activité d’une connexion pour consulter les pages visitées et les annonces ouvertes, avec la date et l’heure.</p>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;">
                             <button class="btn btn-primary btn-small" type="button" onclick="loadLoginHistory()">🔄 Actualiser</button>
                             <button class="btn btn-danger btn-small" type="button" onclick="clearLoginHistory()">🗑️ Vider</button>
@@ -1013,15 +1020,17 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
             document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active'); 
             document.getElementById('navButtons').classList.toggle('visible', id !== 'portal');
+            recordPage(id);
             if (id === 'recherche') renderPecheursAlphabetique();
             if (id === 'historique') renderHistorique();
             if (id === 'travail') renderTravail();
             if (id === 'info') {
+                document.getElementById('infoSectionsDisplay').replaceChildren();
                 renderInfoSections();
             }
         }
         
-        document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'portal'); } });
+        document.getElementById('backBtn').addEventListener('click', () => { if (pageHistory.length > 0) { currentPage = pageHistory.pop(); sessionStorage.setItem('currentPage', currentPage); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1)).classList.add('active'); document.getElementById('navButtons').classList.toggle('visible', currentPage !== 'portal'); recordPage(currentPage); } });
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('portal'); pageHistory = []; });
         document.querySelectorAll('.menu-card[data-page], .menu-grid-card[data-page], .portal-choice-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
@@ -1197,6 +1206,8 @@
                         return;
                     }
                 } catch(e) {}
+                if (!sessionStorage.getItem('visitSession') || sessionStorage.getItem('visitUser') !== savedUser)
+                    recordSuccessfulLogin(savedUser, true);
                 await loadCurrentControllerModuleAccess(savedUser);
                 document.getElementById('loginPage').style.display = 'none'; 
                 document.getElementById('appContainer').style.display = 'block'; 
@@ -1210,7 +1221,7 @@
                 loadAllData(); 
                 listenOnlineUsers(); 
                 const savedPage = new URLSearchParams(location.search).get('push') === 'info' ? 'info' : sessionStorage.getItem('currentPage'); 
-                if (savedPage && savedPage !== 'portal') setTimeout(() => showPage(savedPage), 100); 
+                showPage(savedPage || 'portal'); 
             } 
         }
         checkSession();
@@ -1218,10 +1229,39 @@
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('loginCode').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
 
-        async function recordSuccessfulLogin(userName) {
+        function recordVisit(kind, label, sectionKey) {
+            const key = sessionStorage.getItem('visitSession');
+            const user = getCurrentUser();
+            if (!key || sessionStorage.getItem('logged') !== 'true' ||
+                sessionStorage.getItem('visitUser') !== user) return Promise.resolve();
+            const ref = dbCentral.ref('security/login_history/' + key);
+            const eventKey = ref.child('visits').push().key;
+            const event = {kind, label, timestamp: firebase.database.ServerValue.TIMESTAMP};
+            if (sectionKey) event.sectionKey = sectionKey;
+            return ref.transaction(function(session) {
+                if (!session) return null;
+                if (session.user !== user) return;
+                session.visits = session.visits || {};
+                session.visits[eventKey] = event;
+                return session;
+            }, undefined, false).catch(e => console.warn('Historique de visite indisponible', e.code));
+        }
+
+        function recordPage(id) {
+            const page = document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1));
+            const label = {portal:'Accueil', menu:'Module Contrôleur'}[id] ||
+                page?.querySelector('.page-topbar-title, .menu-topbar-title')?.textContent;
+            if (label) recordVisit('Page', label);
+        }
+
+        async function recordSuccessfulLogin(userName, resumed = false) {
             if (!userName) return;
             try {
-                await dbCentral.ref('security/login_history').push().set({
+                const session = dbCentral.ref('security/login_history').push();
+                sessionStorage.setItem('visitSession', session.key);
+                sessionStorage.setItem('visitUser', userName);
+                await session.set({
+                    resumed,
                     user: userName,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     dateIso: new Date().toISOString()
@@ -1243,7 +1283,7 @@
                 snapshot.forEach(function(child) {
                     const value = child.val() || {};
                     const timestamp = Number(value.timestamp) || Date.parse(value.dateIso || '') || 0;
-                    entries.push({ key: child.key, user: value.user || 'Utilisateur inconnu', timestamp: timestamp });
+                    entries.push({ key: child.key, user: value.user || 'Utilisateur inconnu', timestamp, resumed: value.resumed, visits: Object.values(value.visits || {}) });
                 });
                 entries.sort(function(a, b) { return b.timestamp - a.timestamp; });
                 container.innerHTML = '';
@@ -1272,7 +1312,20 @@
                         date.textContent = 'Date inconnue';
                     }
                     row.appendChild(user);
+                    if (entry.resumed) date.textContent += ' · Session reprise';
                     row.appendChild(date);
+                    const detail = document.createElement('details');
+                    detail.className = 'visit-history';
+                    const summary = document.createElement('summary');
+                    summary.textContent = entry.visits.length ? 'Activité (' + entry.visits.length + ')' : 'Aucune visite enregistrée';
+                    detail.appendChild(summary);
+                    entry.visits.sort((a,b) => a.timestamp - b.timestamp).forEach(function(event) {
+                        const line = document.createElement('div');
+                        line.textContent = new Date(event.timestamp).toLocaleString('fr-FR', {timeZone:'Europe/Paris'}) +
+                            ' · ' + event.kind + ' · ' + event.label;
+                        detail.appendChild(line);
+                    });
+                    row.appendChild(detail);
                     container.appendChild(row);
                 });
             } catch(e) {
@@ -1492,12 +1545,14 @@
         }
         
         function openHardt() {
+            recordVisit('Lien ouvert', 'Réservations Hardt');
             const user = getCurrentUser();
             const url = 'https://patricewalter.github.io/r-saHardt/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
             window.open(url, '_blank');
         }
         
         function openCarpodrome() {
+            recordVisit('Lien ouvert', 'Réservations Carpodrome');
             const user = getCurrentUser();
             const url = 'https://patricewalter.github.io/reservation-carpodrome/?autoconnect=911&from=controleur' + (user ? '&user=' + encodeURIComponent(user) : '') + '#controleur';
             window.open(url, '_blank');
@@ -1548,6 +1603,7 @@
             if (tabs[tab] === undefined) return;
             document.querySelectorAll('.admin-tab')[tabs[tab]].classList.add('active');
             document.getElementById(panels[tab]).classList.add('active');
+            recordVisit('Onglet', 'Administration · ' + document.querySelectorAll('.admin-tab')[tabs[tab]].textContent.trim());
             if (tab === 'cartes') loadCartesValides();
             if (tab === 'controleurs') { loadControleurs(); loadSecuritySettings(); }
             if (tab === 'tickets') { renderTicketModuleSettings(); renderTicketViewAllSettings(); }
@@ -1643,6 +1699,7 @@
         function renderInfoSections() {
             const container = document.getElementById('infoSectionsDisplay');
             if (!container) return;
+            const expanded = new Set(Array.from(container.querySelectorAll('details[data-annonce][open]'), el => el.dataset.annonce));
             container.innerHTML = '';
             if (infoSections.length === 0) {
                 const empty = document.createElement('div');
@@ -1654,9 +1711,17 @@
                 return;
             }
             infoSections.forEach(function(section) {
-                const card = document.createElement('section');
+                const card = document.createElement('details');
                 card.className = 'info-section-card';
-                const title = document.createElement('h2');
+                card.dataset.annonce = section.key;
+                let wasOpen = expanded.has(section.key);
+                card.open = wasOpen;
+                card.addEventListener('toggle', function() {
+                    if (card.open && !wasOpen && card.isConnected && currentPage === 'info')
+                        recordVisit('Annonce ouverte', section.title || 'Information', section.key);
+                    wasOpen = card.open;
+                });
+                const title = document.createElement('summary');
                 title.textContent = section.title || 'Information';
                 const content = document.createElement('div');
                 content.className = 'info-section-text';
@@ -2662,7 +2727,7 @@
             } 
         }
 
-        function switchHistTab(tab) { 
+        function switchHistTab(tab) { recordVisit('Onglet', 'Infractions · ' + tab); 
             currentHistTab = tab; 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
             if (tab === 'avertissements') document.querySelectorAll('.tab-btn')[0].classList.add('active'); 
@@ -2761,7 +2826,7 @@
             } 
         }
 
-        function switchFicheTab(tab) { document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderHistoriqueEnvois(); } }
+        function switchFicheTab(tab) { recordVisit('Onglet', 'Fiche · ' + tab); document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.fiche-tab-content').forEach(c => c.classList.remove('active')); if (tab === 'saisir') { document.querySelectorAll('.fiche-tab')[0].classList.add('active'); document.getElementById('tabSaisir').classList.add('active'); } else if (tab === 'envoyer') { document.querySelectorAll('.fiche-tab')[1].classList.add('active'); document.getElementById('tabEnvoyer').classList.add('active'); } else { document.querySelectorAll('.fiche-tab')[2].classList.add('active'); document.getElementById('tabMails').classList.add('active'); renderHistoriqueEnvois(); } }
 
         async function loadMailsSent() { try { const snap = await dbCentral.ref('mailsSent').once('value'); const data = snap.val(); mailsSent = data ? (Array.isArray(data) ? data : Object.values(data)) : []; } catch(e) { mailsSent = []; } }
         async function saveMailsSent() { try { await dbCentral.ref('mailsSent').set(mailsSent); } catch(e) { console.error('Erreur sauvegarde mails:', e); } }
@@ -2981,10 +3046,10 @@
         }
 
         document.getElementById('ticketMenuCard').addEventListener('click', function() {
-            window.location.href = 'ticket_numerique_aappma.html';
+            Promise.race([recordVisit('Lien ouvert', 'Tickets numériques'), new Promise(resolve => setTimeout(resolve, 1200))]).then(() => { window.location.href = 'ticket_numerique_aappma.html'; });
         });
         document.getElementById('goVerifQR').addEventListener('click', function() {
-            window.location.href = 'ticket_numerique_aappma.html?page=scan';
+            Promise.race([recordVisit('Lien ouvert', 'Vérification QR'), new Promise(resolve => setTimeout(resolve, 1200))]).then(() => { window.location.href = 'ticket_numerique_aappma.html?page=scan'; });
         });
 
         // ===== JOURNÉES DE TRAVAIL =====
@@ -3299,7 +3364,7 @@
         styleMobile.innerHTML = '@media (max-width: 600px) { .page, .menu-page, .sub-menu-page { padding-bottom: 130px !important; } }';
         document.head.appendChild(styleMobile);
     </script>
-    <script src="./push-config.js"></script>
-    <script src="./push-infos.js"></script>
+    <script src="./push-config.js?v=20261124-2"></script>
+    <script src="./push-infos.js?v=20261124-2"></script>
 </body>
 </html>
