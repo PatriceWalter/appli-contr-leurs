@@ -1057,6 +1057,7 @@
                 const pushUrl = new URL(location.href); pushUrl.searchParams.delete('push');
                 history.replaceState(history.state, '', pushUrl.pathname + pushUrl.search + pushUrl.hash);
             }
+            if (['admin','editFiche'].includes(id) && !isAdminUserName(getCurrentUser())) id='portal';
             if (isControllerModulePage(id) && !currentControllerModuleAllowed) {
                 showAlert('🚫 Vous n’avez pas l’autorisation d’accéder au Module Contrôleur', 'warning');
                 updateControllerModuleCard();
@@ -1084,12 +1085,49 @@
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
         document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
-        function isAdminUserName(userName) {
-            return (userName || '').toLowerCase().indexOf('patrice') !== -1;
+        // Le compte secondaire provient de la configuration publiée avec le site.
+        let secondaryAdmin = '';
+        let roleRequest = null;
+        function isOwner(name) { return name === 'Patrice'; }
+        function isAdminUserName(name) { return isOwner(name) || (!!name && name === secondaryAdmin); }
+        function refreshAdminRole() {
+            if (roleRequest) return roleRequest;
+            roleRequest = (async () => {
+                const previous = secondaryAdmin;
+                try {
+                    const response = await fetch('./administrateur.json', {cache:'no-store'});
+                    if (!response.ok) throw Error();
+                    const config = await response.json();
+                    secondaryAdmin = typeof config.secondaire === 'string' ? config.secondaire : '';
+                } catch { secondaryAdmin = ''; }
+                if (previous !== secondaryAdmin && sessionStorage.getItem('logged') === 'true') {
+                    const user = getCurrentUser();
+                    if (previous && user === previous) { location.reload(); return; }
+                    updateMenuUser(user);
+                    renderControleurs();
+                    renderInfoSections();
+                }
+            })().finally(() => { roleRequest=null; });
+            return roleRequest;
+        }
+        window.addEventListener('focus',refreshAdminRole);
+        setInterval(() => { if (!document.hidden) refreshAdminRole(); }, 60000);
+
+        function exportAdminRole(name) {
+            if (!isOwner(getCurrentUser()) || sessionStorage.getItem('logged') !== 'true') return;
+            if (name && (!allControleurs.includes(name) || isControleurRevoked(name))) return;
+            const question = name ? 'Préparer la nomination de '+name+' comme administrateur secondaire ?' :
+                'Préparer le retrait du rôle administrateur secondaire ?';
+            if (!confirm(question)) return;
+            const url=URL.createObjectURL(new Blob([JSON.stringify({secondaire:name},null,2)],{type:'application/json'}));
+            const link=document.createElement('a');
+            link.href=url; link.download='administrateur.json'; document.body.append(link); link.click();link.remove();
+            setTimeout(()=>URL.revokeObjectURL(url),10000);
+            showAlert('Publiez administrateur.json à côté de index.html sur le site contrôleurs pour appliquer le changement.', 'success');
         }
 
         function controllerModuleIsAllowed(accessValue, userName) {
-            if (isAdminUserName(userName)) return true;
+            if (isOwner(userName)) return true;
             if (accessValue === false) return false;
             if (accessValue && typeof accessValue === 'object' && accessValue.allowed === false) return false;
             return true;
@@ -1116,7 +1154,7 @@
         }
 
         async function loadCurrentControllerModuleAccess(userName) {
-            if (!userName || isAdminUserName(userName)) {
+            if (!userName || isOwner(userName)) {
                 currentControllerModuleAllowed = true;
                 updateControllerModuleCard();
                 return true;
@@ -1133,7 +1171,7 @@
 
         function startControllerModuleAccessGuard(userName) {
             stopControllerModuleAccessGuard();
-            if (!userName || isAdminUserName(userName)) {
+            if (!userName || isOwner(userName)) {
                 currentControllerModuleAllowed = true;
                 updateControllerModuleCard();
                 return;
@@ -1153,7 +1191,7 @@
         }
 
         function accessIsRevoked(accessValue, userName) {
-            if (isAdminUserName(userName)) return false;
+            if (isOwner(userName)) return false;
             return accessValue === false || (accessValue && accessValue.revoked === true);
         }
 
@@ -1184,7 +1222,7 @@
 
         function startAccessGuard(userName) {
             stopAccessGuard();
-            if (!userName || isAdminUserName(userName)) return;
+            if (!userName || isOwner(userName)) return;
             accessGuardRef = dbCentral.ref('controleurs_access/' + userName);
             accessGuardCallback = function(snapshot) {
                 if (accessIsRevoked(snapshot.val(), userName) && sessionStorage.getItem('logged') === 'true') {
@@ -1243,6 +1281,7 @@
             });
             if (sessionStorage.getItem('logged') === 'true') { 
                 const savedUser = localStorage.getItem('controleurUser');
+                await refreshAdminRole();
                 if (!savedUser) {
                     sessionStorage.removeItem('logged');
                     return;
@@ -1414,7 +1453,8 @@
                 const snap = await dbCentral.ref('controleurs_mdp/' + selectedUser).once('value');
                 const expectedCode = snap.val() || '911'; 
                 
-                if (enteredCode === expectedCode) { 
+                if (enteredCode === expectedCode) {
+                    await refreshAdminRole(); 
                     localStorage.setItem('controleurUser', selectedUser);
                     await loadCurrentControllerModuleAccess(selectedUser);
                     document.getElementById('loginPage').style.display = 'none'; 
@@ -2276,6 +2316,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         }
         
         window.resetPwdControleur = function(nom) {
+            if (isOwner(nom) && !isOwner(getCurrentUser())) return;
             if (confirm('Réinitialiser le mot de passe de ' + nom + ' à 911 ?')) {
                 dbCentral.ref('controleurs_mdp/' + nom).remove().then(() => {
                     showAlert('Mot de passe réinitialisé pour ' + nom, 'success');
@@ -2294,7 +2335,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         window.toggleControleurAccess = async function(index) {
             const nom = allControleurs[index];
             if (!nom) return;
-            if (isAdminUserName(nom)) {
+            if (isOwner(nom)) {
                 showAlert('🛡️ Le compte administrateur ne peut pas être révoqué', 'warning');
                 return;
             }
@@ -2332,7 +2373,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         window.toggleControleurModuleAccess = async function(index) {
             const nom = allControleurs[index];
             if (!nom) return;
-            if (isAdminUserName(nom)) {
+            if (isOwner(nom)) {
                 showAlert('🛡️ Le Module Contrôleur reste toujours accessible à l’administrateur', 'warning');
                 return;
             }
@@ -2403,8 +2444,9 @@ window.addEventListener('focus',refreshSeasonPanel);
                     item.className = state;
                     badges.appendChild(item);
                 }
-                badge(admin ? 'Administrateur' : revoked ? 'Compte révoqué' : 'Compte actif', admin ? 'role' : revoked ? 'off' : 'on');
-                badge(admin ? 'Module permanent' : allowed ? 'Module contrôleur autorisé' : 'Module contrôleur refusé', admin ? 'role' : allowed ? 'on' : 'off');
+                if (admin) badge(isOwner(name) ? 'Administrateur principal' : 'Administrateur secondaire','role');
+                badge(revoked ? 'Compte révoqué' : 'Compte actif', revoked ? 'off' : 'on');
+                badge(isOwner(name) ? 'Module permanent' : allowed ? 'Module contrôleur autorisé' : 'Module contrôleur refusé', admin ? 'role' : allowed ? 'on' : 'off');
                 card.appendChild(badges);
                 const actions = document.createElement('div');
                 actions.className = 'ctrl-actions';
@@ -2420,12 +2462,15 @@ window.addEventListener('focus',refreshSeasonPanel);
                     });
                     actions.appendChild(button);
                 }
-                action('Réinitialiser le mot de passe', () => resetPwdControleur(name));
-                if (!admin) {
+                if (!isOwner(name) || isOwner(getCurrentUser())) action('Réinitialiser le mot de passe', () => resetPwdControleur(name));
+                if (!isOwner(name)) {
                     action(allowed ? 'Refuser le module' : 'Autoriser le module', toggleControleurModuleAccess);
                     action(revoked ? 'Réactiver le compte' : 'Révoquer le compte', toggleControleurAccess, !revoked);
                 }
-                action('Supprimer le compte', removeControleur, true);
+                if (isOwner(getCurrentUser()) && !isOwner(name) && (admin || (!revoked && allowed))) {
+                    action(admin ? 'Retirer le rôle administrateur…' : 'Nommer administrateur…', () => exportAdminRole(admin ? '' : name));
+                }
+                if (!admin) action('Supprimer le compte', removeControleur, true);
                 card.appendChild(actions);
                 container.appendChild(card);
             }
@@ -2433,7 +2478,7 @@ window.addEventListener('focus',refreshSeasonPanel);
 
         async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
         
-        async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleurs(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
+        async function removeControleur(i) { if (isAdminUserName(allControleurs[i])) return; if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleurs(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
         
         async function saveControleurs() { await dbCentral.ref('controleurs').set(allControleurs); }
 
@@ -3162,7 +3207,7 @@ window.addEventListener('focus',refreshSeasonPanel);
                 ticketModuleUsers = ['Patrice'];
             }
             let ticketAdminAdded = false;
-            allControleurs.filter(isAdminUserName).forEach(function(nom) {
+            allControleurs.filter(isOwner).forEach(function(nom) {
                 if (!ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); })) { ticketModuleUsers.push(nom); ticketAdminAdded = true; }
             });
             if (ticketAdminAdded) await dbCentral.ref('ticketModuleUsers').set(ticketModuleUsers);
@@ -3178,7 +3223,7 @@ window.addEventListener('focus',refreshSeasonPanel);
             const user = getCurrentUser();
             const card = document.getElementById('ticketMenuCard');
             if (card) {
-                const isEnabled = isAdminUserName(user) || ticketModuleUsers.some(u => u.toLowerCase() === user.toLowerCase());
+                const isEnabled = isOwner(user) || ticketModuleUsers.some(u => u.toLowerCase() === user.toLowerCase());
                 card.classList.toggle('visible', isEnabled);
             }
         }
@@ -3190,7 +3235,7 @@ window.addEventListener('focus',refreshSeasonPanel);
                 return;
             }
             container.innerHTML = allControleurs.map(function(nom, idx) {
-                var admin = isAdminUserName(nom);
+                var admin = isOwner(nom);
                 var checked = admin || ticketModuleUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
                 var cls = checked ? ' enabled' : '';
                 var safeId = 'tkchk_' + idx;
@@ -3205,7 +3250,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         }
 
         async function toggleTicketUser(nom, enabled) {
-            if (isAdminUserName(nom) && !enabled) return;
+            if (isOwner(nom) && !enabled) return;
             if (enabled) {
                 if (!ticketModuleUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
                     ticketModuleUsers.push(nom);
@@ -3232,7 +3277,7 @@ window.addEventListener('focus',refreshSeasonPanel);
                 ticketViewAllUsers = ['Patrice'];
             }
             let viewAdminAdded = false;
-            allControleurs.filter(isAdminUserName).forEach(function(nom) {
+            allControleurs.filter(isOwner).forEach(function(nom) {
                 if (!ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); })) { ticketViewAllUsers.push(nom); viewAdminAdded = true; }
             });
             if (viewAdminAdded) await dbCentral.ref('ticketViewAllUsers').set(ticketViewAllUsers);
@@ -3249,7 +3294,7 @@ window.addEventListener('focus',refreshSeasonPanel);
                 return;
             }
             container.innerHTML = allControleurs.map(function(nom, idx) {
-                var admin = isAdminUserName(nom);
+                var admin = isOwner(nom);
                 var checked = admin || ticketViewAllUsers.some(function(u) { return u.toLowerCase() === nom.toLowerCase(); });
                 var cls = checked ? ' enabled' : '';
                 var safeId = 'tkview_' + idx;
@@ -3264,7 +3309,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         }
 
         async function toggleTicketViewAll(nom, enabled) {
-            if (isAdminUserName(nom) && !enabled) return;
+            if (isOwner(nom) && !enabled) return;
             if (enabled) {
                 if (!ticketViewAllUsers.some(u => u.toLowerCase() === nom.toLowerCase())) {
                     ticketViewAllUsers.push(nom);
@@ -3289,8 +3334,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         const MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
         function isPatrice() {
-            const u = getCurrentUser().toLowerCase();
-            return u.indexOf('patrice') !== -1;
+            return isAdminUserName(getCurrentUser());
         }
 
         function getTravMoisKey(d) {
@@ -3404,7 +3448,7 @@ window.addEventListener('focus',refreshSeasonPanel);
         }
 
         function ajouterTravail() {
-            if (!isPatrice()) { showAlert('❌ Accès réservé à Patrice', 'error'); return; }
+            if (!isPatrice()) { showAlert('❌ Accès réservé à l’administrateur', 'error'); return; }
             const nom = document.getElementById('travNom').value.trim().toUpperCase();
             const prenom = document.getElementById('travPrenom').value.trim();
             const date = document.getElementById('travDate').value;
