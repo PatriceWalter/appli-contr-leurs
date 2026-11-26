@@ -252,6 +252,33 @@
         .push-recipient-list label{display:flex;align-items:center;gap:10px;min-height:40px;cursor:pointer;overflow-wrap:anywhere;}
         .push-recipient-list input{width:18px;height:18px;flex-shrink:0;}
         .push-announcement-status{font-size:13px;line-height:1.5;margin-top:10px;color:#526173;}
+
+        #adminTabControleurs .ctrl-box, #adminTabControleurs .ctrl-card {
+            padding:18px; border:1px solid #ccd6cf; border-radius:12px; margin-bottom:14px;
+        }
+        #adminTabControleurs .ctrl-box { background:#f4f7f4; }
+        #adminTabControleurs h2 { font-size:19px; margin:0 0 12px; color:#193d2d; }
+        #adminTabControleurs h3 { font-size:19px; margin:0 0 8px; overflow-wrap:anywhere; }
+        #adminTabControleurs p { font-size:15px; color:#47554e; margin-bottom:12px; }
+        #adminTabControleurs label { display:block; font-size:15px; font-weight:600; margin-bottom:6px; }
+        #adminTabControleurs .ctrl-form { display:grid; grid-template-columns:minmax(0,1fr) 9rem; gap:10px; }
+        #adminTabControleurs .ctrl-form input { box-sizing:border-box; min-width:0; width:100%; border:1px solid #809588; border-radius:8px; padding:10px 12px; background:white; font-size:16px; }
+        #adminTabControleurs .ctrl-form > * { min-height:46px; margin:0; }
+        #adminTabControleurs .ctrl-states { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+        #adminTabControleurs .ctrl-states span { border-radius:6px; padding:4px 8px; font-size:13px; font-weight:600; }
+        #adminTabControleurs .on { background:#e4f1e7;color:#235d38; }
+        #adminTabControleurs .off { background:#fae9e7;color:#852a29; }
+        #adminTabControleurs .role { background:#e6eff7;color:#214c70; }
+        #adminTabControleurs .ctrl-actions { border-top:1px solid #e0e6e1; padding-top:12px; display:grid; gap:9px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+        #adminTabControleurs .ctrl-actions button { min-height:44px; line-height:1.3; font-family:inherit; font-size:15px; font-weight:600; color:#214d3a; background:#f5f8f5; border:1px solid #a4baac; border-radius:8px; padding:9px; cursor:pointer; }
+        #adminTabControleurs .ctrl-actions .danger { color:#952f29; border-color:#dfb7b2; background:#fff9f8; }
+        #adminTabControleurs button:focus-visible, #adminTabControleurs input:focus-visible { outline:3px solid #246b9c; outline-offset:2px; }
+        @media(max-width:540px) {
+            #adminTabControleurs .ctrl-box, #adminTabControleurs .ctrl-card { padding:13px; }
+            #adminTabControleurs .ctrl-form, #adminTabControleurs .ctrl-actions { grid-template-columns:minmax(0,1fr); }
+            #pageAdmin:has(#adminTabControleurs.active) .admin-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+            #pageAdmin:has(#adminTabControleurs.active) .admin-tab { min-width:0; padding:8px 2px; }
+        }
 </style>
 </head>
 <body>
@@ -547,17 +574,24 @@
                     </div><div id="cartesValidesList"></div>
                 </div>
                 <div id="adminTabControleurs" class="admin-tab-content">
-                    <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:15px;margin-bottom:18px;">
-                        <p style="font-weight:700;color:#7a5b00;margin-bottom:8px;">🔔 Alertes de connexion révoquée</p>
-                        <p style="color:#666;font-size:13px;margin-bottom:10px;">Un e-mail est envoyé si un contrôleur dont l'accès est révoqué tente de se connecter.</p>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <input type="email" id="securityAlertEmail" value="walterpatrice67@gmail.fr" placeholder="Adresse e-mail de l'administrateur" class="carte-input" style="flex:1;min-width:220px;">
-                            <button class="btn btn-primary" onclick="saveSecurityAlertEmail()">💾 Enregistrer</button>
+                    <section class="ctrl-box">
+                        <h2>Alertes de connexion révoquée</h2>
+                        <p>Une tentative de connexion à un compte révoqué déclenche un e-mail à cette adresse.</p>
+                        <label for="securityAlertEmail">Adresse e-mail des alertes</label>
+                        <div class="ctrl-form">
+                            <input type="email" id="securityAlertEmail" value="walterpatrice67@gmail.fr">
+                            <button class="btn btn-primary" onclick="saveSecurityAlertEmail()">Enregistrer</button>
                         </div>
-                    </div>
-                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Liste des utilisateurs — vous pouvez révoquer totalement un compte ou seulement autoriser/refuser son Module Contrôleur. Un module refusé n’empêche pas l’accès aux Infos.</p>
-                        <div class="add-carte-form"><input type="text" id="newControleurNom" placeholder="Nom" class="carte-input"><button class="btn btn-primary" onclick="addControleur()">➕</button></div>
-                    </div><div id="controleursList"></div>
+                    </section>
+                    <section class="ctrl-box">
+                        <h2>Ajouter un contrôleur</h2>
+                        <label for="newControleurNom">Nom du contrôleur</label>
+                        <div class="ctrl-form">
+                            <input type="text" id="newControleurNom">
+                            <button class="btn btn-primary" onclick="addControleur()">Ajouter</button>
+                        </div>
+                    </section>
+                    <div id="controleursList"></div>
                 </div>
                 <div id="adminTabTickets" class="admin-tab-content">
                     <p style="color:#666;margin-bottom:15px;">Cochez les contrôleurs autorisés à utiliser le module de vente de tickets numériques.</p>
@@ -2170,35 +2204,57 @@
             }
         };
 
-        function renderControleurs() { 
-            const container = document.getElementById('controleursList'); 
-            if (allControleurs.length === 0) { container.innerHTML = '<div class="no-results">Aucun</div>'; return; } 
-            container.innerHTML = '<div class="cartes-count">👮 ' + allControleurs.length + '</div>' + 
-            allControleurs.map((nom, i) => {
-                const admin = isAdminUserName(nom);
-                const revoked = isControleurRevoked(nom);
-                const moduleAllowed = isControleurModuleAllowed(nom);
-                const status = admin
-                    ? '<span style="background:#e3f2fd;color:#1565c0;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">🛡️ ADMIN</span>'
-                    : revoked
-                        ? '<span style="background:#ffebee;color:#c62828;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">ACCÈS RÉVOQUÉ</span>'
-                        : '<span style="background:#e8f5e9;color:#2e7d32;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">ACCÈS ACTIF</span>';
-                const moduleStatus = admin
-                    ? '<span style="background:#e3f2fd;color:#1565c0;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">MODULE CONTRÔLEUR PERMANENT</span>'
-                    : moduleAllowed
-                        ? '<span style="background:#e8f5e9;color:#2e7d32;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">MODULE CONTRÔLEUR AUTORISÉ</span>'
-                        : '<span style="background:#ffebee;color:#c62828;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;">MODULE CONTRÔLEUR REFUSÉ</span>';
-                return '<div class="carte-item" style="border-left-color:#1565c0;">' +
-                '<div class="carte-item-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">👮 ' + nom + status + moduleStatus + '</div>' +
-                '<div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;">' +
-                '<button class="carte-delete-btn" style="background:#ff9800;color:white;" onclick="resetPwdControleur(\'' + nom + '\')" title="Réinitialiser le mot de passe">🔄 MDP</button>' +
-                (admin ? '' : '<button class="carte-delete-btn" style="background:' + (revoked ? '#2e7d32' : '#c62828') + ';color:white;" onclick="toggleControleurAccess(' + i + ')" title="' + (revoked ? 'Réactiver l’accès' : 'Révoquer l’accès') + '">' + (revoked ? '✅ Réactiver' : '🚫 Révoquer') + '</button>') +
-                (admin ? '' : '<button class="carte-delete-btn" style="background:' + (moduleAllowed ? '#6c757d' : '#1565c0') + ';color:white;" onclick="toggleControleurModuleAccess(' + i + ')" title="' + (moduleAllowed ? 'Refuser le Module Contrôleur' : 'Autoriser le Module Contrôleur') + '">' + (moduleAllowed ? '🚫 Refuser module' : '✅ Autoriser module') + '</button>') +
-                '<button class="carte-delete-btn" onclick="removeControleur(' + i + ')">🗑️</button>' +
-                '</div></div>';
-            }).join(''); 
+        function renderControleurs() {
+            const container = document.getElementById('controleursList');
+            container.replaceChildren();
+            const heading = document.createElement('h2');
+            heading.textContent = 'Contrôleurs (' + allControleurs.length + ')';
+            container.appendChild(heading);
+            for (const name of allControleurs) {
+                const admin = isAdminUserName(name);
+                const revoked = isControleurRevoked(name);
+                const allowed = isControleurModuleAllowed(name);
+                const card = document.createElement('article');
+                card.className = 'ctrl-card';
+                const title = document.createElement('h3');
+                title.textContent = name;
+                card.appendChild(title);
+                const badges = document.createElement('div');
+                badges.className = 'ctrl-states';
+                function badge(text, state) {
+                    const item = document.createElement('span');
+                    item.textContent = text;
+                    item.className = state;
+                    badges.appendChild(item);
+                }
+                badge(admin ? 'Administrateur' : revoked ? 'Compte révoqué' : 'Compte actif', admin ? 'role' : revoked ? 'off' : 'on');
+                badge(admin ? 'Module permanent' : allowed ? 'Module contrôleur autorisé' : 'Module contrôleur refusé', admin ? 'role' : allowed ? 'on' : 'off');
+                card.appendChild(badges);
+                const actions = document.createElement('div');
+                actions.className = 'ctrl-actions';
+                function action(label, handler, danger = false) {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.textContent = label;
+                    button.setAttribute('aria-label', label + ' · ' + name);
+                    if (danger) button.className = 'danger';
+                    button.addEventListener('click', () => {
+                        const index = allControleurs.indexOf(name);
+                        if (index !== -1) handler(index);
+                    });
+                    actions.appendChild(button);
+                }
+                action('Réinitialiser le mot de passe', () => resetPwdControleur(name));
+                if (!admin) {
+                    action(allowed ? 'Refuser le module' : 'Autoriser le module', toggleControleurModuleAccess);
+                    action(revoked ? 'Réactiver le compte' : 'Révoquer le compte', toggleControleurAccess, !revoked);
+                }
+                action('Supprimer le compte', removeControleur, true);
+                card.appendChild(actions);
+                container.appendChild(card);
+            }
         }
-        
+
         async function addControleur() { const nom = document.getElementById('newControleurNom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allControleurs.some(c => c.toUpperCase() === nom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allControleurs.push(nom); await saveControleurs(); document.getElementById('newControleurNom').value = ''; renderControleurs(); updateInfControleurSelect(); showAlert('✅ Ajouté', 'success'); }
         
         async function removeControleur(i) { if (!confirm('Supprimer ' + allControleurs[i] + ' ?')) return; allControleurs.splice(i, 1); await saveControleurs(); renderControleurs(); showAlert('✅ Supprimé', 'success'); }
