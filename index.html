@@ -279,6 +279,17 @@
             #pageAdmin:has(#adminTabControleurs.active) .admin-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
             #pageAdmin:has(#adminTabControleurs.active) .admin-tab { min-width:0; padding:8px 2px; }
         }
+
+#adminTabCartes label,.poll-editor label {display:block;font-weight:600;margin:10px 0}
+#adminTabCartes input,#adminTabCartes select,.poll-editor input:not([type=checkbox]),.poll-editor textarea {display:block;width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px;border:1px solid #889e8e;border-radius:8px;margin-top:5px}
+#adminTabCartes h3 {margin:20px 0 8px} #adminTabCartes table {width:100%;border-collapse:collapse;text-align:left;overflow-wrap:anywhere}
+#adminTabCartes th,#adminTabCartes td {padding:8px 4px;border-bottom:1px solid #d8e1d9} #adminTabCartes th{background:#edf4ee}
+#adminTabCartes td button {min-height:44px;color:#842d27;background:white;border:1px solid #d9b3ad;border-radius:6px;padding:6px}
+.info-poll,.poll-editor {min-width:0;border:1px solid #b8cabe;border-radius:10px;padding:12px;margin:14px 0}
+.info-poll legend,.poll-editor legend {font-weight:bold;color:#214f36}
+.info-poll label {display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.info-poll p {margin:0 0 6px;font-size:14px;overflow-wrap:anywhere}
+.poll-editor input[type=checkbox],.info-poll input[type=radio] {width:20px;height:20px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -569,10 +580,13 @@
                 </div>
                 <div id="adminTabFiches" class="admin-tab-content active"><div id="adminFichesList"></div></div>
                 <div id="adminTabCartes" class="admin-tab-content">
-                    <div class="cartes-header"><p style="color:#666;margin-bottom:15px;">Pêcheurs avec carte valide</p>
-                        <div class="add-carte-form"><input type="text" id="newCarteNom" placeholder="Nom" class="carte-input"><input type="text" id="newCartePrenom" placeholder="Prénom" class="carte-input"><button class="btn btn-primary" onclick="addCarteValide()">➕</button></div>
-                    </div><div id="cartesValidesList"></div>
-                </div>
+<h2>Cartes de pêche</h2>
+<label>Saison du registre<select id="seasonChoice" onchange="loadCartesValides()"></select></label>
+<form id="annualForm" onsubmit="addCarteValide(event)">
+<label>Nom<input id="newCarteNom" required></label><label>Prénom<input id="newCartePrenom" required></label>
+<button id="annualAdd" class="btn btn-primary">Ajouter</button></form>
+<p role="status" id="cardStatus"></p><h3 id="annualListTitle"></h3><div id="annualList"></div>
+<h3 id="doubleTitle"></h3><div id="doubleList"></div></div>
                 <div id="adminTabControleurs" class="admin-tab-content">
                     <section class="ctrl-box">
                         <h2>Alertes de connexion révoquée</h2>
@@ -617,7 +631,7 @@
                                 <div class="form-group full-width"><label for="newInfoLocation">Lieu</label><input type="text" id="newInfoLocation" placeholder="Salle, étang, adresse..."></div>
                             </div>
                         </div>
-                        <button class="btn btn-primary" type="button" onclick="addInfoSection()" style="width:100%;margin-top:12px;">➕ Ajouter et publier cette section</button>
+                        <div id="newPollEditor"></div><button class="btn btn-primary" type="button" onclick="addInfoSection()" style="width:100%;margin-top:12px;">➕ Ajouter et publier cette section</button>
                     </div>
                     <div class="form-section-title">ℹ️ Sections publiées</div>
                     <div id="adminInfoSectionsList"></div>
@@ -860,7 +874,7 @@
         let reglementsRead = { carpodrome: false, hardt: false, breitmatt: false };
         let currentReglementReading = null, deleteTarget = null, mailsSent = [], smsSent = [];
         let currentHistTab = 'avertissements';
-        let allCartesValides = [], allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
+        let allControleurs = [], ticketModuleUsers = [], ticketViewAllUsers = [];
         let pendingExclusion = null, selectedExclusionType = null;
         let controleursMdp = {}, controleursAccess = {}, controleurModuleAccess = {};
         let accessGuardRef = null, accessGuardCallback = null;
@@ -1645,12 +1659,80 @@
             if (tab === 'connections') loadLoginHistory();
         }
 
+function pollEditor(previous) {
+    const root=document.createElement('fieldset'); root.className='poll-editor';
+    const legend=document.createElement('legend'); legend.textContent='Sondage'; root.append(legend);
+    const toggle=document.createElement('input'); toggle.type='checkbox'; toggle.checked=!!previous?.enabled;
+    const label=document.createElement('label'); label.append(toggle,' Activer le sondage pour cette annonce'); root.append(label);
+    const fields=document.createElement('div'); root.append(fields);
+    function field(title,control,value) {
+        const caption=document.createElement('label'); caption.textContent=title;
+        control.value=value; caption.append(control); fields.append(caption); return control;
+    }
+    const question=field('Question',document.createElement('input'),previous?.question || 'Serez-vous présent à la réunion ?');
+    const old=Object.values(previous?.options || {});
+    const answers=field('Choix (un par ligne)',document.createElement('textarea'),old.length ? old.map(o=>o.label).join('\n') : 'Présent\nAbsent');
+    answers.rows=3;
+    function update() {fields.hidden=!toggle.checked;} toggle.onchange=update; update();
+    function read() {
+        if (!toggle.checked) return previous ? {...previous,enabled:false} : null;
+        const labels=answers.value.split('\n').map(s=>s.trim()).filter(Boolean);
+        if (!question.value.trim() || labels.length<2 || new Set(labels.map(s=>s.toLocaleLowerCase('fr'))).size!==labels.length)
+            throw Error('Indiquez une question et au moins deux réponses différentes.');
+        const options=labels.map(label=>old.find(o=>o.label===label) || {id:dbCentral.ref('infos_sections').push().key,label});
+        return {enabled:true,question:question.value.trim(),options};
+    }
+    return {root,read};
+}
+function installNewPoll() {
+    const holder=document.getElementById('newPollEditor');
+    const editor=pollEditor(null);holder.replaceChildren(editor.root);return editor;
+}
+let newPoll=installNewPoll();
+function pollUserKey(name) {
+    return Array.from(new TextEncoder().encode(name), n=>n.toString(16).padStart(2,'0')).join('');
+}
+function displayPoll(card,section) {
+    const poll=section.poll, user=getCurrentUser();
+    if (!poll?.enabled || !user || sessionStorage.getItem('logged')!=='true') return;
+    const root=document.createElement('fieldset');root.className='info-poll';
+    const legend=document.createElement('legend');legend.textContent=poll.question;root.append(legend);
+    const votes=section.pollVotes || {}, userKey=pollUserKey(user);
+    const mine=votes[userKey]?.option;
+    const status=document.createElement('p');status.setAttribute('role','status');
+    for (const option of Object.values(poll.options || {})) {
+        const group=Object.values(votes).filter(v=>v.option===option.id);
+        const label=document.createElement('label'), radio=document.createElement('input');
+        radio.type='radio';radio.name='poll-'+section.key;radio.checked=mine===option.id;
+        label.append(radio,' '+option.label+' ('+group.length+')');root.append(label);
+        if (isAdminUserName(user) && group.length) {
+            const names=document.createElement('p');names.textContent=group.map(v=>v.name).sort((a,b)=>a.localeCompare(b,'fr')).join(', ');root.append(names);
+        }
+        radio.onchange=async()=>{
+            root.disabled=true;
+            try {
+                const result=await dbCentral.ref('infos_sections/'+section.key).transaction(current=>{
+                    if (!current) return null;
+                    if (!current.poll?.enabled || !Object.values(current.poll.options||{}).some(o=>o.id===option.id)) return;
+                    current.pollVotes={...current.pollVotes,[userKey]:{name:user,option:option.id}};
+                    return current;
+                },undefined,false);
+                if (!result.committed || !result.snapshot.exists()) throw Error();
+            } catch(e) {renderInfoSections();showAlert('Réponse non enregistrée. Vérifiez le sondage et réessayez.','error');}
+            finally {root.disabled=false;}
+        };
+    }
+    if (Object.values(poll.options||{}).some(o=>o.id===mine)) status.textContent='Votre réponse est enregistrée.';
+    root.append(status);card.append(root);
+}
+
         function normalizeInfoSections(value) {
             if (!value || typeof value !== 'object') return [];
             return Object.entries(value).map(function(entry) {
                 const key = entry[0], item = entry[1] || {};
                 return {
                     key: key,
+                    poll:item.poll || null, pollVotes:item.pollVotes || {},
                     title: item.title || 'Information',
                     text: item.text || '',
                     createdAt: item.createdAt || '',
@@ -1771,6 +1853,7 @@
                     card.appendChild(calendarDate);
                 }
                 card.appendChild(content);
+                displayPoll(card,section);
                 const calendarButton = createGoogleCalendarButton(section);
                 if (calendarButton) card.appendChild(calendarButton);
                 if (metaText) {
@@ -1815,10 +1898,12 @@
         function setupInfoSectionsListener() {
             if (infoSectionsListenerSetup) return;
             infoSectionsListenerSetup = true;
+            let editorState;
             dbCentral.ref('infos_sections').on('value', function(snapshot) {
                 infoSections = normalizeInfoSections(snapshot.val());
                 renderInfoSections();
-                renderAdminInfoSections();
+                const nextState=JSON.stringify(infoSections.map(({pollVotes,...section})=>section));
+                if(nextState!==editorState){editorState=nextState;renderAdminInfoSections();}
                 if (infoSections.length === 0) migrateLegacyInfoIfNeeded();
             });
         }
@@ -1928,6 +2013,7 @@
                 textGroup.appendChild(textLabel);
                 textGroup.appendChild(textArea);
                 const calendarEditor = createAdminInfoCalendarEditor(section);
+                const editor = pollEditor(section.poll);
                 const meta = document.createElement('div');
                 meta.className = 'info-section-meta';
                 meta.textContent = formatInfoUpdate(section);
@@ -1938,7 +2024,7 @@
                 saveBtn.className = 'btn btn-primary';
                 saveBtn.style.flex = '1';
                 saveBtn.textContent = '💾 Enregistrer';
-                saveBtn.onclick = function() { saveInfoSection(section.key, titleInput.value, textArea.value, calendarEditor.getData()); };
+                saveBtn.onclick = function() { saveInfoSection(section.key, titleInput.value, textArea.value, calendarEditor.getData(),editor); };
                 const deleteBtn = document.createElement('button');
                 deleteBtn.type = 'button';
                 deleteBtn.className = 'btn btn-danger';
@@ -1949,6 +2035,7 @@
                 wrapper.appendChild(titleGroup);
                 wrapper.appendChild(textGroup);
                 wrapper.appendChild(calendarEditor.element);
+                wrapper.appendChild(editor.root);
                 wrapper.appendChild(meta);
                 wrapper.appendChild(actions);
                 container.appendChild(wrapper);
@@ -1996,7 +2083,9 @@
             if (calendarError) { showAlert('⚠️ ' + calendarError, 'warning'); return; }
             const now = new Date().toISOString();
             try {
-                await dbCentral.ref('infos_sections').push().set({ title: title, text: text, createdAt: now, updatedAt: now, updatedBy: getCurrentUser(), ...calendarData });
+                let poll; try { poll=newPoll.read(); } catch(e) {showAlert(e.message,'warning');return;}
+                await dbCentral.ref('infos_sections').push().set({ title: title, text: text, createdAt: now, updatedAt: now, updatedBy: getCurrentUser(), poll, ...calendarData });
+                newPoll=installNewPoll();
                 titleInput.value = '';
                 textInput.value = '';
                 document.getElementById('newInfoIsCalendarEvent').checked = false;
@@ -2010,14 +2099,15 @@
             } catch(e) { showAlert('❌ Impossible d’ajouter la section', 'error'); }
         };
 
-        window.saveInfoSection = async function(key, titleValue, textValue, calendarData) {
+        window.saveInfoSection = async function(key, titleValue, textValue, calendarData,editor) {
             if (!isAdminUserName(getCurrentUser())) { showAlert('❌ Accès réservé à l’administrateur', 'error'); return; }
             const title = (titleValue || '').trim(), text = (textValue || '').trim();
             if (!title || !text) { showAlert('⚠️ Le titre et le texte sont obligatoires', 'warning'); return; }
             const calendarError = validateInfoCalendarData(calendarData);
             if (calendarError) { showAlert('⚠️ ' + calendarError, 'warning'); return; }
             try {
-                await dbCentral.ref('infos_sections/' + key).update({ title: title, text: text, updatedAt: new Date().toISOString(), updatedBy: getCurrentUser(), ...calendarData });
+                let poll; try {poll=editor.read();} catch(e) {showAlert(e.message,'warning');return;}
+                await dbCentral.ref('infos_sections/' + key).update({ poll, title: title, text: text, updatedAt: new Date().toISOString(), updatedBy: getCurrentUser(), ...calendarData });
                 showAlert('✅ Section mise à jour', 'success');
             } catch(e) { showAlert('❌ Impossible de modifier la section', 'error'); }
         };
@@ -2031,37 +2121,123 @@
             } catch(e) { showAlert('❌ Impossible de supprimer la section', 'error'); }
         };
 
-        async function loadCartesValides() { 
-            const container = document.getElementById('cartesValidesList'); 
-            container.innerHTML = '<div style="text-align:center;padding:20px">⏳ Chargement...</div>'; 
-            allCartesValides = []; 
-            try { 
-                const snap = await dbCentral.ref('validUsers').once('value'); 
-                const data = snap.val(); 
-                if (data) { 
-                    const users = Array.isArray(data) ? data : Object.values(data); 
-                    users.forEach(u => { 
-                        if (u && u.nom) { 
-                            allCartesValides.push({ nom: u.nom, prenom: u.prenom || '' }); 
-                        } 
-                    }); 
-                } 
-            } catch(e) {} 
-            allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); 
-            renderCartesValides(); 
+function seasonClock(now = new Date()) {
+    const parts = new Intl.DateTimeFormat('fr-FR', {timeZone:'Europe/Paris', year:'numeric', month:'2-digit', day:'2-digit'}).formatToParts(now);
+    const part = name => Number(parts.find(p => p.type === name).value);
+    const year = part('year');
+    return {year, last:year + Number(part('month') === 12 && part('day') >= 15)};
+}
+function seasonPath(year) {
+    return Number(year) === 2026 ? 'validUsers' : 'validUsersByYear/' + year;
+}
+function personKey(person) {
+    const clean = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLocaleLowerCase('fr');
+    return JSON.stringify([clean(person.nom),clean(person.prenom)]);
+}
+function members(data) {
+    return Object.values(data || {}).filter(p => p && typeof p.nom === 'string' && p.nom.trim());
+}
+async function changeCard(year, person, add) {
+    const clock = seasonClock();
+    if (year < clock.year || year > clock.last) throw Error('Cette saison est fermée à la saisie.');
+    const ref = dbCentral.ref(seasonPath(year));
+    const key = personKey(person);
+    const id = ref.push().key;
+    await ref.once('value');
+    const result = await ref.transaction(data => {
+        const rows = {...(data || {})};
+        const existing = Object.keys(rows).filter(k => rows[k]?.nom && personKey(rows[k]) === key);
+        if (add) {
+            if (existing.length) return;
+            rows[id] = person;
+        } else {
+            if (!existing.length) return;
+            existing.forEach(k => delete rows[k]);
         }
-        
-        function renderCartesValides() { const container = document.getElementById('cartesValidesList'); if (allCartesValides.length === 0) { container.innerHTML = '<div class="no-results">Aucun pêcheur</div>'; return; } container.innerHTML = '<div class="cartes-count">🎫 ' + allCartesValides.length + ' pêcheur(s)</div>' + allCartesValides.map((u, i) => '<div class="carte-item"><div class="carte-item-name">' + u.nom + ' ' + u.prenom + '</div><button class="carte-delete-btn" onclick="removeCarteValide(' + i + ')">🗑️</button></div>').join(''); }
-        
-        async function addCarteValide() { const nom = document.getElementById('newCarteNom').value.trim(); const prenom = document.getElementById('newCartePrenom').value.trim(); if (!nom) { showAlert('❌ Nom obligatoire', 'error'); return; } if (allCartesValides.some(u => u.nom.toUpperCase() === nom.toUpperCase() && (u.prenom || '').toUpperCase() === prenom.toUpperCase())) { showAlert('⚠️ Déjà existant', 'error'); return; } allCartesValides.push({ nom: nom.toUpperCase(), prenom }); allCartesValides.sort((a, b) => (a.nom || '').localeCompare(b.nom || '')); await saveCartesValides(); document.getElementById('newCarteNom').value = ''; document.getElementById('newCartePrenom').value = ''; renderCartesValides(); showAlert('✅ Ajouté', 'success'); }
-        
-        async function removeCarteValide(i) { if (!confirm('Retirer ' + allCartesValides[i].nom + ' ?')) return; allCartesValides.splice(i, 1); await saveCartesValides(); renderCartesValides(); showAlert('✅ Retiré', 'success'); }
-        
-        async function saveCartesValides() { 
-            const usersObj = {}; 
-            allCartesValides.forEach((u, i) => { usersObj['user_' + i] = u; }); 
-            await dbCentral.ref('validUsers').set(usersObj); 
+        return rows;
+    }, undefined, false);
+    if (!result.committed) throw Error(add ? 'Cette carte existe déjà pour cette saison.' : 'Cette carte a déjà été retirée.');
+}
+let seasonRequest = 0;
+let seasonStamp = '';
+const cardField = id => document.getElementById(id);
+function cardTable(target, rows, remove) {
+    const box = cardField(target);
+    box.replaceChildren();
+    if (!rows.length) { box.textContent = 'Aucun pêcheur enregistré.'; return; }
+    const table = document.createElement('table');
+    const header = table.createTHead().insertRow();
+    for (const label of (remove ? ['Nom','Prénom','Action'] : ['Nom','Prénom'])) {
+        const th = document.createElement('th'); th.textContent = label; header.append(th);
+    }
+    const body = table.createTBody();
+    for (const person of rows.sort((a,b) => a.nom.localeCompare(b.nom,'fr') || String(a.prenom||'').localeCompare(String(b.prenom||''),'fr'))) {
+        const row = body.insertRow();
+        row.insertCell().textContent = person.nom;
+        row.insertCell().textContent = person.prenom || '';
+        if (remove) {
+            const button = document.createElement('button');
+            button.textContent = 'Retirer'; button.type = 'button';
+            button.onclick = () => remove(person); row.insertCell().append(button);
         }
+    }
+    box.append(table);
+}
+async function loadCartesValides() {
+    const token = ++seasonRequest;
+    const clock = seasonClock(), select = cardField('seasonChoice');
+    const prior = Number(select.value);
+    const changedYear = seasonStamp && Number(seasonStamp.split('/')[0]) !== clock.year;
+    seasonStamp = clock.year + '/' + clock.last;
+    select.replaceChildren();
+    for (let y = clock.last; y >= 2026; y--) select.add(new Option(String(y) + (y < clock.year ? ' · archive' : y > clock.year ? ' · préinscriptions' : ' · en cours'),String(y)));
+    const year = !changedYear && prior >= 2026 && prior <= clock.last ? prior : clock.year;
+    select.value = String(year);
+    cardField('annualForm').hidden = year < clock.year;
+    cardField('annualAdd').textContent = 'Ajouter à la saison ' + year;
+    cardField('annualListTitle').textContent = 'Détenteurs ' + year;
+    cardField('doubleTitle').textContent = 'Deux années consécutives · ' + (clock.year-1) + ' et ' + clock.year;
+    cardField('annualList').textContent = 'Chargement…';
+    cardField('doubleList').textContent = 'Chargement…';
+    try {
+        const years = [...new Set([year,clock.year,clock.year-1].filter(y=>y>=2026))];
+        const entries = await Promise.all(years.map(async y=>[y,members((await dbCentral.ref(seasonPath(y)).once('value')).val())]));
+        if (token !== seasonRequest) return;
+        const data = Object.fromEntries(entries);
+        cardField('annualListTitle').textContent += ' (' + data[year].length + ')';
+        cardTable('annualList',data[year],year < clock.year ? null : async person => {
+            if (!confirm('Retirer la carte '+year+' de '+person.nom+' '+(person.prenom||'')+' ?')) return;
+            try { await changeCard(year,person,false); await loadCartesValides(); }
+            catch(e) {cardField('cardStatus').textContent=e.message;}
+        });
+        if (!data[clock.year-1]) cardField('doubleList').textContent='Comparaison disponible à partir de 2027 (premier registre : 2026).';
+        else {
+            const previous = new Set(data[clock.year-1].map(personKey));
+            const both = data[clock.year].filter(p => previous.has(personKey(p)));
+            cardField('doubleTitle').textContent += ' (' + both.length + ')';
+            cardTable('doubleList',both,null);
+        }
+    } catch(e) { if(token===seasonRequest) {cardField('annualList').textContent='Lecture impossible. Rouvrez l’onglet pour réessayer.';cardField('doubleList').textContent='Comparaison indisponible.';} }
+}
+async function addCarteValide(event) {
+    event.preventDefault();
+    const year = Number(cardField('seasonChoice').value);
+    const person = {nom:cardField('newCarteNom').value.trim().toLocaleUpperCase('fr'), prenom:cardField('newCartePrenom').value.trim()};
+    if (!person.nom || !person.prenom) return;
+    const button = cardField('annualAdd'); button.disabled=true;
+    try {
+        await changeCard(year,person,true);
+        cardField('annualForm').reset();
+        cardField('cardStatus').textContent='Carte '+year+' ajoutée pour '+person.prenom+' '+person.nom+'.';
+        await loadCartesValides();
+    } catch(e) {cardField('cardStatus').textContent=e.message;} finally {button.disabled=false;}
+}
+function refreshSeasonPanel() {
+    const c=seasonClock();
+    if (document.getElementById('adminTabCartes').classList.contains('active') && seasonStamp && seasonStamp !== c.year+'/'+c.last) loadCartesValides();
+}
+setInterval(refreshSeasonPanel,15000);
+window.addEventListener('focus',refreshSeasonPanel);
 
         async function loadControleurs() { 
             const container = document.getElementById('controleursList'); 
