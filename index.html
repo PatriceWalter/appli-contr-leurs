@@ -306,13 +306,6 @@
 #pageAdmin .shortcut-help[aria-expanded=true] {background:#deebe2;border-radius:8px}
 #pageAdmin .shortcut p {grid-column:1/-1;padding:10px 14px;margin:0;border-top:1px solid #c2d1c7;font-size:15px;line-height:1.45;color:#35463e}
 #pageAdmin .lake-link {border:0;padding:12px 14px;background:transparent;text-align:left;color:#194a30;text-decoration:underline;font:inherit;font-weight:650;cursor:pointer;min-height:44px}
-#lakeDialog {margin:auto;padding:18px;border:1px solid #aabfaf;border-radius:12px;width:min(95vw,560px);max-height:90vh;overflow:auto}
-#lakeDialog::backdrop {background:#0008}
-#lakeDialog label {display:block;margin:10px 0}
-#lakeDialog button,#lakeDialog select,#lakeDialog input {font:inherit;padding:6px;min-height:44px}
-#lakeDays {display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:5px}
-#lakeDays button {background:#fafafa;border:1px solid #aabfaf;border-radius:6px}
-#lakeDays [data-mode="1"] {background:#dcf2df} #lakeDays [data-mode="2"] {background:#fff1c6}
 </style>
 </head>
 <body>
@@ -593,7 +586,7 @@
             <div class="page-topbar"><span class="page-topbar-icon">⚙️</span><span class="page-topbar-title">ADMINISTRATION</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">⚙️ Administration</h1>
-<section class="admin-sites" aria-label="Applications de pêche"><section><h2>Réservations au Carpodrome</h2><div><article class="shortcut"><a href="https://docs.google.com/spreadsheets/d/1JyP2Xn80mPhu2K_C2IJVexdZzicUFZ5WJ-EdvgNh1OI/edit?gid=305800097#gid=305800097" target="_blank" rel="noopener noreferrer">Valider les demandes dans Google Sheets</a><button type="button" class="shortcut-help" aria-label="Aide — Valider les demandes dans Google Sheets" aria-controls="shortcut-1" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-1" hidden>Ouvre le tableau des réservations. Retrouve le pêcheur, la date et le poste pour accepter ou refuser sa demande.</p></article><article class="shortcut"><a href="https://patricewalter.github.io/resa-poste-carpo/#parametres" target="_blank" rel="noopener noreferrer">Modifier le formulaire de réservation</a><button type="button" class="shortcut-help" aria-label="Aide — Modifier le formulaire de réservation" aria-controls="shortcut-2" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-2" hidden>Ouvre la roue dentée du formulaire rempli par les pêcheurs. Modifie les consignes, les modes de pêche (individuel ou américaine), les techniques autorisées et le règlement affiché lors de la réservation.</p></article></div></section><section><h2>Règlements de la fiche de renseignement</h2><div><article class="shortcut"><a href="https://patricewalter.github.io/fiche-de-renseignement/#reglements" target="_blank" rel="noopener noreferrer">Modifier les trois règlements des étangs</a><button type="button" class="shortcut-help" aria-label="Aide — Modifier les trois règlements des étangs" aria-controls="shortcut-3" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-3" hidden>Ouvre l’administration de la fiche remplie par les pêcheurs. Choisis Carpodrome, Hardt ou Breitmatt pour modifier le texte présenté à la lecture sur cette fiche.</p></article></div></section><section><h2>Réglages des calendriers</h2><div><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Carpodrome')">Réglages calendrier Carpodrome</button><button type="button" class="shortcut-help" aria-label="Aide — Réglages calendrier Carpodrome" aria-controls="shortcut-4" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-4" hidden>Ouvre le gestionnaire de calendrier du Carpodrome pour modifier les mois et les jours d’ouverture. Les changements sont enregistrés pour cet étang depuis l’administration centrale.</p></article><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Hardt')">Réglages calendrier Hardt</button><button type="button" class="shortcut-help" aria-label="Aide — Réglages calendrier Hardt" aria-controls="shortcut-5" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-5" hidden>Ouvre le gestionnaire de calendrier du Hardt pour modifier les mois et les jours d’ouverture. Les changements sont enregistrés pour cet étang depuis l’administration centrale.</p></article></div></section></section>
+<section class="admin-sites" aria-label="Applications de pêche"><section><h2>Réservations au Carpodrome</h2><div><article class="shortcut"><a href="https://docs.google.com/spreadsheets/d/1JyP2Xn80mPhu2K_C2IJVexdZzicUFZ5WJ-EdvgNh1OI/edit?gid=305800097#gid=305800097" target="_blank" rel="noopener noreferrer">Valider les demandes dans Google Sheets</a><button type="button" class="shortcut-help" aria-label="Aide — Valider les demandes dans Google Sheets" aria-controls="shortcut-1" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-1" hidden>Ouvre le tableau des réservations. Retrouve le pêcheur, la date et le poste pour accepter ou refuser sa demande.</p></article><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Formulaire')">Modifier le formulaire de réservation</button><button type="button" class="shortcut-help" aria-label="Aide — Modifier le formulaire de réservation" aria-controls="shortcut-2" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-2" hidden>Ouvre la roue dentée du formulaire rempli par les pêcheurs. Modifie les consignes, les modes de pêche (individuel ou américaine), les techniques autorisées et le règlement affiché lors de la réservation.</p></article></div></section><section><h2>Règlements de la fiche de renseignement</h2><div><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Reglements')">Modifier les trois règlements des étangs</button><button type="button" class="shortcut-help" aria-label="Aide — Modifier les trois règlements des étangs" aria-controls="shortcut-3" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-3" hidden>Ouvre l’administration de la fiche remplie par les pêcheurs. Choisis Carpodrome, Hardt ou Breitmatt pour modifier le texte présenté à la lecture sur cette fiche.</p></article></div></section><section><h2>Réglages des calendriers</h2><div><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Carpodrome')">Réglages calendrier Carpodrome</button><button type="button" class="shortcut-help" aria-label="Aide — Réglages calendrier Carpodrome" aria-controls="shortcut-4" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-4" hidden>Ouvre le gestionnaire de calendrier du Carpodrome pour modifier les mois et les jours d’ouverture. Ouvre le site habituel de cet étang dans la partie administration de la roue dentée.</p></article><article class="shortcut"><button type="button" class="lake-link" onclick="openLakeCalendar('Hardt')">Réglages calendrier Hardt</button><button type="button" class="shortcut-help" aria-label="Aide — Réglages calendrier Hardt" aria-controls="shortcut-5" aria-expanded="false" onclick="toggleShortcutHelp(this)">?</button><p id="shortcut-5" hidden>Ouvre le gestionnaire de calendrier du Hardt pour modifier les mois et les jours d’ouverture. Ouvre le site habituel de cet étang dans la partie administration de la roue dentée.</p></article></div></section></section>
 <h2 class="admin-local-title">Gestion interne de l’association</h2>
                 <div class="admin-tabs">
                     <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches</button>
@@ -1108,7 +1101,7 @@
         document.getElementById('homeBtn').addEventListener('click', () => { pageHistory = []; showPage('portal'); pageHistory = []; });
         document.querySelectorAll('.menu-card[data-page], .menu-grid-card[data-page], .portal-choice-card[data-page]').forEach(c => c.addEventListener('click', () => showPage(c.dataset.page)));
         document.getElementById('btnMenuTravail').addEventListener('click', () => showPage('travail'));
-        document.getElementById('btnMenuAdmin').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
+        document.getElementById('btnMenuAdmin').addEventListener('click', () => { nextLake=null; document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
 
         // Le compte secondaire provient de la configuration publiée avec le site.
         let secondaryAdmin = '';
@@ -1233,7 +1226,7 @@
         }
 
         function forceLogoutRevoked() {
-            lakeAdminUser='';lakeEdit=null;if(lakeEl('lakeDialog')?.open)lakeEl('lakeDialog').close();
+            clearLakeSession();
             stopAccessGuard();
             stopControllerModuleAccessGuard();
             removeUserPresence();
@@ -1523,7 +1516,7 @@
         }
         
         function logoutUser() {
-            lakeAdminUser='';lakeEdit=null;if(lakeEl('lakeDialog')?.open)lakeEl('lakeDialog').close();
+            clearLakeSession();
             stopAccessGuard();
             stopControllerModuleAccessGuard();
             removeUserPresence();
@@ -1677,96 +1670,52 @@
         window.addEventListener('beforeunload', function() { removeUserPresence(); });
 
         document.getElementById('adminBtn').addEventListener('click', () => { document.getElementById('adminPassword').value = ''; document.getElementById('adminModal').classList.add('visible'); });
-        document.getElementById('adminModalClose').addEventListener('click', () => document.getElementById('adminModal').classList.remove('visible'));
+        document.getElementById('adminModalClose').addEventListener('click', () => {nextLake=null;document.getElementById('adminModal').classList.remove('visible');});
         document.getElementById('closePageBtn').addEventListener('click', () => window.close());
         document.getElementById('adminModal').addEventListener('click', e => { if (e.target.id === 'adminModal') e.target.classList.remove('visible'); });
         document.getElementById('adminSubmitBtn').addEventListener('click', checkAdminPassword);
         document.getElementById('adminPassword').addEventListener('keypress', e => { if (e.key === 'Enter') checkAdminPassword(); });
         
 
-let lakeAdminUser='', lakeEdit=null;
-const lakeSettings={Hardt: {firebase:{ apiKey: "AIzaSyADXcfDOBLHC7pdlGedDW-4wAHKyPHW19I", authDomain: "resahardt.firebaseapp.com", databaseURL: "https://resahardt-default-rtdb.europe-west1.firebasedatabase.app", projectId: "resahardt", storageBucket: "resahardt.firebasestorage.app", messagingSenderId: "159584744908", appId: "1:159584744908:web:1cc909277052b56e945969" }, defaults:{annee:2026,joursOuverture:{ 1: [28], 2: [6, 7, 13, 14, 20, 21, 22, 27, 28], 3: [3, 4, 5, 10, 11, 17, 18, 24, 25], 4: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 5: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], 6: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 7: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], 8: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], 9: [2, 3, 9, 10, 16, 17, 23, 24, 30, 31], 10: [6, 7, 10, 13, 14, 20, 21, 27, 28], 11: [4, 5, 11, 12, 18, 19, 24, 25, 26] },fermeMatin:{ 1: [28], 2: [28], 3: [25], 5: [13], 8: [19], 9: [17], 10: [14] }}},
-Carpodrome: {firebase:{ apiKey: "AIzaSyBhkDGebCSuqjcENl8dZI0ZeSAkjHUUsuY", authDomain: "reservation-carpodrome.firebaseapp.com", databaseURL: "https://reservation-carpodrome-default-rtdb.europe-west1.firebasedatabase.app", projectId: "reservation-carpodrome", storageBucket: "reservation-carpodrome.firebasestorage.app", messagingSenderId: "112186411680", appId: "1:112186411680:web:13bc4892163e47a04317c5" }, defaults:{annee:2026,joursOuverture:{ 2: [1, 7, 8, 14, 15, 21, 22, 28, 29], 3: [11, 12, 18, 19, 25, 26], 4: [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 5: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], 6: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 7: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], 8: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30], 9: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] },fermeMatin:{ 2: [28], 3: [25], 5: [13], 8: [19], 9: [17] }}}};
-const lakeEl=id=>document.getElementById(id);
-function canEditLake() {
-    return !!lakeAdminUser && lakeAdminUser===getCurrentUser() && sessionStorage.getItem('logged')==='true' && isAdminUserName(lakeAdminUser);
+let centralCalendarSession=null, nextLake=null;
+const lakeTargets={Hardt:'/r-saHardt/',Carpodrome:'/reservation-carpodrome/',Formulaire:'/resa-poste-carpo/',Reglements:'/fiche-de-renseignement/'};
+const lakeWindows=new Map();
+function clearLakeSession() {
+    centralCalendarSession=null;nextLake=null;lakeWindows.clear();
 }
-async function openLakeCalendar(name) {
-    if (!canEditLake()) { document.getElementById('btnMenuAdmin').click(); return; }
-    const settings=lakeSettings[name];
-    if (!settings) return;
-    const dialog=lakeEl('lakeDialog');
-    const edit={name};
-    lakeEdit=edit;
-    lakeEl('lakeTitle').textContent='Calendrier '+name;
-    lakeEl('lakeFields').disabled=true;
-    lakeEl('lakeStatus').textContent='Chargement…';
-    dialog.showModal();
-    try {
-        const appName='calendrier-'+name;
-        const app=firebase.apps.find(a=>a.name===appName) || firebase.initializeApp(settings.firebase,appName);
-        edit.ref=app.database().ref('calendrierConfig');
-        edit.base=(await edit.ref.once('value')).val();
-        if (lakeEdit!==edit || !dialog.open || !canEditLake()) return;
-        edit.data=JSON.parse(JSON.stringify(edit.base || settings.defaults));
-        for(const key of ['joursOuverture','fermeMatin']) edit.data[key]={...(edit.data[key]||{})};
-        lakeEl('lakeYear').value=edit.data.annee;
-        const month=lakeEl('lakeMonth');month.replaceChildren();
-        for(let m=1;m<=12;m++)month.add(new Option(new Date(2026,m-1,1).toLocaleString('fr',{month:'long'}),m));
-        month.value=String(new Date().getMonth()+1);
-        lakeEl('lakeFields').disabled=false;lakeEl('lakeStatus').textContent='';drawLakeDays();
-    } catch(e){if(lakeEdit===edit)lakeEl('lakeStatus').textContent='Impossible de lire le calendrier. Ferme puis réessaie.';}
-}
-function drawLakeDays() {
-    if (!lakeEdit?.data) return;
-    const data=lakeEdit.data, year=lakeEl('lakeYear').valueAsNumber,month=Number(lakeEl('lakeMonth').value);
-    const grid=lakeEl('lakeDays');grid.replaceChildren();
-    if (!Number.isInteger(year)||year<2024||year>2050) return;
-    data.annee=year;
-    const open=data.joursOuverture[month]||[], morning=data.fermeMatin[month]||[];
-    lakeEl('lakeActive').checked=!!open.length;
-    for(let day=1;day<=new Date(year,month,0).getDate();day++) {
-        const mode=open.includes(day)?(morning.includes(day)?2:1):0;
-        const button=document.createElement('button');button.type='button';button.dataset.mode=mode;
-        button.textContent=day+' · '+['Fermé','Ouvert','Fermé le matin'][mode];
-        button.onclick=()=>{
-            const next=(mode+1)%3;
-            data.joursOuverture[month]=open.filter(d=>d!==day);
-            data.fermeMatin[month]=morning.filter(d=>d!==day);
-            if(next)data.joursOuverture[month].push(day);
-            if(next===2)data.fermeMatin[month].push(day);
-            data.joursOuverture[month].sort((a,b)=>a-b);
-            drawLakeDays();
-        };
-        grid.append(button);
+function openLakeCalendar(lake) {
+    const path=lakeTargets[lake],user=getCurrentUser();
+    if (!path || sessionStorage.getItem('logged')!=='true' || !isAdminUserName(user)) return;
+    if (centralCalendarSession?.user!==user) {
+        document.getElementById('btnMenuAdmin').click();nextLake=lake;return;
     }
+    const fragment=['Formulaire','Reglements'].includes(lake) ? '#depuis-administration' : '#administration-etang';
+    const child=window.open(path+fragment,'_blank');
+    if (!child) {showAlert('Autorisez l’ouverture du site de l’étang dans votre navigateur.','warning');return;}
+    lakeWindows.set(child,{path,user});
+    setTimeout(()=>lakeWindows.delete(child),60000);
 }
-function setLakeMonth(active) {
-    const data=lakeEdit.data, month=Number(lakeEl('lakeMonth').value);
-    data.joursOuverture[month]=[];data.fermeMatin[month]=[];
-    if(active)for(let day=1;day<=new Date(data.annee,month,0).getDate();day++){
-        if([0,6].includes(new Date(data.annee,month-1,day).getDay()))data.joursOuverture[month].push(day);
-    }
-    drawLakeDays();
-}
-async function saveLakeCalendar() {
-    if (!canEditLake() || !lakeEl('lakeDialog').open || !lakeEdit?.data || lakeEl('lakeFields').disabled) return;
-    const year=lakeEl('lakeYear').valueAsNumber;
-    if (!Number.isInteger(year)||year<2024||year>2050){lakeEl('lakeStatus').textContent='Indique une année entre 2024 et 2050.';return;}
-    const edit=lakeEdit;edit.data.annee=year;
-    lakeEl('lakeFields').disabled=true;
+function consumeEditorAccess(child) {
+    const entry=lakeWindows.get(child);
+    if (!entry || ![lakeTargets.Formulaire,lakeTargets.Reglements].includes(entry.path))return false;
+    if (sessionStorage.getItem('logged')!=='true' || !isAdminUserName(entry.user) ||
+        getCurrentUser()!==entry.user || centralCalendarSession?.user!==entry.user)return false;
     try {
-        await refreshAdminRole();
-        if(!canEditLake() || edit!==lakeEdit || !lakeEl('lakeDialog').open)return;
-        const result=await edit.ref.transaction(current=>{
-            if (!canEditLake() || JSON.stringify(current)!==JSON.stringify(edit.base)) return;
-            return edit.data;
-        },undefined,false);
-        if(edit!==lakeEdit)return;
-        if(!result.committed){lakeEl('lakeStatus').textContent='Le calendrier a changé. Ferme puis rouvre-le avant de modifier les dates.';return;}
-        lakeEl('lakeDialog').close();showAlert('Calendrier '+edit.name+' enregistré.','success');
-    } catch(e){if(edit===lakeEdit){lakeEl('lakeFields').disabled=false;lakeEl('lakeStatus').textContent='Échec de l’enregistrement. Vérifie ta connexion et réessaie.';}}
+        if(child.location.origin!==location.origin || child.location.pathname!==entry.path ||
+            child.location.hash!=='#depuis-administration')return false;
+    } catch {return false;}
+    lakeWindows.delete(child);
+    return true;
 }
+window.addEventListener('message',event=>{
+    if(event.origin!==location.origin || event.data!=='aappma-etang-pret')return;
+    const entry=lakeWindows.get(event.source);
+    if (!entry || entry.user!==getCurrentUser() || !isAdminUserName(entry.user) ||
+        centralCalendarSession?.user!==entry.user || sessionStorage.getItem('logged')!=='true')return;
+    try { if(event.source.location.pathname!==entry.path || event.source.location.hash!=='#administration-etang')return; } catch {return;}
+    lakeWindows.delete(event.source);
+    event.source.postMessage({type:'aappma-entree-etang',user:entry.user,code:centralCalendarSession.code},location.origin);
+});
 
         function checkAdminPassword() { 
             if (!isAdminUserName(getCurrentUser())) {
@@ -1775,10 +1724,11 @@ async function saveLakeCalendar() {
                 return;
             }
             if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
-                lakeAdminUser=getCurrentUser(); 
+                centralCalendarSession={user:getCurrentUser(),code:document.getElementById('adminPassword').value}; 
                 document.getElementById('adminModal').classList.remove('visible'); 
                 loadAdminFiches(); 
-                showPage('admin'); 
+                showPage('admin');
+                if(nextLake){const lake=nextLake;nextLake=null;openLakeCalendar(lake);} 
             } else { 
                 showAlert('❌ Mot de passe incorrect', 'error'); 
             } 
@@ -3761,14 +3711,6 @@ window.addEventListener('focus',refreshSeasonPanel);
     </script>
     <script src="./push-config.js?v=20261124-2"></script>
     <script src="./push-infos.js?v=20261124-2"></script>
-<dialog id="lakeDialog" aria-labelledby="lakeTitle">
-<h2 id="lakeTitle"></h2><fieldset id="lakeFields" style="border:0">
-<label>Année <input id="lakeYear" type="number" min="2024" max="2050" onchange="drawLakeDays()"></label>
-<label>Mois <select id="lakeMonth" onchange="drawLakeDays()"></select></label>
-<label><input id="lakeActive" type="checkbox" onchange="setLakeMonth(this.checked)"> Mois actif</label>
-<p>Appuie sur un jour pour passer de fermé à ouvert, puis à fermé le matin.</p>
-<div id="lakeDays"></div><button class="btn btn-primary" onclick="saveLakeCalendar()">Enregistrer</button></fieldset>
-<p id="lakeStatus" role="status"></p><button id="lakeClose" onclick="this.closest('dialog').close()">Fermer</button>
-</dialog>
+
 </body>
 </html>
