@@ -290,6 +290,15 @@
 .info-poll label {display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
 .info-poll p {margin:0 0 6px;font-size:14px;overflow-wrap:anywhere}
 .poll-editor input[type=checkbox],.info-poll input[type=radio] {width:20px;height:20px;vertical-align:middle}
+#pageAdmin .admin-sites {margin:18px 0 24px;display:grid;gap:18px}
+#pageAdmin .admin-sites h2,#pageAdmin .admin-local-title {font-size:1.15rem;color:#204c37;margin:0 0 8px}
+#pageAdmin .admin-sites section>div {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:10px}
+#pageAdmin .admin-sites a {display:block;padding:14px;border-radius:9px;background:#f2f7f4;border:1px solid #aabfaf;color:#194a30;text-decoration:none}
+#pageAdmin .admin-sites a:hover,#pageAdmin .admin-sites a:focus-visible {background:#e5f0e9;outline:2px solid #316948}
+#pageAdmin .admin-sites a strong {display:block;text-decoration:underline;text-underline-offset:3px;font-size:1rem}
+#pageAdmin .admin-sites a span,#pageAdmin .admin-purpose {display:block;margin:6px 0 0;line-height:1.45;font-size:.96rem;color:#35463e}
+#pageAdmin .admin-local-title {border-top:2px solid #c2d1c7;padding-top:18px}
+#pageAdmin .admin-purpose {margin:0 0 14px}
 </style>
 </head>
 <body>
@@ -570,6 +579,8 @@
             <div class="page-topbar"><span class="page-topbar-icon">⚙️</span><span class="page-topbar-title">ADMINISTRATION</span></div>
             <div class="page-content"><div class="page-card">
                 <h1 class="page-title">⚙️ Administration</h1>
+<section class="admin-sites" aria-label="Applications de pêche"><section><h2>Réservations au Carpodrome</h2><div><a href="https://docs.google.com/spreadsheets/d/1JyP2Xn80mPhu2K_C2IJVexdZzicUFZ5WJ-EdvgNh1OI/edit?gid=305800097#gid=305800097" target="_blank" rel="noopener noreferrer"><strong>Valider les demandes dans Google Sheets</strong><span>Ouvre le tableau des réservations. Retrouve le pêcheur, la date et le poste pour accepter ou refuser sa demande.</span></a><a href="https://patricewalter.github.io/resa-poste-carpo/#parametres" target="_blank" rel="noopener noreferrer"><strong>Modifier le formulaire de réservation</strong><span>Ouvre la roue dentée du formulaire rempli par les pêcheurs. Modifie les consignes, les modes de pêche (individuel ou américaine), les techniques autorisées et le règlement affiché lors de la réservation.</span></a></div></section><section><h2>Règlements de la fiche de renseignement</h2><div><a href="https://patricewalter.github.io/fiche-de-renseignement/#reglements" target="_blank" rel="noopener noreferrer"><strong>Modifier les trois règlements des étangs</strong><span>Ouvre l’administration de la fiche remplie par les pêcheurs. Choisis Carpodrome, Hardt ou Breitmatt pour modifier le texte présenté à la lecture sur cette fiche.</span></a></div></section><section><h2>Contrôle sur le terrain</h2><div><a href="https://patricewalter.github.io/reservation-carpodrome/" target="_blank" rel="noopener noreferrer"><strong>Contrôler au Carpodrome</strong><span>Ouvre l’application des contrôleurs pour consulter les postes du Carpodrome et enregistrer un contrôle au bord de l’étang.</span></a><a href="https://patricewalter.github.io/r-saHardt/" target="_blank" rel="noopener noreferrer"><strong>Contrôler au Hardt</strong><span>Ouvre l’application des contrôleurs pour consulter les postes du Hardt et enregistrer un contrôle au bord de l’étang.</span></a></div></section></section>
+<h2 class="admin-local-title">Gestion interne de l’association</h2>
                 <div class="admin-tabs">
                     <button class="admin-tab active" onclick="switchAdminTab('fiches')">📋 Fiches</button>
                     <button class="admin-tab" onclick="switchAdminTab('cartes')">🎫 Cartes</button>
@@ -578,8 +589,8 @@
                     <button class="admin-tab" onclick="switchAdminTab('info')">ℹ️ Infos</button>
                     <button class="admin-tab" onclick="switchAdminTab('connections')">🕒 Connexions</button>
                 </div>
-                <div id="adminTabFiches" class="admin-tab-content active"><div id="adminFichesList"></div></div>
-                <div id="adminTabCartes" class="admin-tab-content">
+                <div id="adminTabFiches" class="admin-tab-content active"><p class="admin-purpose">Consulte les fiches de renseignement déjà enregistrées et corrige les coordonnées d’un pêcheur.</p><div id="adminFichesList"></div></div>
+                <div id="adminTabCartes" class="admin-tab-content"><p class="admin-purpose">Enregistre les détenteurs par saison et retrouve les pêcheurs qui ont renouvelé leur carte deux années de suite.</p>
 <h2>Cartes de pêche</h2>
 <label>Saison du registre<select id="seasonChoice" onchange="loadCartesValides()"></select></label>
 <form id="annualForm" onsubmit="addCarteValide(event)">
@@ -587,7 +598,7 @@
 <button id="annualAdd" class="btn btn-primary">Ajouter</button></form>
 <p role="status" id="cardStatus"></p><h3 id="annualListTitle"></h3><div id="annualList"></div>
 <h3 id="doubleTitle"></h3><div id="doubleList"></div></div>
-                <div id="adminTabControleurs" class="admin-tab-content">
+                <div id="adminTabControleurs" class="admin-tab-content"><p class="admin-purpose">Gère les comptes du comité et des gardes, leurs mots de passe et leurs droits d’accès.</p>
                     <section class="ctrl-box">
                         <h2>Alertes de connexion révoquée</h2>
                         <p>Une tentative de connexion à un compte révoqué déclenche un e-mail à cette adresse.</p>
@@ -607,7 +618,7 @@
                     </section>
                     <div id="controleursList"></div>
                 </div>
-                <div id="adminTabTickets" class="admin-tab-content">
+                <div id="adminTabTickets" class="admin-tab-content"><p class="admin-purpose">Choisis qui peut vendre des tickets numériques et qui peut consulter l’historique de toutes les ventes.</p>
                     <p style="color:#666;margin-bottom:15px;">Cochez les contrôleurs autorisés à utiliser le module de vente de tickets numériques.</p>
                     <div id="ticketModuleUsersList" class="tk-user-list"></div>
                     <div style="margin-top:20px;padding-top:15px;border-top:2px dashed #ddd;">
@@ -615,7 +626,7 @@
                         <div id="ticketViewAllList" class="tk-user-list"></div>
                     </div>
                 </div>
-                <div id="adminTabInfo" class="admin-tab-content">
+                <div id="adminTabInfo" class="admin-tab-content"><p class="admin-purpose">Publie les annonces du comité, ajoute un sondage de présence ou propose un événement à ajouter au calendrier.</p>
                     <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:15px;margin-bottom:18px;">
                         <p style="font-weight:700;color:#7a5b00;margin-bottom:8px;">➕ Ajouter une nouvelle section d'information</p>
                         <p style="color:#666;font-size:13px;margin-bottom:12px;">Chaque section est indépendante : vous pourrez ensuite la modifier ou la supprimer.</p>
@@ -636,7 +647,7 @@
                     <div class="form-section-title">ℹ️ Sections publiées</div>
                     <div id="adminInfoSectionsList"></div>
                 </div>
-                <div id="adminTabConnections" class="admin-tab-content">
+                <div id="adminTabConnections" class="admin-tab-content"><p class="admin-purpose">Retrouve la date de connexion de chaque utilisateur et consulte les pages et annonces ouvertes pendant sa session.</p>
                     <div class="login-history-summary">
                         <p style="color:#666;font-size:13px;line-height:1.5;">Ouvrez l’activité d’une connexion pour consulter les pages visitées et les annonces ouvertes, avec la date et l’heure.</p>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;">
